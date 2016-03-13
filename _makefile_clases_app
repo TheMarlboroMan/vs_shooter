@@ -1,0 +1,54 @@
+################################################################################
+#Definciones
+
+DIR_CLASES_APP=./class/app/
+DIR_CLASES_IMPLEMENTACION_FRAMEWORK=./class/app/framework_impl/
+
+################################################################################
+#Implementación framework...
+################################################################################
+
+$(DIR_O)kernel_config.o:\
+$(DIR_CLASES_IMPLEMENTACION_FRAMEWORK)kernel_config.h \
+$(DIR_CLASES_IMPLEMENTACION_FRAMEWORK)kernel_config.cpp
+	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CLASES_IMPLEMENTACION_FRAMEWORK)kernel_config.cpp -o $(DIR_O)kernel_config.o
+
+$(DIR_O)app_config.o:\
+$(DIR_CLASES_IMPLEMENTACION_FRAMEWORK)app_config.h \
+$(DIR_CLASES_IMPLEMENTACION_FRAMEWORK)app_config.cpp
+	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CLASES_IMPLEMENTACION_FRAMEWORK)app_config.cpp -o $(DIR_O)app_config.o
+
+################################################################################
+#Definiciones...
+################################################################################
+
+################################################################################
+#Clases...
+################################################################################
+
+$(DIR_O)jugador.o:\
+$(DIR_O)espaciable.o\
+$(DIR_CLASES_APP)color.h \
+$(DIR_CLASES_APP)bloque_input.h \
+$(DIR_CLASES_APP)jugador.h \
+$(DIR_CLASES_APP)jugador.cpp
+	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CLASES_APP)jugador.cpp -o $(DIR_O)jugador.o
+
+
+$(DIR_O)obstaculo.o:\
+$(DIR_O)espaciable.o\
+$(DIR_CLASES_APP)color.h \
+$(DIR_CLASES_APP)obstaculo.h \
+$(DIR_CLASES_APP)obstaculo.cpp
+	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CLASES_APP)obstaculo.cpp -o $(DIR_O)obstaculo.o
+
+$(DIR_O)representador.o:\
+$(DIR_CLASES_APP)color.h \
+$(DIR_CLASES_APP)representador.h \
+$(DIR_CLASES_APP)representador.cpp
+	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CLASES_APP)representador.cpp -o $(DIR_O)representador.o
+
+$(DIR_O)espaciable.o:\
+$(DIR_CLASES_APP)espaciable.h \
+$(DIR_CLASES_APP)espaciable.cpp
+	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CLASES_APP)espaciable.cpp -o $(DIR_O)espaciable.o
