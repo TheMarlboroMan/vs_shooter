@@ -26,7 +26,7 @@ class Jugador:
 	void				recibir_input(const Bloque_input&);
 	void				turno(float);
 	void				confirmar_movimiento();
-	void				cancelar_movimiento();
+	void				colisionar();
 	void				restar_salud(int);
 
 	private:

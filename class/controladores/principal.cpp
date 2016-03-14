@@ -1,5 +1,6 @@
 #include "principal.h"
 
+#include <algorithm>
 #include <string>
 
 #include <class/lector_txt.h>
@@ -105,16 +106,12 @@ void  Controlador_principal::loop(DFramework::Input& input, float delta)
 
 
 		//TODO: Separar...
+
 		auto ini_j=std::begin(jugadores);
 		while(ini_j < std::end(jugadores))
 		{
-			auto& j=*ini_j;
-
-			if(!j.acc_salud())
-			{
-				ini_j=jugadores.erase(ini_j);
-				continue;
-			}
+			//TODO: Disaster.
+			auto& j=*ini_j;			
 
 			auto bl=obtener_bloque_input(input, obtener_traduccion_input(j.acc_indice()));
 			j.recibir_input(bl);
@@ -126,19 +123,39 @@ void  Controlador_principal::loop(DFramework::Input& input, float delta)
 			{
 				if(j.en_colision_con(o))
 				{
+					j.colisionar();
 					colision=true;
 					break;
 				}
 			}
 
-			if(colision) j.cancelar_movimiento();
-			else j.confirmar_movimiento();
-
-			//Inelegante...
-			if(j.es_y_puede_disparar())
+			for(auto& oj : jugadores)
 			{
-				auto pt=j.disparar();
-				crear_proyectil(pt, j.acc_angulo(), j.acc_indice());
+				if(oj.acc_indice()!=j.acc_indice() && j.en_colision_con(oj))
+				{
+					//TODO: Si uno está parado no recibe daños.
+					j.colisionar();
+					oj.colisionar();
+					colision=true;
+					break;
+				}
+			}
+
+			if(!j.acc_salud())
+			{
+				ini_j=jugadores.erase(ini_j);
+				continue;
+			}
+			else
+			{
+				if(!colision) j.confirmar_movimiento();
+
+				//Inelegante...
+				if(j.es_y_puede_disparar())
+				{
+					auto pt=j.disparar();
+					crear_proyectil(pt, j.acc_angulo(), j.acc_indice());
+				}
 			}
 
 			++ini_j;
@@ -156,22 +173,11 @@ void  Controlador_principal::dibujar(DLibV::Pantalla& pantalla)
 {
 	pantalla.limpiar(0, 0, 0, 255);
 
-	//TODO... 320 y 200 serían configurables?
-	const int mitad_w_pantalla=320,
-			mitad_h_pantalla=200;
-
 	Representador r;
 
+	ajustar_camara();
+
 	r.dibujar_rejilla(pantalla, grid, {255, 255, 255, 64}, xcam, ycam, zoom);
-
-	//TODO: Localizar punto central de todos.
-	//TODO: Autoajustar zoom...
-
-	if(jugadores.size())
-	{
-		xcam=(jugadores[0].acc_poligono().acc_centro().x) - (mitad_w_pantalla / zoom), 
-		ycam=(jugadores[0].acc_poligono().acc_centro().y) + (mitad_h_pantalla / zoom);
-	}
 
 	for(const auto& o : obstaculos)
 	{
@@ -194,10 +200,36 @@ void  Controlador_principal::dibujar(DLibV::Pantalla& pantalla)
 		r.dibujar_segmento(pantalla, s, {0, 255, 0, 128}, xcam, ycam, zoom);		
 	}
 
-	auto pt_raton=punto_desde_pos_pantalla(pos_raton.x, pos_raton.y);
-	std::string texto=std::to_string((int)pt_raton.x)+","+std::to_string((int)pt_raton.y);
-	DLibV::Representacion_TTF txt(fuente_akashi, {255, 255, 255, 255}, texto);
-	txt.ir_a(16, 16);
+//	auto pt_raton=punto_desde_pos_pantalla(pos_raton.x, pos_raton.y);
+//	std::string texto=std::to_string((int)pt_raton.x)+","+std::to_string((int)pt_raton.y);
+//	DLibV::Representacion_TTF txt(fuente_akashi, {255, 255, 255, 255}, texto);
+//	txt.ir_a(16, 16);
+//	txt.volcar(pantalla);
+
+	for(const auto& j : jugadores) dibujar_info_jugador(pantalla, j);
+}
+
+void Controlador_principal::dibujar_info_jugador(DLibV::Pantalla& pantalla, const Jugador& j)
+{
+	int x=16, y=16;
+	auto jc=j.acc_color();
+//	auto centro=j.acc_poligono().centro();
+
+	switch(j.acc_indice())
+	{
+		case 1:
+		default:
+		break;
+
+		case 2:
+			x=500;
+		break;
+	}
+
+
+	std::string texto=std::to_string(j.acc_salud())+" / 100";
+	DLibV::Representacion_TTF txt(fuente_akashi, {(Uint8)jc.r, (Uint8)jc.g, (Uint8)jc.b, 192}, texto);
+	txt.ir_a(x, y);
 	txt.volcar(pantalla);
 }
 
@@ -304,32 +336,64 @@ void Controlador_principal::crear_proyectil(DLibH::Punto_2d<double> pt, double a
 
 void Controlador_principal::registrar_jugador(int indice)
 {
-	bool existe=false;
-	
-	for(const auto& j : jugadores)
+	if(!std::any_of(std::begin(jugadores), std::end(jugadores), [indice](const Jugador& j) {return j.acc_indice()==indice;}))
 	{
-		if(j.acc_indice()==indice)
-		{
-			existe=true;
-			break;
-		}
-	}
-
-	if(!existe)
-	{
+		tcolor color={255, 0, 0, 255};
 		switch(indice)
 		{
-			case 1:
-				jugadores.push_back({1, {255, 0, 0, 255}});
-			break;
-			case 2:
-				jugadores.push_back({2, {0, 255, 0, 255}});
-			break;
+			default:
+			case 1: color={255, 0, 0, 255}; break;
+			case 2: color={0, 255, 0, 255}; break;
 		}
 
-		//TODO: Terrible.
-		jugadores[jugadores.size()-1].establecer_posicion(30, 50);
+		jugadores.push_back({indice, color});
 	}
+}
+
+void Controlador_principal::ajustar_camara()
+{
+	//TODO... 320 y 200 serían configurables?
+	const int mitad_w_pantalla=320,
+			mitad_h_pantalla=200;
+
+	if(jugadores.size())
+	{
+
+		if(jugadores.size()==1)
+		{
+			const auto& c=jugadores[0].acc_poligono().acc_centro();
+			xcam=c.x - (mitad_w_pantalla / zoom), 
+			ycam=c.y + (mitad_h_pantalla / zoom);
+		}
+		else 
+		{
+			int xmin=jugadores[0].acc_poligono().acc_centro().x, xmax=xmin,
+				ymin=jugadores[0].acc_poligono().acc_centro().y, ymax=ymin;
+
+			//Localizar punto central.
+			for(const auto&j : jugadores)
+			{
+				const auto& c=j.acc_poligono().acc_centro();
+				if(c.x < xmin) xmin=c.x;
+				else if(c.x > xmax) xmax=c.x;
+	
+				if(c.y < ymin) ymin=c.y;
+				else if(c.y > ymax) ymax=c.y;
+			}
+
+//			int distx=xmax-xmin,
+//				disty=ymax-ymin;
+
+			xcam=( xmin + ( (xmax-xmin) / 2) ) - (mitad_w_pantalla / zoom), 
+			ycam=( ymin + ( (ymax-ymin) / 2) ) + (mitad_h_pantalla / zoom);
 
 
+//std::cout<<"DIST "<<distx<<","<<disty<<std::endl;
+//			if(
+			//TODO...
+			//Establecer zoom...
+
+		}
+	}
+	
 }

@@ -40,6 +40,8 @@ class Controlador_principal:
 	void					nuevo_punto(DLibH::Punto_2d<double>);
 	void					cerrar_poligono();
 	void					crear_proyectil(DLibH::Punto_2d<double>, double, int);
+	void					ajustar_camara();
+	void					dibujar_info_jugador(DLibV::Pantalla&, const Jugador&);
 
 	Traduccion_input			obtener_traduccion_input(int) const;
 	Bloque_input				obtener_bloque_input(DFramework::Input& input, const Traduccion_input&) const;

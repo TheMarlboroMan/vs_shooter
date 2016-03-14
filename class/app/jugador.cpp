@@ -36,11 +36,12 @@ void Jugador::confirmar_movimiento()
 	angulo_anterior=angulo;
 }
 
-void Jugador::cancelar_movimiento()
+void Jugador::colisionar()
 {
+	salud-=velocidad;
 	poligono=posicion_anterior;
 	angulo=angulo_anterior;
-	velocidad=0.0;
+	velocidad=-velocidad / 2.0;
 }
 
 void Jugador::restar_salud(int v)
@@ -52,7 +53,7 @@ void Jugador::restar_salud(int v)
 void Jugador::girar(int dir, float delta)
 {
 	//TODO. A otro lado???
-	const double factor_rotacion=90.0;
+	const double factor_rotacion=180.0;
 
 	double factor=((double)delta * factor_rotacion) * (double)dir;
 	angulo+=factor;
@@ -101,7 +102,7 @@ void Jugador::formar_poligono()
 DLibH::Punto_2d<double> Jugador::disparar()
 {
 	//TODO: Constantes por aquí?
-	cooldown_disparo=0.2f;
+	cooldown_disparo=0.1f;
 	double distancia=30.0;
 
 	//Obtener spawn point de disparo...
