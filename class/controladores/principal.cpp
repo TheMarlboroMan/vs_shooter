@@ -177,7 +177,10 @@ void  Controlador_principal::dibujar(DLibV::Pantalla& pantalla)
 
 	ajustar_camara();
 
-	r.dibujar_rejilla(pantalla, grid, {255, 255, 255, 64}, xcam, ycam, zoom);
+	if(!jugadores.size())
+	{
+		r.dibujar_rejilla(pantalla, grid, {255, 255, 255, 64}, xcam, ycam, zoom);
+	}
 
 	for(const auto& o : obstaculos)
 	{
@@ -270,7 +273,7 @@ Bloque_input Controlador_principal::obtener_bloque_input(DFramework::Input& inpu
 		res.giro=-1;
 	}
 
-	if(input.es_input_pulsado(traduccion.disparo))
+	if(input.es_input_down(traduccion.disparo))
 	{
 		res.disparo=true;
 	}
@@ -352,9 +355,11 @@ void Controlador_principal::registrar_jugador(int indice)
 
 void Controlador_principal::ajustar_camara()
 {
-	//TODO... 320 y 200 serían configurables?
-	const int mitad_w_pantalla=320,
-			mitad_h_pantalla=200;
+	//TODO... serían configurables?
+	const int w_pantalla=640, 
+		h_pantalla=400,
+		mitad_w_pantalla=w_pantalla / 2,
+		mitad_h_pantalla=h_pantalla / 2;
 
 	if(jugadores.size())
 	{
@@ -381,18 +386,19 @@ void Controlador_principal::ajustar_camara()
 				else if(c.y > ymax) ymax=c.y;
 			}
 
-//			int distx=xmax-xmin,
-//				disty=ymax-ymin;
-
 			xcam=( xmin + ( (xmax-xmin) / 2) ) - (mitad_w_pantalla / zoom), 
 			ycam=( ymin + ( (ymax-ymin) / 2) ) + (mitad_h_pantalla / zoom);
 
-
-//std::cout<<"DIST "<<distx<<","<<disty<<std::endl;
-//			if(
-			//TODO...
+			
 			//Establecer zoom...
+			double 	distx=xmax-xmin,
+				disty=ymax-ymin;
 
+			double zoomx=distx < mitad_w_pantalla ? 1.0 : (double)mitad_w_pantalla / distx;
+			double zoomy=disty < mitad_h_pantalla ? 1.0 : (double)mitad_h_pantalla / disty;
+
+			zoom=zoomx < zoomy ? zoomx : zoomy;
+			if(zoom > 1.0) zoom=1.0;
 		}
 	}
 	
