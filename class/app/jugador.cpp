@@ -3,7 +3,8 @@
 using namespace App;
 
 Jugador::Jugador(int indice, tcolor color)
-	:indice(indice), angulo(90.0), velocidad(0.0f), salud(100), color(color)
+	:indice(indice), angulo(0.0), angulo_anterior(angulo), velocidad(0.0f), 
+	cooldown_disparo(0.0f), salud(100), color(color)
 {
 	formar_poligono();
 }
@@ -21,16 +22,25 @@ void Jugador::turno(float delta)
 	else if(velocidad) detener_velocidad(delta);
 
 	if(velocidad) movimiento_tentativo(delta);
+
+	if(cooldown_disparo)
+	{
+		cooldown_disparo-=delta;
+		if(cooldown_disparo <= 0.0f) cooldown_disparo=0.0f;
+	}
 }
 
 void Jugador::confirmar_movimiento()
 {
 	posicion_anterior=poligono;
+	angulo_anterior=angulo;
 }
 
 void Jugador::cancelar_movimiento()
 {
 	poligono=posicion_anterior;
+	angulo=angulo_anterior;
+	velocidad=0.0;
 }
 
 void Jugador::restar_salud(int v)
@@ -72,6 +82,7 @@ void Jugador::detener_velocidad(float delta)
 
 void Jugador::movimiento_tentativo(float delta)
 {
+	//TODO: Esto ya es común a dos clases.
 	DLibH::Vector_2d<double> v=vector_unidad_para_angulo_cartesiano(angulo);
 	DLibH::Punto_2d<double> pd{v.x * velocidad, v.y * velocidad};
 	poligono.desplazar(pd);
@@ -79,9 +90,27 @@ void Jugador::movimiento_tentativo(float delta)
 
 void Jugador::formar_poligono()
 {
-	poligono.insertar_vertice({10.0, 30.0});
 	poligono.insertar_vertice({20.0, 0.0});
-	poligono.insertar_vertice({0.0, 0.0});
+	poligono.insertar_vertice({0.0, -10.0});
+	poligono.insertar_vertice({0.0, 10.0});
 	poligono.cerrar();
-	poligono.mut_centro({10.0, 10.0});
+	poligono.mut_centro({0.0, 0.0});
+}
+
+//TODO: Retornar paquete con punto y ángulo???
+DLibH::Punto_2d<double> Jugador::disparar()
+{
+	//TODO: Constantes por aquí?
+	cooldown_disparo=0.2f;
+	double distancia=30.0;
+
+	//Obtener spawn point de disparo...
+	DLibH::Vector_2d<double> v=vector_unidad_para_angulo_cartesiano(angulo);
+	auto res=poligono.acc_centro();
+
+	res.x+=v.x * distancia;
+	res.y+=v.y * distancia;
+
+	return res;
+	
 }

@@ -22,12 +22,7 @@ Controlador_principal::Controlador_principal(DLibH::Log_base& log)
 		ycam(0),
 		grid(20)
 {
-	//Registrar jugadores...
-	jugadores.push_back({1, {255, 0, 0, 255}});
-	jugadores.push_back({2, {0, 255, 0, 255}});
-
-	//TODO: This shit is not working.
-	jugadores[1].establecer_posicion(30, 50);
+	
 }
 
 void  Controlador_principal::preloop(DFramework::Input& input, float delta)
@@ -55,6 +50,9 @@ void  Controlador_principal::loop(DFramework::Input& input, float delta)
 			if(zoom < 0.10) zoom=0.10;
 		}
 
+		if(input.es_input_down(Input::registrar_j1)) registrar_jugador(1);
+		else if(input.es_input_down(Input::registrar_j2)) registrar_jugador(2);
+
 		if(input.es_input_down(Input::click_i))
 		{
 
@@ -65,8 +63,59 @@ void  Controlador_principal::loop(DFramework::Input& input, float delta)
 			cerrar_poligono();
 		}
 
-		for(auto& j : jugadores)
+		//TODO: Separar
+
+		auto p_ini=std::begin(proyectiles);
+		while(p_ini < std::end(proyectiles))
+		{			
+			//TODO: Desastre.
+			auto& p=*p_ini;
+
+			p.turno(delta);
+			bool borrar=!p.es_activo();			
+
+			if(!borrar)
+			{
+				for(auto& j : jugadores)
+				{
+					if(p.en_colision_con(j))
+					{
+						j.restar_salud(p.acc_potencia());				
+						p.desactivar();
+						borrar=true;
+					}	
+				}
+			}
+
+			if(!borrar)
+			{
+				for(auto& o : obstaculos)
+				{
+					if(p.en_colision_con(o))
+					{
+						p.desactivar();
+						borrar=true;
+					}	
+				}
+			}
+
+			if(borrar) p_ini=proyectiles.erase(p_ini);
+			else ++p_ini;
+		}
+
+
+		//TODO: Separar...
+		auto ini_j=std::begin(jugadores);
+		while(ini_j < std::end(jugadores))
 		{
+			auto& j=*ini_j;
+
+			if(!j.acc_salud())
+			{
+				ini_j=jugadores.erase(ini_j);
+				continue;
+			}
+
 			auto bl=obtener_bloque_input(input, obtener_traduccion_input(j.acc_indice()));
 			j.recibir_input(bl);
 			j.turno(delta);
@@ -84,6 +133,15 @@ void  Controlador_principal::loop(DFramework::Input& input, float delta)
 
 			if(colision) j.cancelar_movimiento();
 			else j.confirmar_movimiento();
+
+			//Inelegante...
+			if(j.es_y_puede_disparar())
+			{
+				auto pt=j.disparar();
+				crear_proyectil(pt, j.acc_angulo(), j.acc_indice());
+			}
+
+			++ini_j;
 		}
 
 	}
@@ -109,8 +167,11 @@ void  Controlador_principal::dibujar(DLibV::Pantalla& pantalla)
 	//TODO: Localizar punto central de todos.
 	//TODO: Autoajustar zoom...
 
-	xcam=(jugadores[0].acc_poligono().acc_centro().x) - (mitad_w_pantalla / zoom), 
-	ycam=(jugadores[0].acc_poligono().acc_centro().y) + (mitad_h_pantalla / zoom);
+	if(jugadores.size())
+	{
+		xcam=(jugadores[0].acc_poligono().acc_centro().x) - (mitad_w_pantalla / zoom), 
+		ycam=(jugadores[0].acc_poligono().acc_centro().y) + (mitad_h_pantalla / zoom);
+	}
 
 	for(const auto& o : obstaculos)
 	{
@@ -120,6 +181,11 @@ void  Controlador_principal::dibujar(DLibV::Pantalla& pantalla)
 	for(const auto& j : jugadores)
 	{
 		r.dibujar_poligono(pantalla, j.acc_poligono(), j.acc_color(), xcam, ycam, zoom);
+	}
+
+	for(const auto& p : proyectiles)
+	{
+		r.dibujar_poligono(pantalla, p.acc_poligono(), p.acc_color(), xcam, ycam, zoom);
 	}
 
 	//TODO: Quizás dibujar el segmento en construcción tb.
@@ -228,4 +294,42 @@ void Controlador_principal::cerrar_poligono()
 	}
 
 	poligono_construccion=Poligono_2d<double>{};
+}
+
+void Controlador_principal::crear_proyectil(DLibH::Punto_2d<double> pt, double angulo, int indice)
+{
+	Proyectil proy(angulo, pt.x, pt.y, indice, {250, 128, 128, 128});
+	proyectiles.push_back(proy);
+}
+
+void Controlador_principal::registrar_jugador(int indice)
+{
+	bool existe=false;
+	
+	for(const auto& j : jugadores)
+	{
+		if(j.acc_indice()==indice)
+		{
+			existe=true;
+			break;
+		}
+	}
+
+	if(!existe)
+	{
+		switch(indice)
+		{
+			case 1:
+				jugadores.push_back({1, {255, 0, 0, 255}});
+			break;
+			case 2:
+				jugadores.push_back({2, {0, 255, 0, 255}});
+			break;
+		}
+
+		//TODO: Terrible.
+		jugadores[jugadores.size()-1].establecer_posicion(30, 50);
+	}
+
+
 }

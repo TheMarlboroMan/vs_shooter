@@ -34,6 +34,12 @@ $(DIR_CLASES_APP)jugador.h \
 $(DIR_CLASES_APP)jugador.cpp
 	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CLASES_APP)jugador.cpp -o $(DIR_O)jugador.o
 
+$(DIR_O)proyectil.o:\
+$(DIR_O)espaciable.o\
+$(DIR_CLASES_APP)color.h \
+$(DIR_CLASES_APP)proyectil.h \
+$(DIR_CLASES_APP)proyectil.cpp
+	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CLASES_APP)proyectil.cpp -o $(DIR_O)proyectil.o
 
 $(DIR_O)obstaculo.o:\
 $(DIR_O)espaciable.o\

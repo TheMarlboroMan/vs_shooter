@@ -15,10 +15,14 @@ class Jugador:
 
 					Jugador(int, tcolor);
 
+	//TODO: Inelegante... Se usa sólo para el disparo.
+	double				acc_angulo() const {return angulo;}
 	int				acc_indice() const {return indice;}
 	int				acc_salud() const {return salud;}
 	tcolor				acc_color() const {return color;}
-
+	bool				es_y_puede_disparar() const {return input_actual.disparo && !cooldown_disparo;}
+	
+	DLibH::Punto_2d<double>		disparar();
 	void				recibir_input(const Bloque_input&);
 	void				turno(float);
 	void				confirmar_movimiento();
@@ -37,8 +41,8 @@ class Jugador:
 	tpoligono			posicion_anterior;
 
 	int				indice;	//Indice del input que lo controla.
-	double 				angulo;
-	float				velocidad;
+	double 				angulo, angulo_anterior;
+	float				velocidad, cooldown_disparo;
 	int				salud;
 	tcolor				color;
 };

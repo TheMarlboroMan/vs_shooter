@@ -8,6 +8,7 @@
 
 #include "../app/obstaculo.h"
 #include "../app/jugador.h"
+#include "../app/proyectil.h"
 #include "../app/bloque_input.h"
 #include "../app/representador.h"
 #include "../framework/controlador_interface.h"
@@ -30,18 +31,22 @@ class Controlador_principal:
 	virtual void 			dormir();
 	virtual bool			es_posible_abandonar_estado() const;
 
+	void				registrar_jugador(int);
+
 	private:
 
 	//TODO: Esto es sólo para prototipo.
 	DLibH::Punto_2d<double>			punto_desde_pos_pantalla(int x, int y);
 	void					nuevo_punto(DLibH::Punto_2d<double>);
 	void					cerrar_poligono();
+	void					crear_proyectil(DLibH::Punto_2d<double>, double, int);
 
 	Traduccion_input			obtener_traduccion_input(int) const;
 	Bloque_input				obtener_bloque_input(DFramework::Input& input, const Traduccion_input&) const;
 
 	std::vector<Jugador>			jugadores;
 	std::vector<Obstaculo>			obstaculos;
+	std::vector<Proyectil>			proyectiles;
 
 	DLibH::Log_base&			log;
 

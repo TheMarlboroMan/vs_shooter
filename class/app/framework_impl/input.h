@@ -8,6 +8,8 @@ struct Input
 {
 	enum inputs{
 escape=0,
+registrar_j1,
+registrar_j2,
 j1_disparo,
 j1_izquierda,
 j1_derecha,
