@@ -33,12 +33,19 @@ void  Controlador_principal::preloop(DFramework::Input& input, float delta)
 
 void  Controlador_principal::loop(DFramework::Input& input, float delta)
 {
-	if(input.es_senal_salida() || input.es_input_pulsado(Input::escape))
+	if(input.es_senal_salida())
 	{
 		abandonar_aplicacion();
 	}
 	else
 	{
+		if(input.es_input_down(Input::escape))
+		{
+			if(jugadores.size()) jugadores.clear();
+			else abandonar_aplicacion();
+			return;
+		}
+
 		pos_raton=input.acc_posicion_raton();
 
 		if(input.es_input_pulsado(Input::zoom_mas)) 
@@ -56,12 +63,18 @@ void  Controlador_principal::loop(DFramework::Input& input, float delta)
 
 		if(input.es_input_down(Input::click_i))
 		{
-
 			nuevo_punto(punto_desde_pos_pantalla(pos_raton.x, pos_raton.y));
 		}
 		else if(input.es_input_down(Input::click_d))
 		{
-			cerrar_poligono();
+			if(poligono_construccion.acc_vertices().size())
+			{
+				cerrar_poligono();
+			}
+			else
+			{
+				crear_punto_inicio(punto_desde_pos_pantalla(pos_raton.x, pos_raton.y));
+			}
 		}
 
 		//TODO: Separar
@@ -129,6 +142,7 @@ void  Controlador_principal::loop(DFramework::Input& input, float delta)
 				}
 			}
 
+
 			for(auto& oj : jugadores)
 			{
 				if(oj.acc_indice()!=j.acc_indice() && j.en_colision_con(oj))
@@ -181,6 +195,7 @@ void  Controlador_principal::dibujar(DLibV::Pantalla& pantalla)
 	{
 		r.dibujar_rejilla(pantalla, grid, {255, 255, 255, 64}, xcam, ycam, zoom);
 	}
+	
 
 	for(const auto& o : obstaculos)
 	{
@@ -196,18 +211,27 @@ void  Controlador_principal::dibujar(DLibV::Pantalla& pantalla)
 	{
 		r.dibujar_poligono(pantalla, p.acc_poligono(), p.acc_color(), xcam, ycam, zoom);
 	}
-
+	
 	//TODO: Quizás dibujar el segmento en construcción tb.
 	for(const auto& s : poligono_construccion.acc_segmentos())
 	{
 		r.dibujar_segmento(pantalla, s, {0, 255, 0, 128}, xcam, ycam, zoom);		
 	}
 
-//	auto pt_raton=punto_desde_pos_pantalla(pos_raton.x, pos_raton.y);
-//	std::string texto=std::to_string((int)pt_raton.x)+","+std::to_string((int)pt_raton.y);
-//	DLibV::Representacion_TTF txt(fuente_akashi, {255, 255, 255, 255}, texto);
-//	txt.ir_a(16, 16);
-//	txt.volcar(pantalla);
+	if(!jugadores.size())
+	{
+		for(const auto& p : puntos_inicio)
+		{
+			Espaciable::tpoligono poli={ {{p.x, p.y}, {p.x+10, p.y}, {p.x+10, p.y+10}, {p.x, p.y+10}}, {p.x, p.y}};
+			r.dibujar_poligono(pantalla, poli, {255, 0, 0, 128}, xcam, ycam, zoom);
+		}
+
+		auto pt_raton=punto_desde_pos_pantalla(pos_raton.x, pos_raton.y);
+		std::string texto=std::to_string((int)pt_raton.x)+","+std::to_string((int)pt_raton.y);
+		DLibV::Representacion_TTF txt(fuente_akashi, {255, 255, 255, 255}, texto);
+		txt.ir_a(16, 16);
+		txt.volcar(pantalla);
+	}
 
 	for(const auto& j : jugadores) dibujar_info_jugador(pantalla, j);
 }
@@ -339,6 +363,11 @@ void Controlador_principal::crear_proyectil(DLibH::Punto_2d<double> pt, double a
 
 void Controlador_principal::registrar_jugador(int indice)
 {
+	if(!puntos_inicio.size())
+	{
+		return;
+	}
+
 	if(!std::any_of(std::begin(jugadores), std::end(jugadores), [indice](const Jugador& j) {return j.acc_indice()==indice;}))
 	{
 		tcolor color={255, 0, 0, 255};
@@ -349,7 +378,30 @@ void Controlador_principal::registrar_jugador(int indice)
 			case 2: color={0, 255, 0, 255}; break;
 		}
 
-		jugadores.push_back({indice, color});
+		Jugador j={indice, color};
+
+		Herramientas_proyecto::Generador_int gen(0, puntos_inicio.size()-1);
+
+		//Comprobar que está vacío (posible bucle infinito).
+		while(true)
+		{
+			auto pt=puntos_inicio[gen()];
+			j.establecer_posicion(pt.x, pt.y);
+
+			bool colision=false;
+			for(auto& oj : jugadores)
+			{
+				if(j.en_colision_con(oj))
+				{
+					colision=true;
+					break;
+				}
+			}
+
+			if(!colision) break;
+		};
+
+		jugadores.push_back(j);
 	}
 }
 
@@ -402,4 +454,9 @@ void Controlador_principal::ajustar_camara()
 		}
 	}
 	
+}
+
+void Controlador_principal::crear_punto_inicio(DLibH::Punto_2d<double> pt)
+{
+	puntos_inicio.push_back(pt);
 }

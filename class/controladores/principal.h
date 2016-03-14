@@ -6,6 +6,8 @@
 #include <def_video.h>
 #include <herramientas/log_base/log_base.h>
 
+#include <class/generador_numeros.h>
+
 #include "../app/obstaculo.h"
 #include "../app/jugador.h"
 #include "../app/proyectil.h"
@@ -42,6 +44,7 @@ class Controlador_principal:
 	void					crear_proyectil(DLibH::Punto_2d<double>, double, int);
 	void					ajustar_camara();
 	void					dibujar_info_jugador(DLibV::Pantalla&, const Jugador&);
+	void					crear_punto_inicio(DLibH::Punto_2d<double>);
 
 	Traduccion_input			obtener_traduccion_input(int) const;
 	Bloque_input				obtener_bloque_input(DFramework::Input& input, const Traduccion_input&) const;
@@ -49,6 +52,7 @@ class Controlador_principal:
 	std::vector<Jugador>			jugadores;
 	std::vector<Obstaculo>			obstaculos;
 	std::vector<Proyectil>			proyectiles;
+	std::vector<DLibH::Punto_2d<double>>	puntos_inicio;
 
 	DLibH::Log_base&			log;
 
