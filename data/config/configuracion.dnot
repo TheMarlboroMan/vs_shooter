@@ -14,12 +14,24 @@ config:{
 			derecha:79,
 			arriba:82,
 			abajo:81,
-			disparo:44}
+			disparo:44,
+			tizquierda:0,
+			tderecha:0,
+			tarriba:0,
+			tabajo:0,
+			tdisparo:0
+}
 		, jugador_2:{
-			izquierda:4,
-			derecha:7,
-			arriba:26,
-			abajo:22,
-			disparo:20}
+			izquierda:15,
+			derecha:13,
+			arriba:12,
+			abajo:14,
+			disparo:2,
+			tizquierda:1,
+			tderecha:1,
+			tarriba:1,
+			tabajo:1,
+			tdisparo:1
+}
 	}
 }

@@ -34,9 +34,9 @@ struct Info_ventana
 
 struct Par_input
 {
-	enum class 	tipos {teclado, raton};
+	enum class 	tipos {teclado, raton, joystick};
 	tipos 		tipo;
-	int 		clave, sdl_clave;
+	int 		clave, sdl_clave, indice_dispositivo;
 };
 
 class Kernel_driver_interface

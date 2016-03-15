@@ -20,6 +20,11 @@ class App_config:
 	int acc_h_logica_pantalla() const {return token_por_ruta(CLAVE_H_LOGICA_PANTALLA);}
 	int acc_w_fisica_pantalla() const {return token_por_ruta(CLAVE_W_FISICA_PANTALLA);}
 	int acc_h_fisica_pantalla() const {return token_por_ruta(CLAVE_H_FISICA_PANTALLA);}
+	int acc_tipo_izquierda(int j) const	{return token_por_ruta_jugador("tizquierda", j);}
+	int acc_tipo_derecha(int j) const 	{return token_por_ruta_jugador("tderecha", j);}
+	int acc_tipo_arriba(int j) const 	{return token_por_ruta_jugador("tarriba", j);}
+	int acc_tipo_abajo(int j) const		{return token_por_ruta_jugador("tabajo", j);}
+	int acc_tipo_disparo(int j) const 	{return token_por_ruta_jugador("tdisparo", j);}
 	int acc_izquierda(int j) const	{return token_por_ruta_jugador("izquierda", j);}
 	int acc_derecha(int j) const 	{return token_por_ruta_jugador("derecha", j);}
 	int acc_arriba(int j) const 	{return token_por_ruta_jugador("arriba", j);}

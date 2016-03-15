@@ -10,8 +10,6 @@
 enum de turno se puede asignar a uno o más valores SDLK_xxx, según lo mismo
 pueda hacerse con varias teclas, joystick o no. Esta clase es la propietaria
 de la instancia de controles_SDL.
-
-Ahora mismo no hay soporte de Joystick... 
 */
 
 namespace DFramework
@@ -24,17 +22,23 @@ class Input
 
 	public:
 
+	struct tinput{int sdl_clave, indice_dispositivo;};
+
 	typedef DLibI::Controles_SDL::Posicion_raton Posicion_raton;
-	typedef std::multimap<unsigned int, unsigned int> tipo_mapa;
-	typedef std::multimap<unsigned int, unsigned int>::const_iterator tipo_iterador;
+	typedef std::multimap<unsigned int, tinput> tipo_mapa;
 
 	private:
 
 	struct Resultado_lookup
 	{
-		enum t_mapa {NADA=0, TECLADO=1, RATON=2};
+		struct valores
+		{
+			int val, indice;
+		};
+
+		enum t_mapa {NADA=0, TECLADO=1, RATON=2, JOYSTICK=3};
 		unsigned int mapa;
-		std::vector<unsigned int> val;
+		std::vector<valores> val;
 		Resultado_lookup(unsigned int tm):mapa(tm) {}
 	};
 
@@ -48,6 +52,7 @@ class Input
 	mutable std::map<unsigned int, Resultado_lookup> lookup;
 	tipo_mapa mapa_teclado;
 	tipo_mapa mapa_raton;
+	tipo_mapa mapa_joystick;
 
 	////////////////////////
 	//Métodos
@@ -77,6 +82,12 @@ class Input
 	bool es_boton_up(int p_boton) const {return controles_sdl.es_boton_up(p_boton);}
 	bool es_boton_down(int p_boton) const {return controles_sdl.es_boton_down(p_boton);}
 	bool es_boton_pulsado(int p_boton) const {return controles_sdl.es_boton_pulsado(p_boton);}
+
+	bool es_joystick_boton_up(int indice, int p_boton) const {return controles_sdl.es_joystick_boton_up(indice, p_boton);}
+	bool es_joystick_boton_down(int indice, int p_boton) const {return controles_sdl.es_joystick_boton_down(indice, p_boton);}
+	bool es_joystick_boton_pulsado(int indice, int p_boton) const {return controles_sdl.es_joystick_boton_pulsado(indice, p_boton);}
+
+	int obtener_cantidad_joysticks() {return controles_sdl.acc_cantidad_joysticks();}
 
 //	const DLibI::Controles_SDL::Posicion_raton& acc_posicion_raton() const {return controles_sdl.acc_raton().posicion;}
 	Posicion_raton acc_posicion_raton() const {return controles_sdl.obtener_posicion_raton();}

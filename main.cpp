@@ -43,7 +43,7 @@ int iniciar_app(Herramientas_proyecto::Controlador_argumentos& CARG)
 		Kernel_config kernel_config(config);
 
 		log_app<<"Inicializando SDL2..."<<std::endl;	
-		if(!DLibH::Herramientas_SDL::iniciar_SDL(SDL_INIT_VIDEO | SDL_INIT_TIMER))
+		if(!DLibH::Herramientas_SDL::iniciar_SDL(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_JOYSTICK))
 		{
 			throw std::runtime_error("No ha sido posible inicializar la librería SD2L");
 		}
