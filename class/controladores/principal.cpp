@@ -67,6 +67,7 @@ void  Controlador_principal::loop(DFramework::Input& input, float delta)
 
 		if(input.es_input_down(Input::registrar_j1)) registrar_jugador(1);
 		else if(input.es_input_down(Input::registrar_j2)) registrar_jugador(2);
+		else if(input.es_input_down(Input::registrar_j3)) registrar_jugador(3);
 
 		if(input.es_input_down(Input::click_i))
 		{
@@ -318,6 +319,10 @@ void Controlador_principal::dibujar_info_jugador(DLibV::Pantalla& pantalla, cons
 		break;
 
 		case 2:
+			x=250;
+		break;
+
+		case 3:
 			x=500;
 		break;
 	}
@@ -384,10 +389,13 @@ Traduccion_input Controlador_principal::obtener_traduccion_input(int indice) con
 		default: 
 			return Traduccion_input{Input::j1_arriba, Input::j1_abajo, Input::j1_izquierda, Input::j1_derecha, Input::j1_disparo};
 		break;
-
 		case 2:
 			return Traduccion_input{Input::j2_arriba, Input::j2_abajo, Input::j2_izquierda, Input::j2_derecha, Input::j2_disparo};
 		break;
+		case 3:
+			return Traduccion_input{Input::j3_arriba, Input::j3_abajo, Input::j3_izquierda, Input::j3_derecha, Input::j3_disparo};
+		break;
+
 	}
 }
 
@@ -441,6 +449,7 @@ void Controlador_principal::registrar_jugador(int indice)
 			default:
 			case 1: color={255, 0, 0, 255}; break;
 			case 2: color={0, 255, 0, 255}; break;
+			case 3: color={0, 0, 255, 255}; break;
 		}
 
 		Jugador j={indice, color};

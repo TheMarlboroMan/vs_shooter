@@ -19,8 +19,7 @@ config:{
 			tderecha:0,
 			tarriba:0,
 			tabajo:0,
-			tdisparo:0
-}
+			tdisparo:0}
 		, jugador_2:{
 			izquierda:15,
 			derecha:13,
@@ -31,7 +30,17 @@ config:{
 			tderecha:1,
 			tarriba:1,
 			tabajo:1,
-			tdisparo:1
-}
+			tdisparo:1}
+		, jugador_3:{
+			izquierda:4,
+			derecha:7,
+			arriba:26,
+			abajo:22,
+			disparo:20,
+			tizquierda:0,
+			tderecha:0,
+			tarriba:0,
+			tabajo:0,
+			tdisparo:0}
 	}
 }

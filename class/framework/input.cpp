@@ -23,7 +23,7 @@ Input::Resultado_lookup Input::obtener(unsigned int i) const
 	{
 		Resultado_lookup resultado(Resultado_lookup::NADA);
 
-		auto f=[&resultado, this, i](const tipo_mapa& mapa, unsigned int tipo, unsigned int indice)
+		auto f=[&resultado, this, i](const tipo_mapa& mapa, unsigned int tipo)
 		{
 			resultado.mapa=tipo;
 			auto it=mapa.equal_range(i);
@@ -42,16 +42,15 @@ Input::Resultado_lookup Input::obtener(unsigned int i) const
 
 		if(mapa_teclado.count(i))
 		{
-			f(mapa_teclado, Resultado_lookup::TECLADO, 0); 
+			f(mapa_teclado, Resultado_lookup::TECLADO); 
 		}
 		else if(mapa_raton.count(i))
 		{
-			f(mapa_raton, Resultado_lookup::RATON, 0); 
+			f(mapa_raton, Resultado_lookup::RATON); 
 		}
 		else if(mapa_joystick.count(i))
 		{
-			//TODO: El indice del joystick!!! 
-			f(mapa_joystick, Resultado_lookup::JOYSTICK, 0);
+			f(mapa_joystick, Resultado_lookup::JOYSTICK);
 		}
 
 		return resultado;

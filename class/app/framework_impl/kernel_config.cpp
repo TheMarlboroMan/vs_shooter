@@ -60,6 +60,7 @@ std::vector<DFramework::Par_input> Kernel_config::obtener_pares_input() const
 		Par_input{Par_input::tipos::teclado, Input::zoom_menos, SDL_SCANCODE_KP_MINUS, 0},
 		Par_input{Par_input::tipos::teclado, Input::registrar_j1, SDL_SCANCODE_1, 0},
 		Par_input{Par_input::tipos::teclado, Input::registrar_j2, SDL_SCANCODE_2, 0},
+		Par_input{Par_input::tipos::teclado, Input::registrar_j3, SDL_SCANCODE_3, 0},
 		Par_input{Par_input::tipos::raton, Input::click_i, SDL_BUTTON_LEFT, 0},
 		Par_input{Par_input::tipos::raton, Input::click_d, SDL_BUTTON_RIGHT, 0},
 
@@ -74,6 +75,13 @@ std::vector<DFramework::Par_input> Kernel_config::obtener_pares_input() const
 		Par_input{tipo_desde_config(config.acc_tipo_derecha(2)), 	Input::j2_derecha, config.acc_derecha(2), 0},
 		Par_input{tipo_desde_config(config.acc_tipo_arriba(2)), 	Input::j2_arriba, config.acc_arriba(2), 0},
 		Par_input{tipo_desde_config(config.acc_tipo_abajo(2)), 		Input::j2_abajo, config.acc_abajo(2), 0},
+
+		Par_input{tipo_desde_config(config.acc_tipo_disparo(3)), 	Input::j3_disparo, config.acc_disparo(3), 0},
+		Par_input{tipo_desde_config(config.acc_tipo_izquierda(3)), 	Input::j3_izquierda, config.acc_izquierda(3), 0},
+		Par_input{tipo_desde_config(config.acc_tipo_derecha(3)), 	Input::j3_derecha, config.acc_derecha(3), 0},
+		Par_input{tipo_desde_config(config.acc_tipo_arriba(3)), 	Input::j3_arriba, config.acc_arriba(3), 0},
+		Par_input{tipo_desde_config(config.acc_tipo_abajo(3)), 		Input::j3_abajo, config.acc_abajo(3), 0}
 };
+
 	return res;
 }
