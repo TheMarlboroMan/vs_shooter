@@ -2,6 +2,7 @@
 #define CONTROLADOR_PRINCIPAL_H
 
 #include <vector>
+#include <memory>
 
 #include <def_video.h>
 #include <herramientas/log_base/log_base.h>
@@ -10,9 +11,12 @@
 
 #include "../app/obstaculo.h"
 #include "../app/jugador.h"
+#include "../app/jugador_arma_alt.h"
+#include "../app/jugador_arma_normal.h"
 #include "../app/proyectil.h"
 #include "../app/bloque_input.h"
 #include "../app/representador.h"
+#include "../app/disparador.h"
 #include "../framework/controlador_interface.h"
 
 namespace App
@@ -41,18 +45,19 @@ class Controlador_principal:
 	DLibH::Punto_2d<double>			punto_desde_pos_pantalla(int x, int y);
 	void					nuevo_punto(DLibH::Punto_2d<double>);
 	void					cerrar_poligono();
-	void					crear_proyectil(DLibH::Punto_2d<double>, double, int);
 	void					ajustar_camara();
 	void					dibujar_info_jugador(DLibV::Pantalla&, const Jugador&);
 	void					crear_punto_inicio(DLibH::Punto_2d<double>);
+	void					procesar_disparadores();
 
 	Traduccion_input			obtener_traduccion_input(int) const;
 	Bloque_input				obtener_bloque_input(DFramework::Input& input, const Traduccion_input&) const;
 
 	std::vector<Jugador>			jugadores;
 	std::vector<Obstaculo>			obstaculos;
-	std::vector<Proyectil>			proyectiles;
+	std::vector<std::unique_ptr<Proyectil>>	proyectiles;
 	std::vector<DLibH::Punto_2d<double>>	puntos_inicio;
+	std::vector<Disparador>			disparadores;
 
 	DLibH::Log_base&			log;
 

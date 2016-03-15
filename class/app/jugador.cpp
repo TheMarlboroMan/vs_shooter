@@ -3,8 +3,8 @@
 using namespace App;
 
 Jugador::Jugador(int indice, tcolor color)
-	:indice(indice), angulo(0.0), angulo_anterior(angulo), velocidad(0.0f), 
-	cooldown_disparo(0.0f), salud(100), color(color)
+	:arma(nullptr), indice(indice), angulo(0.0), angulo_anterior(angulo), velocidad(0.0f), 
+	salud(100), color(color)
 {
 	formar_poligono();
 }
@@ -22,12 +22,7 @@ void Jugador::turno(float delta)
 	else if(velocidad) detener_velocidad(delta);
 
 	if(velocidad) movimiento_tentativo(delta);
-
-	if(cooldown_disparo)
-	{
-		cooldown_disparo-=delta;
-		if(cooldown_disparo <= 0.0f) cooldown_disparo=0.0f;
-	}
+	if(arma) arma->turno(delta);
 }
 
 void Jugador::confirmar_movimiento()
@@ -98,20 +93,46 @@ void Jugador::formar_poligono()
 	poligono.mut_centro({0.0, 0.0});
 }
 
-//TODO: Retornar paquete con punto y ángulo???
-DLibH::Punto_2d<double> Jugador::disparar()
+Disparador Jugador::disparar()
 {
 	//TODO: Constantes por aquí?
-	cooldown_disparo=0.1f;
 	double distancia=30.0;
 
-	//Obtener spawn point de disparo...
-	DLibH::Vector_2d<double> v=vector_unidad_para_angulo_cartesiano(angulo);
-	auto res=poligono.acc_centro();
+	//TODO: Mejorable?
+	auto func=[this, distancia](Disparador::v_info& info)
+	{
+		//Obtener spawn point de disparo...
+		DLibH::Vector_2d<double> v=vector_unidad_para_angulo_cartesiano(angulo);
+		auto pt=poligono.acc_centro();
+		pt.x+=v.x * distancia;
+		pt.y+=v.y * distancia;
 
-	res.x+=v.x * distancia;
-	res.y+=v.y * distancia;
+		arma->generar_proyectiles(info, indice, pt, angulo);
+	};
 
+	arma->disparar();
+	Disparador res(func);
 	return res;
-	
+}
+
+void Jugador::establecer_arma(Jugador_arma * a)
+{
+	arma.reset(nullptr);
+	arma.reset(a);
+}
+
+int Jugador::acc_municion_restante() const
+{
+	if(arma!=nullptr)
+	{
+		return arma->acc_municion_restante();
+	}
+
+	return -1;
+}
+
+bool Jugador::es_arma_agotada() const
+{
+	if(arma!=nullptr) return arma->es_agotada();
+	else return true;
 }

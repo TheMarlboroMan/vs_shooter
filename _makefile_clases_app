@@ -28,11 +28,24 @@ $(DIR_CLASES_IMPLEMENTACION_FRAMEWORK)app_config.cpp
 
 $(DIR_O)jugador.o:\
 $(DIR_O)espaciable.o\
+$(DIR_O)proyectil_normal.o\
 $(DIR_CLASES_APP)color.h \
 $(DIR_CLASES_APP)bloque_input.h \
 $(DIR_CLASES_APP)jugador.h \
 $(DIR_CLASES_APP)jugador.cpp
 	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CLASES_APP)jugador.cpp -o $(DIR_O)jugador.o
+
+$(DIR_O)proyectil_alt.o:\
+$(DIR_O)proyectil.o\
+$(DIR_CLASES_APP)proyectil_alt.h \
+$(DIR_CLASES_APP)proyectil_alt.cpp
+	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CLASES_APP)proyectil_alt.cpp -o $(DIR_O)proyectil_alt.o
+
+$(DIR_O)proyectil_normal.o:\
+$(DIR_O)proyectil.o\
+$(DIR_CLASES_APP)proyectil_normal.h \
+$(DIR_CLASES_APP)proyectil_normal.cpp
+	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CLASES_APP)proyectil_normal.cpp -o $(DIR_O)proyectil_normal.o
 
 $(DIR_O)proyectil.o:\
 $(DIR_O)espaciable.o\
@@ -58,3 +71,28 @@ $(DIR_O)espaciable.o:\
 $(DIR_CLASES_APP)espaciable.h \
 $(DIR_CLASES_APP)espaciable.cpp
 	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CLASES_APP)espaciable.cpp -o $(DIR_O)espaciable.o
+
+$(DIR_O)jugador_arma_alt.o:\
+$(DIR_O)jugador_arma.o\
+$(DIR_O)proyectil_normal.o\
+$(DIR_CLASES_APP)jugador_arma_alt.h \
+$(DIR_CLASES_APP)jugador_arma_alt.cpp
+	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CLASES_APP)jugador_arma_alt.cpp -o $(DIR_O)jugador_arma_alt.o
+
+$(DIR_O)jugador_arma_normal.o:\
+$(DIR_O)jugador_arma.o\
+$(DIR_O)proyectil_normal.o\
+$(DIR_CLASES_APP)jugador_arma_normal.h \
+$(DIR_CLASES_APP)jugador_arma_normal.cpp
+	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CLASES_APP)jugador_arma_normal.cpp -o $(DIR_O)jugador_arma_normal.o
+
+$(DIR_O)jugador_arma.o:\
+$(DIR_O)disparador.o\
+$(DIR_CLASES_APP)jugador_arma.h \
+$(DIR_CLASES_APP)jugador_arma.cpp
+	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CLASES_APP)jugador_arma.cpp -o $(DIR_O)jugador_arma.o
+
+$(DIR_O)disparador.o:\
+$(DIR_CLASES_APP)disparador.h \
+$(DIR_CLASES_APP)disparador.cpp
+	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CLASES_APP)disparador.cpp -o $(DIR_O)disparador.o

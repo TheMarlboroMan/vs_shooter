@@ -12,26 +12,23 @@ class Proyectil:
 {
 	public:
 
-				Proyectil(double, double, double, int, tcolor);
+				Proyectil(int, double, double);
 
 	bool			es_activo() const {return tiempo > 0.0f;}
-	int			acc_potencia() const {return potencia;}
-	tcolor			acc_color() const {return color;}
-
 	void			desactivar() {tiempo=0.0f;}
-	void			turno(float);	
 
-	private:
+	virtual int		acc_potencia() const=0;
+	virtual tcolor		acc_color() const=0;
+	virtual void		turno(float)=0;
+	virtual void		formar_poligono()=0;
+	virtual void		preparar(double, DLibH::Punto_2d<double>)=0;
 
-	void			formar_poligono();
+	protected:
 
 	double 			angulo;
 	float			velocidad,
 				tiempo;
-	int 			potencia,
-				indice_jugador;
-	tcolor			color;
-
+	int 			indice_jugador;
 };
 
 }

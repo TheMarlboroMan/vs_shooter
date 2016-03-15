@@ -83,11 +83,13 @@ void  Controlador_principal::loop(DFramework::Input& input, float delta)
 		while(p_ini < std::end(proyectiles))
 		{			
 			//TODO: Desastre.
-			auto& p=*p_ini;
+			auto& p=**p_ini;
 
 			p.turno(delta);
 			bool borrar=!p.es_activo();			
 
+			//TODO: Mejorar... Esto quizás deba estar en el código
+			//del jugador?
 			if(!borrar)
 			{
 				for(auto& j : jugadores)
@@ -107,6 +109,7 @@ void  Controlador_principal::loop(DFramework::Input& input, float delta)
 				{
 					if(p.en_colision_con(o))
 					{
+						//TODO: Más bien "colisionar", veremos lo que haría el proyectil si colisiona?
 						p.desactivar();
 						borrar=true;
 					}	
@@ -119,7 +122,6 @@ void  Controlador_principal::loop(DFramework::Input& input, float delta)
 
 
 		//TODO: Separar...
-
 		auto ini_j=std::begin(jugadores);
 		while(ini_j < std::end(jugadores))
 		{
@@ -167,13 +169,19 @@ void  Controlador_principal::loop(DFramework::Input& input, float delta)
 				//Inelegante...
 				if(j.es_y_puede_disparar())
 				{
-					auto pt=j.disparar();
-					crear_proyectil(pt, j.acc_angulo(), j.acc_indice());
+					disparadores.push_back(j.disparar());
+
+					if(j.es_arma_agotada())
+					{
+						j.establecer_arma(new Jugador_arma_normal());
+					}
 				}
 			}
 
 			++ini_j;
 		}
+
+		procesar_disparadores();
 
 	}
 }
@@ -209,7 +217,7 @@ void  Controlador_principal::dibujar(DLibV::Pantalla& pantalla)
 
 	for(const auto& p : proyectiles)
 	{
-		r.dibujar_poligono(pantalla, p.acc_poligono(), p.acc_color(), xcam, ycam, zoom);
+		r.dibujar_poligono(pantalla, p->acc_poligono(), p->acc_color(), xcam, ycam, zoom);
 	}
 	
 	//TODO: Quizás dibujar el segmento en construcción tb.
@@ -253,8 +261,10 @@ void Controlador_principal::dibujar_info_jugador(DLibV::Pantalla& pantalla, cons
 		break;
 	}
 
+	int m=j.acc_municion_restante();
 
-	std::string texto=std::to_string(j.acc_salud())+" / 100";
+	std::string municion=m==-1 ? "#" : std::to_string(m);
+	std::string texto=std::to_string(j.acc_salud())+" / 100 - "+municion;
 	DLibV::Representacion_TTF txt(fuente_akashi, {(Uint8)jc.r, (Uint8)jc.g, (Uint8)jc.b, 192}, texto);
 	txt.ir_a(x, y);
 	txt.volcar(pantalla);
@@ -355,12 +365,6 @@ void Controlador_principal::cerrar_poligono()
 	poligono_construccion=Poligono_2d<double>{};
 }
 
-void Controlador_principal::crear_proyectil(DLibH::Punto_2d<double> pt, double angulo, int indice)
-{
-	Proyectil proy(angulo, pt.x, pt.y, indice, {250, 128, 128, 128});
-	proyectiles.push_back(proy);
-}
-
 void Controlador_principal::registrar_jugador(int indice)
 {
 	if(!puntos_inicio.size())
@@ -401,7 +405,17 @@ void Controlador_principal::registrar_jugador(int indice)
 			if(!colision) break;
 		};
 
-		jugadores.push_back(j);
+		//TODO: Asignar un arma aleatoria!!!.
+		if(rand()%2)
+		{
+			j.establecer_arma(new Jugador_arma_alt());
+		}
+		else
+		{
+			j.establecer_arma(new Jugador_arma_alt());
+		}
+
+		jugadores.push_back(std::move(j));
 	}
 }
 
@@ -459,4 +473,22 @@ void Controlador_principal::ajustar_camara()
 void Controlador_principal::crear_punto_inicio(DLibH::Punto_2d<double> pt)
 {
 	puntos_inicio.push_back(pt);
+}
+
+void Controlador_principal::procesar_disparadores()
+{
+	std::vector<Disparador::info> info_pr;
+
+	for(const auto& d : disparadores)
+	{
+		d.generar_proyectiles(info_pr);	
+	}
+
+	for(auto& info : info_pr) 
+	{
+		info.proyectil->preparar(info.angulo, info.pt);
+		proyectiles.push_back(std::move(info.proyectil));
+	}
+
+	disparadores.clear();
 }

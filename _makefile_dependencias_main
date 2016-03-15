@@ -18,8 +18,14 @@ $(DIR_O)app_config.o\
 $(DIR_O)representador.o\
 $(DIR_O)espaciable.o\
 $(DIR_O)jugador.o\
+$(DIR_O)jugador_arma.o\
+$(DIR_O)jugador_arma_normal.o\
+$(DIR_O)jugador_arma_alt.o\
 $(DIR_O)obstaculo.o\
 $(DIR_O)proyectil.o\
+$(DIR_O)proyectil_normal.o\
+$(DIR_O)proyectil_alt.o\
+$(DIR_O)disparador.o\
 
 DEP_CONTROLADORES=\
 $(DIR_O)director_estados.o \

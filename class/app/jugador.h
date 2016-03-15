@@ -5,6 +5,9 @@
 #include "espaciable.h"
 #include "bloque_input.h"
 
+#include "disparador.h"
+#include "jugador_arma.h"
+
 namespace App
 {
 
@@ -15,19 +18,23 @@ class Jugador:
 
 					Jugador(int, tcolor);
 
-	//TODO: Inelegante... Se usa sólo para el disparo.
-	double				acc_angulo() const {return angulo;}
 	int				acc_indice() const {return indice;}
 	int				acc_salud() const {return salud;}
 	tcolor				acc_color() const {return color;}
-	bool				es_y_puede_disparar() const {return input_actual.disparo && !cooldown_disparo;}
-	
-	DLibH::Punto_2d<double>		disparar();
+
+	bool				es_y_puede_disparar() const {return input_actual.disparo && arma!=nullptr && arma->es_preparada();
+	}
+
+	bool				es_arma_agotada() const;	
+	int				acc_municion_restante() const;
+
+	Disparador			disparar();
 	void				recibir_input(const Bloque_input&);
 	void				turno(float);
 	void				confirmar_movimiento();
 	void				colisionar();
 	void				restar_salud(int);
+	void				establecer_arma(Jugador_arma * a);
 
 	private:
 
@@ -37,12 +44,13 @@ class Jugador:
 	void				girar(int, float);
 	void				movimiento_tentativo(float);
 
+	std::unique_ptr<Jugador_arma>	arma;
 	Bloque_input			input_actual;
 	tpoligono			posicion_anterior;
 
 	int				indice;	//Indice del input que lo controla.
 	double 				angulo, angulo_anterior;
-	float				velocidad, cooldown_disparo;
+	float				velocidad;
 	int				salud;
 	tcolor				color;
 };
