@@ -78,10 +78,7 @@ void Jugador::detener_velocidad(float delta)
 
 void Jugador::movimiento_tentativo(float delta)
 {
-	//TODO: Esto ya es común a dos clases.
-	DLibH::Vector_2d<double> v=vector_unidad_para_angulo_cartesiano(angulo);
-	DLibH::Punto_2d<double> pd{v.x * velocidad, v.y * velocidad};
-	poligono.desplazar(pd);
+	desplazar_angulo_velocidad(angulo, velocidad);
 }
 
 void Jugador::formar_poligono()
@@ -98,20 +95,15 @@ Disparador Jugador::disparar()
 	//TODO: Constantes por aquí?
 	double distancia=30.0;
 
-	//TODO: Mejorable?
-	auto func=[this, distancia](Disparador::v_info& info)
-	{
-		//Obtener spawn point de disparo...
-		DLibH::Vector_2d<double> v=vector_unidad_para_angulo_cartesiano(angulo);
-		auto pt=poligono.acc_centro();
-		pt.x+=v.x * distancia;
-		pt.y+=v.y * distancia;
+	//Obtener spawn point de disparo...
+	DLibH::Vector_2d<double> v=vector_unidad_para_angulo_cartesiano(angulo);
+	auto pt=poligono.acc_centro();
+	pt.x+=v.x * distancia;
+	pt.y+=v.y * distancia;
 
-		arma->generar_proyectiles(info, indice, pt, angulo);
-	};
-
+	Disparador res;
+	arma->generar_proyectiles(res.disparos, indice, pt, angulo);
 	arma->disparar();
-	Disparador res(func);
 	return res;
 }
 

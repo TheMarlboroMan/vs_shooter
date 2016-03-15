@@ -1,20 +1,20 @@
-#ifndef PROYECTIL_NORMAL_H
-#define PROYECTIL_NORMAL_H
+#ifndef PROYECTIL_EXPLOSIVO_H
+#define PROYECTIL_EXPLOSIVO_H
 
 #include "proyectil.h"
 
 namespace App
 {
-class Proyectil_normal:
+class Proyectil_explosivo:
 	public Proyectil
 {
 	public:
 
-				Proyectil_normal(int);
+				Proyectil_explosivo(int);
 
 	virtual void		extinguir(std::vector<Disparador>&);
 	virtual void		colisionar(std::vector<Disparador>&);
-	virtual int		acc_potencia() const {return 20;}
+	virtual int		acc_potencia() const {return 50;}
 	virtual tcolor		acc_color() const {return color;}
 	virtual void		turno(float);
 	virtual void		formar_poligono();
@@ -23,6 +23,7 @@ class Proyectil_normal:
 	private:
 
 	tcolor			color;
+	float			rot;
 };
 }
 

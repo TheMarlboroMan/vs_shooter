@@ -40,6 +40,7 @@ std::vector<DFramework::Par_input> Kernel_config::obtener_pares_input() const
 	using namespace DFramework;
 	std::vector<Par_input> res{
 		Par_input{Par_input::tipos::teclado, Input::escape, SDL_SCANCODE_ESCAPE},
+		Par_input{Par_input::tipos::teclado, Input::tab, SDL_SCANCODE_TAB},
 		Par_input{Par_input::tipos::teclado, Input::zoom_mas, SDL_SCANCODE_KP_PLUS},
 		Par_input{Par_input::tipos::teclado, Input::zoom_menos, SDL_SCANCODE_KP_MINUS},
 		Par_input{Par_input::tipos::teclado, Input::registrar_j1, SDL_SCANCODE_1},

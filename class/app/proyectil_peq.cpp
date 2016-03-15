@@ -1,8 +1,8 @@
-#include "proyectil_alt.h"
+#include "proyectil_peq.h"
 
 using namespace App;
 
-Proyectil_alt::Proyectil_alt(int indice):
+Proyectil_peq::Proyectil_peq(int indice):
 	//TODO: Constantes???
 	Proyectil(indice, 6.0, 1.0),
 	color({255, 255, 255, 192})
@@ -10,7 +10,17 @@ Proyectil_alt::Proyectil_alt(int indice):
 
 }
 
-void Proyectil_alt::preparar(double ang, DLibH::Punto_2d<double> pt)
+void Proyectil_peq::colisionar(std::vector<Disparador>&)
+{
+
+}
+
+void Proyectil_peq::extinguir(std::vector<Disparador>&)
+{
+	
+}
+
+void Proyectil_peq::preparar(double ang, DLibH::Punto_2d<double> pt)
 {
 	angulo=ang;
 	formar_poligono();
@@ -18,19 +28,16 @@ void Proyectil_alt::preparar(double ang, DLibH::Punto_2d<double> pt)
 	establecer_posicion(pt.x, pt.y);
 }
 
-void Proyectil_alt::turno(float delta)
+void Proyectil_peq::turno(float delta)
 {
 	tiempo-=delta;
 	velocidad-=5.0*delta;
 	if(velocidad < 0.2) velocidad=0.2;
 
-	//TODO: Esto ya es común a dos clases.
-	DLibH::Vector_2d<double> v=vector_unidad_para_angulo_cartesiano(angulo);
-	DLibH::Punto_2d<double> pd{v.x * velocidad, v.y * velocidad};
-	poligono.desplazar(pd);
+	desplazar_angulo_velocidad(angulo, velocidad);
 }
 
-void Proyectil_alt::formar_poligono()
+void Proyectil_peq::formar_poligono()
 {
 	poligono.insertar_vertice({2.0, 0.0});
 	poligono.insertar_vertice({0.0, -2.0});

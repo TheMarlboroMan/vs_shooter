@@ -3,6 +3,7 @@
 
 #include "color.h"
 #include "espaciable.h"
+#include "disparador.h"
 
 namespace App
 {
@@ -15,8 +16,9 @@ class Proyectil:
 				Proyectil(int, double, double);
 
 	bool			es_activo() const {return tiempo > 0.0f;}
-	void			desactivar() {tiempo=0.0f;}
 
+	virtual void		extinguir(std::vector<Disparador>&)=0;
+	virtual void		colisionar(std::vector<Disparador>&)=0;
 	virtual int		acc_potencia() const=0;
 	virtual tcolor		acc_color() const=0;
 	virtual void		turno(float)=0;

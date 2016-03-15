@@ -12,29 +12,20 @@ namespace App
 
 class Proyectil;
 
-class Disparador
+struct Disparador
 {
-	public:
+	enum class tproyectiles {normal, peq, explosivo};
 
-	//Estructura con el proyectil y su información de preparación. Nos
-	//evitamos en todos los constructores pasar parámetros y llamar a formar polígono,
-	//que se deriva en otro lado.
 	struct info
 	{
-		std::unique_ptr<Proyectil>	proyectil;
-		Punto_2d<double>		pt;
-		double				angulo;
+		tproyectiles				tipo;
+		int					indice;
+		Punto_2d<double>			pt;
+		double					angulo;
 	};
-
-
-	typedef std::vector<info>		v_info;
-
-			Disparador(std::function<void(v_info&)>);
-	void		generar_proyectiles(v_info&) const;
-
-	private:
-
-	std::function<void(v_info&)>	funcion;
+	
+	typedef std::vector<info>			v_info;
+	v_info						disparos;
 };
 
 }

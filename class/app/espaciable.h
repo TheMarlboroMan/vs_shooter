@@ -15,6 +15,8 @@ class Espaciable
 {
 	public:
 
+	//TODO: Cambiar instancias de punto_2d por eso.
+	typedef DLibH::Punto_2d<double>		tpunto;
 	typedef DLibH::Poligono_2d<double>	tpoligono;
 
 						Espaciable();
@@ -23,6 +25,7 @@ class Espaciable
 	const tpoligono&			acc_poligono() const {return poligono;}
 	void					establecer_posicion(double, double);
 	bool					en_colision_con(const Espaciable& e) const;
+	void					desplazar_angulo_velocidad(double, double);
 
 	protected:
 

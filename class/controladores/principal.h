@@ -10,10 +10,17 @@
 #include <class/generador_numeros.h>
 
 #include "../app/obstaculo.h"
+#include "../app/generador_items.h"
 #include "../app/jugador.h"
-#include "../app/jugador_arma_alt.h"
+#include "../app/jugador_arma_triple.h"
 #include "../app/jugador_arma_normal.h"
+#include "../app/jugador_arma_explosivo.h"
+//TODO: Quitar con factoría de disparos.
 #include "../app/proyectil.h"
+#include "../app/proyectil_normal.h"
+#include "../app/proyectil_peq.h"
+#include "../app/proyectil_explosivo.h"
+
 #include "../app/bloque_input.h"
 #include "../app/representador.h"
 #include "../app/disparador.h"
@@ -48,6 +55,7 @@ class Controlador_principal:
 	void					ajustar_camara();
 	void					dibujar_info_jugador(DLibV::Pantalla&, const Jugador&);
 	void					crear_punto_inicio(DLibH::Punto_2d<double>);
+	void					crear_punto_generador_items(DLibH::Punto_2d<double>);
 	void					procesar_disparadores();
 
 	Traduccion_input			obtener_traduccion_input(int) const;
@@ -57,6 +65,7 @@ class Controlador_principal:
 	std::vector<Obstaculo>			obstaculos;
 	std::vector<std::unique_ptr<Proyectil>>	proyectiles;
 	std::vector<DLibH::Punto_2d<double>>	puntos_inicio;
+	std::vector<Generador_items>		generadores_items;
 	std::vector<Disparador>			disparadores;
 
 	DLibH::Log_base&			log;
@@ -66,9 +75,12 @@ class Controlador_principal:
 
 	double  				zoom;
 	int 					xcam, ycam;
+
 	//TODO: Esto es sólo para prototipo.
 	Espaciable::tpoligono			poligono_construccion;
 	int					grid;
+
+	enum class tobjetocreado		{inicio, arma} tobjeto;
 };
 
 }

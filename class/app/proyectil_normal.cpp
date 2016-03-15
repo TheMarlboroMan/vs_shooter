@@ -10,6 +10,16 @@ Proyectil_normal::Proyectil_normal(int indice):
 
 }
 
+void Proyectil_normal::colisionar(std::vector<Disparador>& d)
+{
+
+}
+
+void Proyectil_normal::extinguir(std::vector<Disparador>& d)
+{
+
+}
+
 void Proyectil_normal::preparar(double ang, DLibH::Punto_2d<double> pt)
 {
 	angulo=ang;
@@ -21,11 +31,7 @@ void Proyectil_normal::preparar(double ang, DLibH::Punto_2d<double> pt)
 void Proyectil_normal::turno(float delta)
 {
 	tiempo-=delta;
-
-	//TODO: Esto ya es común a dos clases.
-	DLibH::Vector_2d<double> v=vector_unidad_para_angulo_cartesiano(angulo);
-	DLibH::Punto_2d<double> pd{v.x * velocidad, v.y * velocidad};
-	poligono.desplazar(pd);
+	desplazar_angulo_velocidad(angulo, velocidad);
 }
 
 void Proyectil_normal::formar_poligono()

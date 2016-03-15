@@ -21,7 +21,8 @@ Controlador_principal::Controlador_principal(DLibH::Log_base& log)
 		zoom(1.0), 
 		xcam(0), 
 		ycam(0),
-		grid(20)
+		grid(20),
+		tobjeto(tobjetocreado::inicio)
 {
 	
 }
@@ -44,6 +45,12 @@ void  Controlador_principal::loop(DFramework::Input& input, float delta)
 			if(jugadores.size()) jugadores.clear();
 			else abandonar_aplicacion();
 			return;
+		}
+
+		if(input.es_input_down(Input::tab))
+		{
+			if(tobjeto==tobjetocreado::inicio) tobjeto=tobjetocreado::arma;
+			else tobjeto=tobjetocreado::inicio;
 		}
 
 		pos_raton=input.acc_posicion_raton();
@@ -73,8 +80,23 @@ void  Controlador_principal::loop(DFramework::Input& input, float delta)
 			}
 			else
 			{
-				crear_punto_inicio(punto_desde_pos_pantalla(pos_raton.x, pos_raton.y));
+				switch(tobjeto)
+				{
+					case tobjetocreado::inicio:
+						crear_punto_inicio(punto_desde_pos_pantalla(pos_raton.x, pos_raton.y));
+					break;
+
+					case tobjetocreado::arma:
+						crear_punto_generador_items(punto_desde_pos_pantalla(pos_raton.x, pos_raton.y));
+					break;
+				}
 			}
+		}
+
+		//Procesar generadores...
+		for(auto& g : generadores_items)
+		{
+			g.turno(delta);
 		}
 
 		//TODO: Separar
@@ -86,7 +108,14 @@ void  Controlador_principal::loop(DFramework::Input& input, float delta)
 			auto& p=**p_ini;
 
 			p.turno(delta);
-			bool borrar=!p.es_activo();			
+
+			bool borrar=false;
+
+			if(!p.es_activo())
+			{
+				p.extinguir(disparadores);
+				borrar=true;
+			}
 
 			//TODO: Mejorar... Esto quizás deba estar en el código
 			//del jugador?
@@ -96,8 +125,8 @@ void  Controlador_principal::loop(DFramework::Input& input, float delta)
 				{
 					if(p.en_colision_con(j))
 					{
-						j.restar_salud(p.acc_potencia());				
-						p.desactivar();
+						j.restar_salud(p.acc_potencia());
+						p.colisionar(disparadores);		
 						borrar=true;
 					}	
 				}
@@ -109,8 +138,7 @@ void  Controlador_principal::loop(DFramework::Input& input, float delta)
 				{
 					if(p.en_colision_con(o))
 					{
-						//TODO: Más bien "colisionar", veremos lo que haría el proyectil si colisiona?
-						p.desactivar();
+						p.colisionar(disparadores);
 						borrar=true;
 					}	
 				}
@@ -144,6 +172,23 @@ void  Controlador_principal::loop(DFramework::Input& input, float delta)
 				}
 			}
 
+			for(auto& g : generadores_items)
+			{
+				if(g.es_activo() && j.en_colision_con(g))
+				{
+					switch(g.acc_tipo())
+					{
+						case Generador_items::titems::triple:
+							j.establecer_arma(new Jugador_arma_triple());
+						break;
+						case Generador_items::titems::explosivo:
+							j.establecer_arma(new Jugador_arma_explosivo());
+						break;
+					}
+
+					g.reiniciar();
+				}
+			}
 
 			for(auto& oj : jugadores)
 			{
@@ -210,6 +255,11 @@ void  Controlador_principal::dibujar(DLibV::Pantalla& pantalla)
 		r.dibujar_poligono(pantalla, o.acc_poligono(), o.acc_color(), xcam, ycam, zoom);
 	}
 
+	for(const auto& g : generadores_items)
+	{
+		if(g.es_activo()) r.dibujar_poligono(pantalla, g.acc_poligono(), g.acc_color(), xcam, ycam, zoom);
+	}
+
 	for(const auto& j : jugadores)
 	{
 		r.dibujar_poligono(pantalla, j.acc_poligono(), j.acc_color(), xcam, ycam, zoom);
@@ -234,11 +284,22 @@ void  Controlador_principal::dibujar(DLibV::Pantalla& pantalla)
 			r.dibujar_poligono(pantalla, poli, {255, 0, 0, 128}, xcam, ycam, zoom);
 		}
 
+		for(const auto& g : generadores_items)
+		{
+			r.dibujar_poligono(pantalla, g.acc_poligono(), {0, 0, 255, 128}, xcam, ycam, zoom);
+		}	
+
 		auto pt_raton=punto_desde_pos_pantalla(pos_raton.x, pos_raton.y);
 		std::string texto=std::to_string((int)pt_raton.x)+","+std::to_string((int)pt_raton.y);
+		texto+=tobjeto==tobjetocreado::inicio ? " [spawn]" : " [weapon]";
+
 		DLibV::Representacion_TTF txt(fuente_akashi, {255, 255, 255, 255}, texto);
 		txt.ir_a(16, 16);
 		txt.volcar(pantalla);
+
+		//Punto actual...
+		Espaciable::tpoligono poli={ {{pt_raton.x-5, pt_raton.y-5}, {pt_raton.x-5, pt_raton.y+5}, {pt_raton.x+5, pt_raton.y+5}, {pt_raton.x+5, pt_raton.y-5}}, {pt_raton.x, pt_raton.y}};
+		r.dibujar_poligono(pantalla, poli, {255, 255, 255, 128}, xcam, ycam, zoom);
 	}
 
 	for(const auto& j : jugadores) dibujar_info_jugador(pantalla, j);
@@ -405,16 +466,7 @@ void Controlador_principal::registrar_jugador(int indice)
 			if(!colision) break;
 		};
 
-		//TODO: Asignar un arma aleatoria!!!.
-		if(rand()%2)
-		{
-			j.establecer_arma(new Jugador_arma_alt());
-		}
-		else
-		{
-			j.establecer_arma(new Jugador_arma_alt());
-		}
-
+		j.establecer_arma(new Jugador_arma_normal());
 		jugadores.push_back(std::move(j));
 	}
 }
@@ -475,19 +527,38 @@ void Controlador_principal::crear_punto_inicio(DLibH::Punto_2d<double> pt)
 	puntos_inicio.push_back(pt);
 }
 
+void Controlador_principal::crear_punto_generador_items(DLibH::Punto_2d<double> pt)
+{
+	Generador_items gi(pt);
+	gi.reiniciar();
+	generadores_items.push_back(gi);
+}
+
 void Controlador_principal::procesar_disparadores()
 {
-	std::vector<Disparador::info> info_pr;
+	//TODO: Quitar con factoría de disparos.
 
-	for(const auto& d : disparadores)
+	for(auto& d : disparadores)
 	{
-		d.generar_proyectiles(info_pr);	
-	}
-
-	for(auto& info : info_pr) 
-	{
-		info.proyectil->preparar(info.angulo, info.pt);
-		proyectiles.push_back(std::move(info.proyectil));
+		for(const auto& i : d.disparos)
+		{
+			std::unique_ptr<Proyectil>	p(nullptr);
+			switch(i.tipo)
+			{
+				case Disparador::tproyectiles::normal:
+					p.reset(new Proyectil_normal(i.indice));
+				break;
+				case Disparador::tproyectiles::peq:
+					p.reset(new Proyectil_peq(i.indice));
+				break;
+				case Disparador::tproyectiles::explosivo:
+					p.reset(new Proyectil_explosivo(i.indice));
+				break;
+			}
+			
+			p->preparar(i.angulo, i.pt);
+			proyectiles.push_back(std::move(p));
+		}
 	}
 
 	disparadores.clear();

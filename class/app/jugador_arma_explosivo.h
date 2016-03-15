@@ -1,17 +1,16 @@
-#ifndef JUGADOR_ARMA_ALT_H
-#define JUGADOR_ARMA_ALT_H
+#ifndef JUGADOR_ARMA_EXPLOSIVO_H
+#define JUGADOR_ARMA_EXPLOSIVO_H
 
 #include "jugador_arma.h"
-#include "proyectil_alt.h"
 
 namespace App
 {
-class Jugador_arma_alt:
+class Jugador_arma_explosivo:
 	public Jugador_arma
 {
 	public:
 
-						Jugador_arma_alt();
+						Jugador_arma_explosivo();
 	virtual void				generar_proyectiles(Disparador::v_info&, int, DLibH::Punto_2d<double>, double);
 	virtual void				disparar();
 	virtual int				acc_municion_restante() const {return municion;}

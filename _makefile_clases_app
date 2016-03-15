@@ -35,11 +35,17 @@ $(DIR_CLASES_APP)jugador.h \
 $(DIR_CLASES_APP)jugador.cpp
 	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CLASES_APP)jugador.cpp -o $(DIR_O)jugador.o
 
-$(DIR_O)proyectil_alt.o:\
+$(DIR_O)proyectil_explosivo.o:\
 $(DIR_O)proyectil.o\
-$(DIR_CLASES_APP)proyectil_alt.h \
-$(DIR_CLASES_APP)proyectil_alt.cpp
-	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CLASES_APP)proyectil_alt.cpp -o $(DIR_O)proyectil_alt.o
+$(DIR_CLASES_APP)proyectil_explosivo.h \
+$(DIR_CLASES_APP)proyectil_explosivo.cpp
+	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CLASES_APP)proyectil_explosivo.cpp -o $(DIR_O)proyectil_explosivo.o
+
+$(DIR_O)proyectil_peq.o:\
+$(DIR_O)proyectil.o\
+$(DIR_CLASES_APP)proyectil_peq.h \
+$(DIR_CLASES_APP)proyectil_peq.cpp
+	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CLASES_APP)proyectil_peq.cpp -o $(DIR_O)proyectil_peq.o
 
 $(DIR_O)proyectil_normal.o:\
 $(DIR_O)proyectil.o\
@@ -49,6 +55,7 @@ $(DIR_CLASES_APP)proyectil_normal.cpp
 
 $(DIR_O)proyectil.o:\
 $(DIR_O)espaciable.o\
+$(DIR_O)disparador.o\
 $(DIR_CLASES_APP)color.h \
 $(DIR_CLASES_APP)proyectil.h \
 $(DIR_CLASES_APP)proyectil.cpp
@@ -67,21 +74,31 @@ $(DIR_CLASES_APP)representador.h \
 $(DIR_CLASES_APP)representador.cpp
 	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CLASES_APP)representador.cpp -o $(DIR_O)representador.o
 
+$(DIR_O)generador_items.o:\
+$(DIR_O)espaciable.o\
+$(DIR_CLASES_APP)generador_items.h \
+$(DIR_CLASES_APP)generador_items.cpp
+	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CLASES_APP)generador_items.cpp -o $(DIR_O)generador_items.o
+
 $(DIR_O)espaciable.o:\
 $(DIR_CLASES_APP)espaciable.h \
 $(DIR_CLASES_APP)espaciable.cpp
 	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CLASES_APP)espaciable.cpp -o $(DIR_O)espaciable.o
 
-$(DIR_O)jugador_arma_alt.o:\
+$(DIR_O)jugador_arma_explosivo.o:\
 $(DIR_O)jugador_arma.o\
-$(DIR_O)proyectil_normal.o\
-$(DIR_CLASES_APP)jugador_arma_alt.h \
-$(DIR_CLASES_APP)jugador_arma_alt.cpp
-	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CLASES_APP)jugador_arma_alt.cpp -o $(DIR_O)jugador_arma_alt.o
+$(DIR_CLASES_APP)jugador_arma_explosivo.h \
+$(DIR_CLASES_APP)jugador_arma_explosivo.cpp
+	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CLASES_APP)jugador_arma_explosivo.cpp -o $(DIR_O)jugador_arma_explosivo.o
+
+$(DIR_O)jugador_arma_triple.o:\
+$(DIR_O)jugador_arma.o\
+$(DIR_CLASES_APP)jugador_arma_triple.h \
+$(DIR_CLASES_APP)jugador_arma_triple.cpp
+	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CLASES_APP)jugador_arma_triple.cpp -o $(DIR_O)jugador_arma_triple.o
 
 $(DIR_O)jugador_arma_normal.o:\
 $(DIR_O)jugador_arma.o\
-$(DIR_O)proyectil_normal.o\
 $(DIR_CLASES_APP)jugador_arma_normal.h \
 $(DIR_CLASES_APP)jugador_arma_normal.cpp
 	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CLASES_APP)jugador_arma_normal.cpp -o $(DIR_O)jugador_arma_normal.o

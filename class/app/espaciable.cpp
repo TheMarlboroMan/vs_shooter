@@ -22,3 +22,10 @@ bool Espaciable::en_colision_con(const Espaciable& e) const
 {
 	return colision_poligono_SAT(poligono, e.poligono);
 }
+
+void Espaciable::desplazar_angulo_velocidad(double angulo, double velocidad)
+{
+	DLibH::Vector_2d<double> v=vector_unidad_para_angulo_cartesiano(angulo);
+	DLibH::Punto_2d<double> pd{v.x * velocidad, v.y * velocidad};
+	poligono.desplazar(pd);
+}

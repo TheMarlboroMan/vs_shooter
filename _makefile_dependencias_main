@@ -17,14 +17,17 @@ $(DIR_O)kernel_config.o\
 $(DIR_O)app_config.o\
 $(DIR_O)representador.o\
 $(DIR_O)espaciable.o\
+$(DIR_O)generador_items.o\
 $(DIR_O)jugador.o\
 $(DIR_O)jugador_arma.o\
 $(DIR_O)jugador_arma_normal.o\
-$(DIR_O)jugador_arma_alt.o\
+$(DIR_O)jugador_arma_triple.o\
+$(DIR_O)jugador_arma_explosivo.o\
 $(DIR_O)obstaculo.o\
 $(DIR_O)proyectil.o\
 $(DIR_O)proyectil_normal.o\
-$(DIR_O)proyectil_alt.o\
+$(DIR_O)proyectil_peq.o\
+$(DIR_O)proyectil_explosivo.o\
 $(DIR_O)disparador.o\
 
 DEP_CONTROLADORES=\
