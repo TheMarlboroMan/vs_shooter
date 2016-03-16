@@ -96,13 +96,14 @@ Disparador Jugador::disparar()
 	double distancia=30.0;
 
 	//Obtener spawn point de disparo...
-	DLibH::Vector_2d<double> v=vector_unidad_para_angulo_cartesiano(angulo);
 	auto pt=poligono.acc_centro();
-	pt.x+=v.x * distancia;
-	pt.y+=v.y * distancia;
+
+	//TODO: Mejorar: quizás el jugador puede computar los puntos posibles para
+	//iniciar un disparo en este punto y enviarlos todos. El arma podría saber
+	//qué puntos tiene que elegir???.
 
 	Disparador res;
-	arma->generar_proyectiles(res.disparos, indice, pt, angulo);
+	arma->generar_proyectiles(res.disparos, indice, pt, distancia, angulo);
 	arma->disparar();
 	return res;
 }

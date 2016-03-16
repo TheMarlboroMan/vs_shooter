@@ -23,6 +23,15 @@ tcolor Generador_items::acc_color() const
 			return {255, 32, 32, 128};
 		break;
 
+		case titems::trasero:
+			return {32, 32, 255, 128};
+		break;
+
+		case titems::divide:
+			return {128, 128, 128, 128};
+		break;
+
+
 		default:
 			return {255, 255, 255, 128};
 		break;
@@ -43,11 +52,13 @@ void Generador_items::reiniciar()
 {
 	tiempo_restante=6.0;
 
-	Herramientas_proyecto::Generador_int gen(0, 1);
+	Herramientas_proyecto::Generador_int gen(0, 3);
 	switch(gen())
 	{
 		case 0: tipo=titems::triple; break;
 		case 1: tipo=titems::explosivo; break;
+		case 2: tipo=titems::trasero; break;
+		case 3: tipo=titems::divide; break;
 	}
 }
 

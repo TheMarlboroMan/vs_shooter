@@ -14,7 +14,7 @@ class Proyectil;
 
 struct Disparador
 {
-	enum class tproyectiles {normal, peq, explosivo};
+	enum class tproyectiles {normal, peq, explosivo, divide};
 
 	struct info
 	{

@@ -11,7 +11,7 @@ class Jugador_arma_triple:
 	public:
 
 						Jugador_arma_triple();
-	virtual void				generar_proyectiles(Disparador::v_info&, int, DLibH::Punto_2d<double>, double);
+	virtual void				generar_proyectiles(Disparador::v_info&, int, DLibH::Punto_2d<double>, double, double);
 	virtual void				disparar();
 	virtual int				acc_municion_restante() const {return municion;}
 

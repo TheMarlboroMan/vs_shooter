@@ -17,7 +17,7 @@ class Generador_items:
 {
 	public:
 
-	enum class titems {triple, explosivo};
+	enum class titems {triple, explosivo, trasero, divide};
 
 					Generador_items(Espaciable::tpunto);
 

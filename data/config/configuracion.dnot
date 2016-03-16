@@ -23,9 +23,9 @@ config:{
 		, jugador_2:{
 			izquierda:7,
 			derecha:5,
-			arriba:4,
-			abajo:6,
-			disparo:14,
+			arriba:12,
+			abajo:14,
+			disparo:9,
 			tizquierda:1,
 			tderecha:1,
 			tarriba:1,

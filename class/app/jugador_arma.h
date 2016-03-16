@@ -12,7 +12,7 @@ class Jugador_arma
 {
 	public:
 
-	virtual void				generar_proyectiles(Disparador::v_info&, int, DLibH::Punto_2d<double>, double)=0;
+	virtual void				generar_proyectiles(Disparador::v_info&, int, DLibH::Punto_2d<double>, double, double)=0;
 	virtual void				disparar()=0;
 	virtual int				acc_municion_restante() const=0;
 

@@ -185,6 +185,12 @@ void  Controlador_principal::loop(DFramework::Input& input, float delta)
 						case Generador_items::titems::explosivo:
 							j.establecer_arma(new Jugador_arma_explosivo());
 						break;
+						case Generador_items::titems::trasero:
+							j.establecer_arma(new Jugador_arma_trasero());
+						break;
+						case Generador_items::titems::divide:
+							j.establecer_arma(new Jugador_arma_divide());
+						break;
 					}
 
 					g.reiniciar();
@@ -562,6 +568,9 @@ void Controlador_principal::procesar_disparadores()
 				break;
 				case Disparador::tproyectiles::explosivo:
 					p.reset(new Proyectil_explosivo(i.indice));
+				break;
+				case Disparador::tproyectiles::divide:
+					p.reset(new Proyectil_divide(i.indice));
 				break;
 			}
 			

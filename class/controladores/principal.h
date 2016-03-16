@@ -15,11 +15,14 @@
 #include "../app/jugador_arma_triple.h"
 #include "../app/jugador_arma_normal.h"
 #include "../app/jugador_arma_explosivo.h"
+#include "../app/jugador_arma_trasero.h"
+#include "../app/jugador_arma_divide.h"
 //TODO: Quitar con factoría de disparos.
 #include "../app/proyectil.h"
 #include "../app/proyectil_normal.h"
 #include "../app/proyectil_peq.h"
 #include "../app/proyectil_explosivo.h"
+#include "../app/proyectil_divide.h"
 
 #include "../app/bloque_input.h"
 #include "../app/representador.h"
