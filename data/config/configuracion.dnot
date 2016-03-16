@@ -21,11 +21,11 @@ config:{
 			tabajo:0,
 			tdisparo:0}
 		, jugador_2:{
-			izquierda:15,
-			derecha:13,
-			arriba:12,
-			abajo:14,
-			disparo:2,
+			izquierda:7,
+			derecha:5,
+			arriba:4,
+			abajo:6,
+			disparo:14,
 			tizquierda:1,
 			tderecha:1,
 			tarriba:1,

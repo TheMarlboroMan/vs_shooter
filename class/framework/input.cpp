@@ -151,3 +151,27 @@ void Input::configurar(const std::vector<Par_input>& v)
 		}
 	}
 }
+
+Input::Entrada Input::obtener_entrada() const
+{
+	if(controles_sdl.recibe_eventos_teclado_down())
+	{
+		return Entrada{Entrada::ttipo::teclado, controles_sdl.obtener_tecla_down(), 0};
+	}
+	else if(controles_sdl.recibe_eventos_boton_raton())
+	{
+		return Entrada{Entrada::ttipo::raton, controles_sdl.obtener_boton_down(), 0};
+	}
+	else if(controles_sdl.recibe_eventos_boton_joystick_down())
+	{
+		int cantidad=controles_sdl.acc_cantidad_joysticks(), i=0;
+		while(i < cantidad)
+		{
+			int btn=controles_sdl.obtener_joystick_boton_down(i);
+			if(btn >= 0) return Entrada{Entrada::ttipo::joystick, btn, i};
+			++i;
+		}	
+	}
+
+	return Entrada{Entrada::ttipo::nada, 0, 0};
+}

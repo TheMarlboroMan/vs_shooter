@@ -23,11 +23,52 @@ class Input
 	public:
 
 	struct tinput{int sdl_clave, indice_dispositivo;};
+	struct Entrada
+	{
+		enum class ttipo {nada, teclado, raton, joystick};
+		ttipo		tipo;
+		int		codigo,
+				dispositivo;
+	};
 
 	typedef DLibI::Controles_SDL::Posicion_raton Posicion_raton;
-	typedef std::multimap<unsigned int, tinput> tipo_mapa;
 
-	private:
+	public:
+
+	void 			configurar(const std::vector<Par_input>&);
+
+	/* Todas estas vamos a imaginar que son finales, ok?... */
+
+	void 			turno(); 
+
+	bool 			es_senal_salida() const;
+	bool 			es_input_down(unsigned int) const;
+	bool 			es_input_up(unsigned int) const;
+	bool 			es_input_pulsado(unsigned int) const;
+
+	bool 			es_tecla_down(unsigned int i) const {return controles_sdl.es_tecla_down(i);}
+	bool 			es_tecla_up(unsigned int i) const {return controles_sdl.es_tecla_up(i);}	
+	bool 			es_tecla_pulsada(unsigned int i) const {return controles_sdl.es_tecla_pulsada(i);}
+	bool 			hay_eventos_teclado_down() const {return controles_sdl.recibe_eventos_teclado_down();}
+
+	bool 			es_boton_up(int p_boton) const {return controles_sdl.es_boton_up(p_boton);}
+	bool 			es_boton_down(int p_boton) const {return controles_sdl.es_boton_down(p_boton);}
+	bool 			es_boton_pulsado(int p_boton) const {return controles_sdl.es_boton_pulsado(p_boton);}
+
+	bool 			es_joystick_boton_up(int indice, int p_boton) const {return controles_sdl.es_joystick_boton_up(indice, p_boton);}
+	bool 			es_joystick_boton_down(int indice, int p_boton) const {return controles_sdl.es_joystick_boton_down(indice, p_boton);}
+	bool 			es_joystick_boton_pulsado(int indice, int p_boton) const {return controles_sdl.es_joystick_boton_pulsado(indice, p_boton);}
+
+	int 			obtener_cantidad_joysticks() {return controles_sdl.acc_cantidad_joysticks();}
+
+//	const DLibI::Controles_SDL::Posicion_raton& acc_posicion_raton() const {return controles_sdl.acc_raton().posicion;}
+	Posicion_raton 		acc_posicion_raton() const {return controles_sdl.obtener_posicion_raton();}
+	DLibI::Controles_SDL& 	acc_controles_sdl() {return controles_sdl;}
+	Entrada			obtener_entrada() const;	
+
+	protected:
+
+	typedef std::multimap<unsigned int, tinput> tipo_mapa;	
 
 	struct Resultado_lookup
 	{
@@ -42,59 +83,14 @@ class Input
 		Resultado_lookup(unsigned int tm):mapa(tm) {}
 	};
 
-	////////////////////////
-	//Propiedades. --
-
-	private:
-	DLibI::Controles_SDL controles_sdl;
-
-	protected:
 	mutable std::map<unsigned int, Resultado_lookup> lookup;
-	tipo_mapa mapa_teclado;
-	tipo_mapa mapa_raton;
-	tipo_mapa mapa_joystick;
-
-	////////////////////////
-	//Métodos
+	tipo_mapa 		mapa_teclado;
+	tipo_mapa 		mapa_raton;
+	tipo_mapa 		mapa_joystick;
 
 	private:
-
-	Resultado_lookup obtener(unsigned int) const;
-
-	public:
-
-	void configurar(const std::vector<Par_input>&);
-
-	/* Todas estas vamos a imaginar que son finales, ok?... */
-
-	void turno(); 
-
-	bool es_senal_salida() const;
-	bool es_input_down(unsigned int) const;
-	bool es_input_up(unsigned int) const;
-	bool es_input_pulsado(unsigned int) const;
-
-	bool es_tecla_down(unsigned int i) const {return controles_sdl.es_tecla_down(i);}
-	bool es_tecla_up(unsigned int i) const {return controles_sdl.es_tecla_up(i);}	
-	bool es_tecla_pulsada(unsigned int i) const {return controles_sdl.es_tecla_pulsada(i);}
-	bool hay_eventos_teclado_down() const {return controles_sdl.recibe_eventos_teclado_down();}
-
-	bool es_boton_up(int p_boton) const {return controles_sdl.es_boton_up(p_boton);}
-	bool es_boton_down(int p_boton) const {return controles_sdl.es_boton_down(p_boton);}
-	bool es_boton_pulsado(int p_boton) const {return controles_sdl.es_boton_pulsado(p_boton);}
-
-	bool es_joystick_boton_up(int indice, int p_boton) const {return controles_sdl.es_joystick_boton_up(indice, p_boton);}
-	bool es_joystick_boton_down(int indice, int p_boton) const {return controles_sdl.es_joystick_boton_down(indice, p_boton);}
-	bool es_joystick_boton_pulsado(int indice, int p_boton) const {return controles_sdl.es_joystick_boton_pulsado(indice, p_boton);}
-
-	int obtener_cantidad_joysticks() {return controles_sdl.acc_cantidad_joysticks();}
-
-//	const DLibI::Controles_SDL::Posicion_raton& acc_posicion_raton() const {return controles_sdl.acc_raton().posicion;}
-	Posicion_raton acc_posicion_raton() const {return controles_sdl.obtener_posicion_raton();}
-
-	DLibI::Controles_SDL& acc_controles_sdl() {return controles_sdl;}
-
-	Input() {}
+	Resultado_lookup 	obtener(unsigned int) const;
+	DLibI::Controles_SDL 	controles_sdl;
 };
 
 }
