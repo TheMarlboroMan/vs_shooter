@@ -7,7 +7,7 @@ void Input::turno()
 	controles_sdl.recoger();
 }
 
-Input::Resultado_lookup Input::obtener(unsigned int i) const
+Input::Resultado_lookup Input::obtener(int i) const
 {
 	//Esto puede dar problemas en el futuro si queremos usar el mismo
 	//input para dos cosas distintas.
@@ -23,7 +23,7 @@ Input::Resultado_lookup Input::obtener(unsigned int i) const
 	{
 		Resultado_lookup resultado(Resultado_lookup::NADA);
 
-		auto f=[&resultado, this, i](const tipo_mapa& mapa, unsigned int tipo)
+		auto f=[&resultado, this, i](const tipo_mapa& mapa, int tipo)
 		{
 			resultado.mapa=tipo;
 			auto it=mapa.equal_range(i);
@@ -62,7 +62,7 @@ bool Input::es_senal_salida() const
 	return controles_sdl.es_senal_salida();
 }
 
-bool Input::es_input_down(unsigned int i) const
+bool Input::es_input_down(int i) const
 {
 	Resultado_lookup rl=obtener(i);
 	switch(rl.mapa)
@@ -85,7 +85,7 @@ bool Input::es_input_down(unsigned int i) const
 	return false;
 }
 
-bool Input::es_input_up(unsigned int i) const
+bool Input::es_input_up(int i) const
 {
 	Resultado_lookup rl=obtener(i);
 	switch(rl.mapa)
@@ -108,7 +108,7 @@ bool Input::es_input_up(unsigned int i) const
 	return false;
 }
 
-bool Input::es_input_pulsado(unsigned int i) const
+bool Input::es_input_pulsado(int i) const
 {
 	Resultado_lookup rl=obtener(i);
 	switch(rl.mapa)
@@ -140,16 +140,34 @@ void Input::configurar(const std::vector<Par_input>& v)
 {
 	for(const auto& i : v)
 	{
-		tinput ti={i.sdl_clave, i.indice_dispositivo};
-		auto par=std::make_pair(i.clave, ti);
-
-		switch(i.tipo)
-		{
-			case Par_input::tipos::teclado: 	mapa_teclado.insert(par); break;
-			case Par_input::tipos::raton:		mapa_raton.insert(par); break;
-			case Par_input::tipos::joystick:	mapa_joystick.insert(par); break;
-		}
+		configurar(i);
 	}
+}
+
+void Input::configurar(Par_input i)
+{
+	tinput ti={i.sdl_clave, i.indice_dispositivo};
+	auto par=std::make_pair(i.clave, ti);
+
+	switch(i.tipo)
+	{
+		case Par_input::tipos::nada:		break;
+		case Par_input::tipos::teclado: 	mapa_teclado.insert(par); break;
+		case Par_input::tipos::raton:		mapa_raton.insert(par); break;
+		case Par_input::tipos::joystick:	mapa_joystick.insert(par); break;
+	}
+}
+
+
+//Elimina un input de los mapas y del lookup, liberándolo para poder volverlo
+//a configurar.
+
+void Input::limpiar(int clave)
+{
+	if(mapa_teclado.count(clave)) mapa_teclado.erase(clave);
+	if(mapa_raton.count(clave)) mapa_raton.erase(clave);
+	if(mapa_joystick.count(clave)) mapa_joystick.erase(clave);
+	if(lookup.count(clave)) lookup.erase(clave);
 }
 
 Input::Entrada Input::obtener_entrada() const
@@ -170,8 +188,55 @@ Input::Entrada Input::obtener_entrada() const
 			int btn=controles_sdl.obtener_joystick_boton_down(i);
 			if(btn >= 0) return Entrada{Entrada::ttipo::joystick, btn, i};
 			++i;
-		}	
+		}
 	}
 
 	return Entrada{Entrada::ttipo::nada, 0, 0};
+}
+
+Input::Entrada Input::localizar_entrada(int i) const
+{
+	Entrada res{Entrada::ttipo::nada, 0, 0};
+
+	auto l=obtener(i);
+
+	switch(l.mapa)
+	{
+		case Resultado_lookup::NADA:	
+		break;
+		
+		case Resultado_lookup::TECLADO:
+			res.tipo=Entrada::ttipo::teclado;
+			res.codigo=l.val[0].val;
+			
+		break;
+
+		case Resultado_lookup::RATON:
+			res.tipo=Entrada::ttipo::raton;
+			res.codigo=l.val[0].val;
+		break;
+
+		case Resultado_lookup::JOYSTICK:
+			res.tipo=Entrada::ttipo::joystick;
+			res.dispositivo=l.val[0].indice;
+			res.codigo=l.val[0].val;
+		break;
+	}
+
+	return res;
+}
+
+Par_input Input::desde_entrada(const Input::Entrada& e, int clave)
+{
+	Par_input::tipos t=Par_input::tipos::nada;
+
+	switch(e.tipo)
+	{
+		case Entrada::ttipo::nada: break;
+		case Entrada::ttipo::teclado: t=Par_input::tipos::teclado; break;
+		case Entrada::ttipo::raton: t=Par_input::tipos::raton; break;
+		case Entrada::ttipo::joystick: t=Par_input::tipos::joystick; break;
+	}
+
+	return Par_input{t, clave, e.codigo, e.dispositivo};
 }

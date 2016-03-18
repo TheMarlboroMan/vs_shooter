@@ -1,46 +1,55 @@
 config:{
 	audio:{
 		audio_buffers:1024, audio_canales:1, audio_ratio:44100, audio_salidas:0, volumen_audio:64, volumen_musica:64
+	}, input:{
+		general:{
+			zoom_mas:0, zoom_menos:0
+		}, jugador_1:{
+			abajo:[
+				1, 0, 14
+			], arriba:[
+				1, 0, 12
+			], derecha:[
+				1, 0, 13
+			], disparo:[
+				1, 0, 2
+			], izquierda:[
+				1, 0, 15
+			], registrar:[
+				1, 0, 9
+			]
+		}, jugador_2:{
+			abajo:[
+				1, 1, 2
+			], arriba:[
+				1, 1, 0
+			], derecha:[
+				1, 1, 1
+			], disparo:[
+				1, 1, 7
+			], izquierda:[
+				1, 1, 3
+			], registrar:[
+				1, 1, 9
+			]
+		}, jugador_3:{
+			abajo:[
+				0, 0, 81
+			], arriba:[
+				0, 0, 82
+			], derecha:[
+				0, 0, 79
+			], disparo:[
+				0, 0, 44
+			], izquierda:[
+				0, 0, 80
+			], registrar:[
+				0, 0, 30
+			]
+		}
 	}, meta:{
 		v:1
 	}, video:{
 		doble_buffer:1, h_fisica_ventana:400, h_logica_ventana:400, modo_hardware:1, modo_pantalla:0, pantalla_anyformat:1, w_fisica_ventana:640, w_logica_ventana:640
-	}, input:{
-		general:{
-			zoom_mas: 0,
-			zoom_menos: 0}
-		, jugador_1:{
-			izquierda:80,
-			derecha:79,
-			arriba:82,
-			abajo:81,
-			disparo:44,
-			tizquierda:0,
-			tderecha:0,
-			tarriba:0,
-			tabajo:0,
-			tdisparo:0}
-		, jugador_2:{
-			izquierda:7,
-			derecha:5,
-			arriba:12,
-			abajo:14,
-			disparo:9,
-			tizquierda:1,
-			tderecha:1,
-			tarriba:1,
-			tabajo:1,
-			tdisparo:1}
-		, jugador_3:{
-			izquierda:4,
-			derecha:7,
-			arriba:26,
-			abajo:22,
-			disparo:20,
-			tizquierda:0,
-			tderecha:0,
-			tarriba:0,
-			tabajo:0,
-			tdisparo:0}
 	}
 }

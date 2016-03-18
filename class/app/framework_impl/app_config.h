@@ -16,37 +16,59 @@ class App_config:
 
 	public:
 
+	struct input_jugador
+	{
+		enum devs{teclado=0, joystick=1};
+		int tipo, device, codigo;
+	};
+
 	int acc_w_logica_pantalla() const {return token_por_ruta(CLAVE_W_LOGICA_PANTALLA);}
 	int acc_h_logica_pantalla() const {return token_por_ruta(CLAVE_H_LOGICA_PANTALLA);}
 	int acc_w_fisica_pantalla() const {return token_por_ruta(CLAVE_W_FISICA_PANTALLA);}
 	int acc_h_fisica_pantalla() const {return token_por_ruta(CLAVE_H_FISICA_PANTALLA);}
-	int acc_tipo_izquierda(int j) const	{return token_por_ruta_jugador("tizquierda", j);}
-	int acc_tipo_derecha(int j) const 	{return token_por_ruta_jugador("tderecha", j);}
-	int acc_tipo_arriba(int j) const 	{return token_por_ruta_jugador("tarriba", j);}
-	int acc_tipo_abajo(int j) const		{return token_por_ruta_jugador("tabajo", j);}
-	int acc_tipo_disparo(int j) const 	{return token_por_ruta_jugador("tdisparo", j);}
-	int acc_izquierda(int j) const	{return token_por_ruta_jugador("izquierda", j);}
-	int acc_derecha(int j) const 	{return token_por_ruta_jugador("derecha", j);}
-	int acc_arriba(int j) const 	{return token_por_ruta_jugador("arriba", j);}
-	int acc_abajo(int j) const	{return token_por_ruta_jugador("abajo", j);}
-	int acc_disparo(int j) const 	{return token_por_ruta_jugador("disparo", j);}
 	int acc_zoom_mas() const 	{return token_por_ruta("config:input:general:zoom_mas");}
 	int acc_zoom_menos() const 	{return token_por_ruta("config:input:general:zoom_menos");}
+	input_jugador acc_registrar(int j) const	{return token_por_ruta_jugador("registrar", j);}
+	input_jugador acc_izquierda(int j) const	{return token_por_ruta_jugador("izquierda", j);}
+	input_jugador acc_derecha(int j) const 	{return token_por_ruta_jugador("derecha", j);}
+	input_jugador acc_arriba(int j) const 	{return token_por_ruta_jugador("arriba", j);}
+	input_jugador acc_abajo(int j) const	{return token_por_ruta_jugador("abajo", j);}
+	input_jugador acc_disparo(int j) const 	{return token_por_ruta_jugador("disparo", j);}
 
 	void mut_w_logica_pantalla(int p_valor) {configurar(CLAVE_W_LOGICA_PANTALLA, p_valor);}
 	void mut_h_logica_pantalla(int p_valor) {configurar(CLAVE_H_LOGICA_PANTALLA, p_valor);}
 	void mut_w_fisica_pantalla(int p_valor) {configurar(CLAVE_W_FISICA_PANTALLA, p_valor);}
 	void mut_h_fisica_pantalla(int p_valor) {configurar(CLAVE_H_FISICA_PANTALLA, p_valor);}
 
+	void mut_izquierda(int j, input_jugador p_valor) 	{configurar_jugador(ruta_jugador("izquierda", j), p_valor);}
+	void mut_derecha(int j, input_jugador p_valor) 	 	{configurar_jugador(ruta_jugador("derecha", j), p_valor);}
+	void mut_arriba(int j, input_jugador p_valor) 	 	{configurar_jugador(ruta_jugador("arriba", j), p_valor);}
+	void mut_abajo(int j, input_jugador p_valor) 		{configurar_jugador(ruta_jugador("abajo", j), p_valor);}
+	void mut_disparo(int j, input_jugador p_valor) 		{configurar_jugador(ruta_jugador("disparo", j), p_valor);}
+	void mut_registrar(int j, input_jugador p_valor) 	{configurar_jugador(ruta_jugador("registrar", j), p_valor);}
+
 	App_config();
 
 	private:
 
-	int token_por_ruta_jugador(const std::string& tipo, int j) const
+	void configurar_jugador(const std::string& ruta, input_jugador j)
+	{
+		auto& tok=token_por_ruta(ruta);
+		auto& l=tok.acc_lista();
+		l[0].asignar(j.tipo);
+		l[1].asignar(j.device);
+		l[2].asignar(j.codigo);
+	};
+
+	std::string ruta_jugador(const std::string& tipo, int j) const
+	{
+		return "config:input:jugador_"+std::to_string(j)+":"+tipo;
+	}
+
+	input_jugador token_por_ruta_jugador(const std::string& tipo, int j) const
 	{	
-		//TODO: std::no_string no estará en windows.
-		const std::string r="config:input:jugador_"+std::to_string(j)+":"+tipo;
-		return token_por_ruta(r);
+		const auto& tok=token_por_ruta(ruta_jugador(tipo, j));
+		return input_jugador{tok[0], tok[1], tok[2]};
 	}
 
 	////////////////////////////////////

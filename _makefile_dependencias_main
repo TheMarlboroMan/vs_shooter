@@ -38,6 +38,7 @@ $(DIR_O)importador.o\
 DEP_CONTROLADORES=\
 $(DIR_O)director_estados.o \
 $(DIR_O)controlador_principal.o \
+$(DIR_O)controlador_controles.o \
 
 DEP_FRAMEWORK=\
 $(DIR_O)fw_kernel.o \

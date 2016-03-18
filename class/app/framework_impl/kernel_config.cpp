@@ -58,32 +58,28 @@ std::vector<DFramework::Par_input> Kernel_config::obtener_pares_input() const
 		Par_input{Par_input::tipos::teclado, Input::tab, SDL_SCANCODE_TAB, 0},
 		Par_input{Par_input::tipos::teclado, Input::zoom_mas, SDL_SCANCODE_KP_PLUS, 0},
 		Par_input{Par_input::tipos::teclado, Input::zoom_menos, SDL_SCANCODE_KP_MINUS, 0},
-		Par_input{Par_input::tipos::teclado, Input::registrar_j1, SDL_SCANCODE_1, 0},
-		Par_input{Par_input::tipos::teclado, Input::registrar_j2, SDL_SCANCODE_2, 0},
-		Par_input{Par_input::tipos::teclado, Input::registrar_j3, SDL_SCANCODE_3, 0},
 		Par_input{Par_input::tipos::teclado, Input::cargar_mapa, SDL_SCANCODE_C, 0},
 		Par_input{Par_input::tipos::teclado, Input::grabar_mapa, SDL_SCANCODE_G, 0},
 		Par_input{Par_input::tipos::raton, Input::click_i, SDL_BUTTON_LEFT, 0},
-		Par_input{Par_input::tipos::raton, Input::click_d, SDL_BUTTON_RIGHT, 0},
+		Par_input{Par_input::tipos::raton, Input::click_d, SDL_BUTTON_RIGHT, 0}};
 
-		Par_input{tipo_desde_config(config.acc_tipo_disparo(1)), 	Input::j1_disparo, config.acc_disparo(1), 0},
-		Par_input{tipo_desde_config(config.acc_tipo_izquierda(1)), 	Input::j1_izquierda, config.acc_izquierda(1), 0},
-		Par_input{tipo_desde_config(config.acc_tipo_derecha(1)), 	Input::j1_derecha, config.acc_derecha(1), 0},
-		Par_input{tipo_desde_config(config.acc_tipo_arriba(1)), 	Input::j1_arriba, config.acc_arriba(1), 0},
-		Par_input{tipo_desde_config(config.acc_tipo_abajo(1)), 		Input::j1_abajo, config.acc_abajo(1), 0},
+	auto obtener_info_jugador=[this](std::map<int, App_config::input_jugador>& res, int j, int idis, int iizq, int ider, int iarr, int iaba, int ireg)
+	{
+		res[idis]=config.acc_disparo(j);
+		res[iizq]=config.acc_izquierda(j);
+		res[ider]=config.acc_derecha(j);
+		res[iarr]=config.acc_arriba(j);
+		res[iaba]=config.acc_abajo(j);
+		res[ireg]=config.acc_registrar(j);
+	};
 
-		Par_input{tipo_desde_config(config.acc_tipo_disparo(2)), 	Input::j2_disparo, config.acc_disparo(2), 0},
-		Par_input{tipo_desde_config(config.acc_tipo_izquierda(2)), 	Input::j2_izquierda, config.acc_izquierda(2), 0},
-		Par_input{tipo_desde_config(config.acc_tipo_derecha(2)), 	Input::j2_derecha, config.acc_derecha(2), 0},
-		Par_input{tipo_desde_config(config.acc_tipo_arriba(2)), 	Input::j2_arriba, config.acc_arriba(2), 0},
-		Par_input{tipo_desde_config(config.acc_tipo_abajo(2)), 		Input::j2_abajo, config.acc_abajo(2), 0},
+	std::map<int, App_config::input_jugador> mapa;
+	obtener_info_jugador(mapa, 1, Input::j1_disparo, Input::j1_izquierda, Input::j1_derecha, Input::j1_arriba, Input::j1_abajo, Input::j1_registrar);
+	obtener_info_jugador(mapa, 2, Input::j2_disparo, Input::j2_izquierda, Input::j2_derecha, Input::j2_arriba, Input::j2_abajo, Input::j2_registrar);
+	obtener_info_jugador(mapa, 3, Input::j3_disparo, Input::j3_izquierda, Input::j3_derecha, Input::j3_arriba, Input::j3_abajo, Input::j3_registrar);
 
-		Par_input{tipo_desde_config(config.acc_tipo_disparo(3)), 	Input::j3_disparo, config.acc_disparo(3), 0},
-		Par_input{tipo_desde_config(config.acc_tipo_izquierda(3)), 	Input::j3_izquierda, config.acc_izquierda(3), 0},
-		Par_input{tipo_desde_config(config.acc_tipo_derecha(3)), 	Input::j3_derecha, config.acc_derecha(3), 0},
-		Par_input{tipo_desde_config(config.acc_tipo_arriba(3)), 	Input::j3_arriba, config.acc_arriba(3), 0},
-		Par_input{tipo_desde_config(config.acc_tipo_abajo(3)), 		Input::j3_abajo, config.acc_abajo(3), 0}
-};
-
+	for(const auto& p : mapa)
+		res.push_back({tipo_desde_config(p.second.tipo), p.first, p.second.codigo, p.second.device});
+	
 	return res;
 }

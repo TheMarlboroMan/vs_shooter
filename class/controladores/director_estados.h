@@ -11,6 +11,7 @@
 
 #include "estados_controladores.h"
 #include "principal.h"
+#include "controles.h"
 
 
 namespace App
@@ -34,6 +35,7 @@ class Director_estados:
 	DLibH::Log_base&				log;
 
 	std::unique_ptr<Controlador_principal>		controlador_principal;
+	std::unique_ptr<Controlador_controles>		controlador_controles;
 };
 
 }

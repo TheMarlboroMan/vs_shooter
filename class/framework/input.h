@@ -36,19 +36,21 @@ class Input
 	public:
 
 	void 			configurar(const std::vector<Par_input>&);
+	void 			configurar(Par_input);
+	void			limpiar(int);
 
 	/* Todas estas vamos a imaginar que son finales, ok?... */
 
 	void 			turno(); 
 
 	bool 			es_senal_salida() const;
-	bool 			es_input_down(unsigned int) const;
-	bool 			es_input_up(unsigned int) const;
-	bool 			es_input_pulsado(unsigned int) const;
+	bool 			es_input_down(int) const;
+	bool 			es_input_up(int) const;
+	bool 			es_input_pulsado(int) const;
 
-	bool 			es_tecla_down(unsigned int i) const {return controles_sdl.es_tecla_down(i);}
-	bool 			es_tecla_up(unsigned int i) const {return controles_sdl.es_tecla_up(i);}	
-	bool 			es_tecla_pulsada(unsigned int i) const {return controles_sdl.es_tecla_pulsada(i);}
+	bool 			es_tecla_down(int i) const {return controles_sdl.es_tecla_down(i);}
+	bool 			es_tecla_up(int i) const {return controles_sdl.es_tecla_up(i);}	
+	bool 			es_tecla_pulsada(int i) const {return controles_sdl.es_tecla_pulsada(i);}
 	bool 			hay_eventos_teclado_down() const {return controles_sdl.recibe_eventos_teclado_down();}
 
 	bool 			es_boton_up(int p_boton) const {return controles_sdl.es_boton_up(p_boton);}
@@ -64,12 +66,15 @@ class Input
 //	const DLibI::Controles_SDL::Posicion_raton& acc_posicion_raton() const {return controles_sdl.acc_raton().posicion;}
 	Posicion_raton 		acc_posicion_raton() const {return controles_sdl.obtener_posicion_raton();}
 	DLibI::Controles_SDL& 	acc_controles_sdl() {return controles_sdl;}
-	Entrada			obtener_entrada() const;	
+	Entrada			obtener_entrada() const;
+	Entrada			localizar_entrada(int) const;
+	Par_input		desde_entrada(const Entrada&, int);
 
 	protected:
 
-	typedef std::multimap<unsigned int, tinput> tipo_mapa;	
+	typedef std::multimap<int, tinput> tipo_mapa;	
 
+	//TODO: No es esto lo mismo que Entrada???
 	struct Resultado_lookup
 	{
 		struct valores
@@ -78,18 +83,19 @@ class Input
 		};
 
 		enum t_mapa {NADA=0, TECLADO=1, RATON=2, JOYSTICK=3};
-		unsigned int mapa;
+		int mapa;
 		std::vector<valores> val;
-		Resultado_lookup(unsigned int tm):mapa(tm) {}
+		Resultado_lookup(int tm):mapa(tm) {}
 	};
 
-	mutable std::map<unsigned int, Resultado_lookup> lookup;
+	mutable std::map<int, Resultado_lookup> lookup;
 	tipo_mapa 		mapa_teclado;
 	tipo_mapa 		mapa_raton;
 	tipo_mapa 		mapa_joystick;
 
 	private:
-	Resultado_lookup 	obtener(unsigned int) const;
+
+	Resultado_lookup 	obtener(int) const;
 	DLibI::Controles_SDL 	controles_sdl;
 };
 

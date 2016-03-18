@@ -7,7 +7,7 @@ using namespace App;
 extern DLibH::Log_base LOG;
 
 Director_estados::Director_estados(DFramework::Kernel& kernel, App::App_config& c, DLibH::Log_base& log)
-	:Director_estados_interface(t_estados::principal, std::function<bool(int)>([](int v){return v >= principal && v < principal;})),
+	:Director_estados_interface(t_estados::controles, std::function<bool(int)>([](int v){return v >= principal && v < estado_max;})),
 	config(c), log(log)
 {
 	preparar_video(kernel);
@@ -31,14 +31,17 @@ void Director_estados::preparar_video(DFramework::Kernel& kernel)
 void Director_estados::registrar_controladores()
 {
 	controlador_principal.reset(new Controlador_principal(log));
+	controlador_controles.reset(new Controlador_controles(log, config));
+
 	registrar_controlador(t_estados::principal, *controlador_principal);
+	registrar_controlador(t_estados::controles, *controlador_controles);
 }
 
 void Director_estados::preparar_cambio_estado(int deseado, int actual)
 {
 	switch(deseado)
 	{
-		case t_estados::principal: 
-		break;
+		case t_estados::principal: break;
+		case t_estados::controles: break;
 	}
 }

@@ -69,9 +69,9 @@ void  Controlador_principal::loop(DFramework::Input& input, float delta)
 			if(zoom < 0.10) zoom=0.10;
 		}
 
-		if(input.es_input_down(Input::registrar_j1)) registrar_jugador(1);
-		else if(input.es_input_down(Input::registrar_j2)) registrar_jugador(2);
-		else if(input.es_input_down(Input::registrar_j3)) registrar_jugador(3);
+		if(input.es_input_down(Input::j1_registrar)) registrar_jugador(1);
+		if(input.es_input_down(Input::j2_registrar)) registrar_jugador(2);
+		if(input.es_input_down(Input::j3_registrar)) registrar_jugador(3);
 
 		if(input.es_input_down(Input::click_i))
 		{
@@ -145,7 +145,7 @@ void  Controlador_principal::loop(DFramework::Input& input, float delta)
 					{
 						p.colisionar(disparadores);
 						borrar=true;
-					}	
+					}
 				}
 			}
 
