@@ -27,6 +27,9 @@ int main(int argc, char ** argv)
 
 int iniciar_app(Herramientas_proyecto::Controlador_argumentos& CARG)
 {
+	
+
+
 	using namespace App;
 
 	DLibH::Log_base log_app("logs/app_log.log");

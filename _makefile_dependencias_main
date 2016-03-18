@@ -32,6 +32,8 @@ $(DIR_O)proyectil_divide.o\
 $(DIR_O)proyectil_peq.o\
 $(DIR_O)proyectil_explosivo.o\
 $(DIR_O)disparador.o\
+$(DIR_O)exportador.o\
+$(DIR_O)importador.o\
 
 DEP_CONTROLADORES=\
 $(DIR_O)director_estados.o \

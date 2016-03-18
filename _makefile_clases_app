@@ -67,6 +67,20 @@ $(DIR_CLASES_APP)proyectil.h \
 $(DIR_CLASES_APP)proyectil.cpp
 	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CLASES_APP)proyectil.cpp -o $(DIR_O)proyectil.o
 
+$(DIR_O)importador.o:\
+$(DIR_O)obstaculo.o\
+$(DIR_O)generador_items.o\
+$(DIR_CLASES_APP)importador.h \
+$(DIR_CLASES_APP)importador.cpp
+	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CLASES_APP)importador.cpp -o $(DIR_O)importador.o
+
+$(DIR_O)exportador.o:\
+$(DIR_O)obstaculo.o\
+$(DIR_O)generador_items.o\
+$(DIR_CLASES_APP)exportador.h \
+$(DIR_CLASES_APP)exportador.cpp
+	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CLASES_APP)exportador.cpp -o $(DIR_O)exportador.o
+
 $(DIR_O)obstaculo.o:\
 $(DIR_O)espaciable.o\
 $(DIR_CLASES_APP)color.h \

@@ -9,6 +9,8 @@
 
 #include <class/generador_numeros.h>
 
+#include "../app/exportador.h"
+#include "../app/importador.h"
 #include "../app/obstaculo.h"
 #include "../app/generador_items.h"
 #include "../app/jugador.h"
@@ -60,6 +62,8 @@ class Controlador_principal:
 	void					crear_punto_inicio(DLibH::Punto_2d<double>);
 	void					crear_punto_generador_items(DLibH::Punto_2d<double>);
 	void					procesar_disparadores();
+	void					cargar_mapa();
+	void					grabar_mapa();
 
 	Traduccion_input			obtener_traduccion_input(int) const;
 	Bloque_input				obtener_bloque_input(DFramework::Input& input, const Traduccion_input&) const;

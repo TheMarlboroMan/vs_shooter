@@ -1,5 +1,6 @@
 #include "principal.h"
 
+#include <fstream>
 #include <algorithm>
 #include <string>
 
@@ -52,6 +53,9 @@ void  Controlador_principal::loop(DFramework::Input& input, float delta)
 			if(tobjeto==tobjetocreado::inicio) tobjeto=tobjetocreado::arma;
 			else tobjeto=tobjetocreado::inicio;
 		}
+
+		if(input.es_input_down(Input::cargar_mapa)) cargar_mapa();	
+		else if(input.es_input_down(Input::grabar_mapa)) grabar_mapa();	
 
 		pos_raton=input.acc_posicion_raton();
 
@@ -580,4 +584,21 @@ void Controlador_principal::procesar_disparadores()
 	}
 
 	disparadores.clear();
+}
+
+void Controlador_principal::cargar_mapa()
+{
+	obstaculos.clear();
+	puntos_inicio.clear();
+	generadores_items.clear();
+
+	Importador importador;
+	importador.importar("mapa.dat", obstaculos, puntos_inicio, generadores_items);
+}
+
+void Controlador_principal::grabar_mapa()
+{
+	std::ofstream fichero("mapa.dat");
+	Exportador exportador;
+	fichero<<exportador.serializar(obstaculos, puntos_inicio, generadores_items);
 }

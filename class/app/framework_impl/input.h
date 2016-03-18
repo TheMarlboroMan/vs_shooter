@@ -9,6 +9,8 @@ struct Input
 	enum inputs{
 escape=0,
 tab,
+cargar_mapa,
+grabar_mapa,
 registrar_j1,
 registrar_j2,
 registrar_j3,
