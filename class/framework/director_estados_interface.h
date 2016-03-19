@@ -35,6 +35,8 @@ class Director_estados_interface
 	//original y despertar el nuevo.
 
 	virtual void				preparar_cambio_estado(int deseado, int actual)=0;
+	virtual void				input_comun(DFramework::Input& input, float delta)=0;
+
 	void					iniciar(DFramework::Kernel& kernel);
 	void					registrar_controlador(int indice, Controlador_interface& controlador);
 	void					registrar_interprete_eventos(Interprete_eventos_interface& i);

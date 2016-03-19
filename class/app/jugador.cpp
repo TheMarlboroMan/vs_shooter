@@ -84,8 +84,8 @@ void Jugador::movimiento_tentativo(float delta)
 void Jugador::formar_poligono()
 {
 	poligono.insertar_vertice({20.0, 0.0});
-	poligono.insertar_vertice({0.0, -10.0});
-	poligono.insertar_vertice({0.0, 10.0});
+	poligono.insertar_vertice({0.0, -7.0});
+	poligono.insertar_vertice({0.0, 7.0});
 	poligono.cerrar();
 	poligono.mut_centro({0.0, 0.0});
 }

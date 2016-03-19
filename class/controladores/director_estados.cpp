@@ -12,6 +12,8 @@ Director_estados::Director_estados(DFramework::Kernel& kernel, App::App_config& 
 {
 	preparar_video(kernel);
 	registrar_controladores();
+	
+	virtualizar_joysticks(kernel.acc_input());
 }
 
 void Director_estados::preparar_video(DFramework::Kernel& kernel)
@@ -43,5 +45,24 @@ void Director_estados::preparar_cambio_estado(int deseado, int actual)
 	{
 		case t_estados::principal: break;
 		case t_estados::controles: break;
+	}
+}
+
+void Director_estados::input_comun(DFramework::Input& input, float delta)
+{
+	if(input.es_nuevo_joystick_conectado())
+	{
+		log<<"Detectado nuevo joystick..."<<std::endl;
+		virtualizar_joysticks(input);
+	}
+}
+
+void Director_estados::virtualizar_joysticks(DFramework::Input& input)
+{
+	for(int i=0; i < input.obtener_cantidad_joysticks(); ++i)
+	{
+		input.virtualizar_hats_joystick(i);
+		input.virtualizar_ejes_joystick(i,15000);
+		log<<"Virtualizado joystick "<<i<<std::endl;
 	}
 }

@@ -44,6 +44,8 @@ class Input
 	void 			turno(); 
 
 	bool 			es_senal_salida() const;
+
+	//Estos son shortcuts para teclas, botones de ratón y botones de joystick.
 	bool 			es_input_down(int) const;
 	bool 			es_input_up(int) const;
 	bool 			es_input_pulsado(int) const;
@@ -57,21 +59,15 @@ class Input
 	bool 			es_boton_down(int p_boton) const {return controles_sdl.es_boton_down(p_boton);}
 	bool 			es_boton_pulsado(int p_boton) const {return controles_sdl.es_boton_pulsado(p_boton);}
 
-	//TODO: Añadir soporte para hats. En un principio habría que poder 
-	//registrar el movimiento de un indice de hat y guardarlo.
-	//Nos faltaría en la estructura el indice no sólo del dispositivo
-	//sino también del hat... Si queremos tener más de un hat no podemos
-	//usar la estructura tal cual.
-	//TODO: Cuando un hat vuelve a su posición normal contaría como "up"
-	//para los inputs asociados a ese hat.
-	//TODO: Ahora mismo la librería de DanSDL no está controlando nada
-	//sobre si el hat es down o pulsado. Lo necesitaríamos también.
-
 	bool 			es_joystick_boton_up(int indice, int p_boton) const {return controles_sdl.es_joystick_boton_up(indice, p_boton);}
 	bool 			es_joystick_boton_down(int indice, int p_boton) const {return controles_sdl.es_joystick_boton_down(indice, p_boton);}
 	bool 			es_joystick_boton_pulsado(int indice, int p_boton) const {return controles_sdl.es_joystick_boton_pulsado(indice, p_boton);}
 
-	int 			obtener_cantidad_joysticks() {return controles_sdl.acc_cantidad_joysticks();}
+	int 			obtener_cantidad_joysticks() const {return controles_sdl.acc_cantidad_joysticks();}
+	bool			es_nuevo_joystick_conectado() const {return controles_sdl.es_nuevo_joystick_conectado();}
+
+	void			virtualizar_hats_joystick(int indice) {controles_sdl.virtualizar_hats_joystick(indice);}
+	void			virtualizar_ejes_joystick(int indice, int threshold) {controles_sdl.virtualizar_ejes_joystick(indice, threshold);}
 
 //	const DLibI::Controles_SDL::Posicion_raton& acc_posicion_raton() const {return controles_sdl.acc_raton().posicion;}
 	Posicion_raton 		acc_posicion_raton() const {return controles_sdl.obtener_posicion_raton();}

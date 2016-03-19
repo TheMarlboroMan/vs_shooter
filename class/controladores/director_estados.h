@@ -24,12 +24,14 @@ class Director_estados:
 
 							Director_estados(DFramework::Kernel& kernel, App::App_config& config, DLibH::Log_base&);
 
+	virtual void					input_comun(DFramework::Input& input, float delta);
 	virtual void					preparar_cambio_estado(int deseado, int actual);
 
 	private:
 
 	void						preparar_video(DFramework::Kernel& kernel);
 	void						registrar_controladores();
+	void 						virtualizar_joysticks(DFramework::Input& input);
 
 	App::App_config					config;
 	DLibH::Log_base&				log;

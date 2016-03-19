@@ -45,6 +45,8 @@ bool Director_estados_interface::loop(DFramework::Kernel& kernel)
 
 	auto& input=kernel.acc_input();
 
+	input_comun(input, paso_delta);
+
 	IC->preloop(input, paso_delta);
 
 	//Aquí se consume el tiempo desde el último paso en bloques de "paso_delta".
