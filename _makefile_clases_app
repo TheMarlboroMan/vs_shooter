@@ -35,6 +35,48 @@ $(DIR_CLASES_APP)jugador.h \
 $(DIR_CLASES_APP)jugador.cpp
 	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CLASES_APP)jugador.cpp -o $(DIR_O)jugador.o
 
+$(DIR_O)logica_editor.o:\
+$(DIR_O)mapa.o\
+$(DIR_O)importador.o\
+$(DIR_O)exportador.o\
+$(DIR_O)representador.o\
+$(DIR_CLASES_APP)logica_interface.h\
+$(DIR_CLASES_APP)struct_camara.h\
+$(DIR_CLASES_APP)representador.h\
+$(DIR_CLASES_APP)logica_editor.h \
+$(DIR_CLASES_APP)logica_editor.cpp
+	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CLASES_APP)logica_editor.cpp -o $(DIR_O)logica_editor.o
+
+$(DIR_O)logica_juego.o:\
+$(DIR_O)mapa.o\
+$(DIR_O)jugador.o\
+$(DIR_O)proyectil.o\
+$(DIR_O)disparador.o\
+$(DIR_O)jugador_arma_divide.o\
+$(DIR_O)jugador_arma_trasero.o\
+$(DIR_O)jugador_arma_triple.o\
+$(DIR_O)jugador_arma_normal.o\
+$(DIR_O)jugador_arma_explosivo.o\
+$(DIR_O)proyectil_peq.o\
+$(DIR_O)proyectil_normal.o\
+$(DIR_O)proyectil_explosivo.o\
+$(DIR_O)proyectil_divide.o\
+$(DIR_CLASES_APP)representador.h\
+$(DIR_CLASES_APP)logica_interface.h\
+$(DIR_CLASES_APP)bloque_input.h\
+$(DIR_CLASES_APP)logica_juego.h \
+$(DIR_CLASES_APP)logica_juego.cpp
+	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CLASES_APP)logica_juego.cpp -o $(DIR_O)logica_juego.o
+
+$(DIR_O)mapa.o:\
+$(DIR_O)obstaculo.o\
+$(DIR_O)punto_ruta.o\
+$(DIR_O)generador_items.o\
+$(DIR_CLASES_APP)mapa.h \
+$(DIR_CLASES_APP)mapa.cpp
+	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CLASES_APP)mapa.cpp -o $(DIR_O)mapa.o
+
+
 $(DIR_O)proyectil_explosivo.o:\
 $(DIR_O)proyectil.o\
 $(DIR_CLASES_APP)proyectil_explosivo.h \
@@ -99,6 +141,12 @@ $(DIR_O)espaciable.o\
 $(DIR_CLASES_APP)generador_items.h \
 $(DIR_CLASES_APP)generador_items.cpp
 	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CLASES_APP)generador_items.cpp -o $(DIR_O)generador_items.o
+
+$(DIR_O)punto_ruta.o:\
+$(DIR_O)espaciable.o\
+$(DIR_CLASES_APP)punto_ruta.h \
+$(DIR_CLASES_APP)punto_ruta.cpp
+	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CLASES_APP)punto_ruta.cpp -o $(DIR_O)punto_ruta.o
 
 $(DIR_O)espaciable.o:\
 $(DIR_CLASES_APP)espaciable.h \

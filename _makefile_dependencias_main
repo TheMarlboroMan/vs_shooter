@@ -34,6 +34,10 @@ $(DIR_O)proyectil_explosivo.o\
 $(DIR_O)disparador.o\
 $(DIR_O)exportador.o\
 $(DIR_O)importador.o\
+$(DIR_O)logica_editor.o\
+$(DIR_O)logica_juego.o\
+$(DIR_O)mapa.o\
+$(DIR_O)punto_ruta.o\
 
 DEP_CONTROLADORES=\
 $(DIR_O)director_estados.o \

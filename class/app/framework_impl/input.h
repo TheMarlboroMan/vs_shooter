@@ -9,8 +9,12 @@ struct Input
 	enum inputs{
 escape=0,
 tab,
+cambio_logica,
 cargar_mapa,
 grabar_mapa,
+
+TEST_VISIBILIDAD,
+
 j1_registrar,
 j1_disparo,
 j1_izquierda,
