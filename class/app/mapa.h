@@ -2,7 +2,6 @@
 #define MAPA_H
 
 #include <vector>
-#include <map>
 
 #include "obstaculo.h"
 #include "punto_ruta.h"
@@ -10,19 +9,6 @@
 
 namespace App
 {
-
-struct Nodo_ruta
-{
-	const Punto_ruta&	origen;
-	
-	struct conexion
-	{	
-		const Punto_ruta&	destino;
-		double			distancia;
-	};
-	
-	std::vector<conexion>	conexiones;
-};
 
 class Mapa
 {

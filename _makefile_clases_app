@@ -142,6 +142,12 @@ $(DIR_CLASES_APP)generador_items.h \
 $(DIR_CLASES_APP)generador_items.cpp
 	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CLASES_APP)generador_items.cpp -o $(DIR_O)generador_items.o
 
+$(DIR_O)trazador_ruta.o:\
+$(DIR_O)punto_ruta.o\
+$(DIR_CLASES_APP)trazador_ruta.h \
+$(DIR_CLASES_APP)trazador_ruta.cpp
+	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CLASES_APP)trazador_ruta.cpp -o $(DIR_O)trazador_ruta.o
+
 $(DIR_O)punto_ruta.o:\
 $(DIR_O)espaciable.o\
 $(DIR_CLASES_APP)punto_ruta.h \

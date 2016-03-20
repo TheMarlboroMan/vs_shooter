@@ -14,6 +14,7 @@ cargar_mapa,
 grabar_mapa,
 
 TEST_VISIBILIDAD,
+TEST_RUTA,
 
 j1_registrar,
 j1_disparo,

@@ -38,6 +38,7 @@ $(DIR_O)logica_editor.o\
 $(DIR_O)logica_juego.o\
 $(DIR_O)mapa.o\
 $(DIR_O)punto_ruta.o\
+$(DIR_O)trazador_ruta.o\
 
 DEP_CONTROLADORES=\
 $(DIR_O)director_estados.o \

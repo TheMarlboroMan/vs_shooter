@@ -9,6 +9,7 @@
 
 #include "struct_camara.h"
 #include "mapa.h"
+#include "trazador_ruta.h"
 
 namespace App
 {
@@ -37,6 +38,7 @@ class Logica_editor:
 	void					crear_punto_inicio(DLibH::Punto_2d<double>);
 	void					crear_punto_ruta(DLibH::Punto_2d<double>);
 	void					crear_punto_generador_items(DLibH::Punto_2d<double>);
+	void					do_crazy_pathfind();
 
 	Mapa&					mapa;
 
@@ -47,6 +49,8 @@ class Logica_editor:
 	Espaciable::tpoligono			poligono_construccion;
 	int					grid;
 	enum class tobjetocreado		{vertice, punto_ruta, inicio, arma} tobjeto;
+
+	std::vector<DLibH::Punto_2d<double>>	ruta;
 
 };
 }

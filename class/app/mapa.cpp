@@ -7,6 +7,8 @@ void Mapa::limpiar()
 	obstaculos.clear();
 	puntos_inicio.clear();
 	generadores_items.clear();
+	puntos_ruta.clear();
+	nodos_ruta.clear();
 }
 
 bool Mapa::visibilidad_entre_puntos(Espaciable::tpunto pt1, Espaciable::tpunto pt2) const
@@ -28,24 +30,27 @@ void Mapa::construir_nodos_ruta()
 {
 	nodos_ruta.clear();
 
+	//En primer lugar creamos todos los nodos de ruta, vacíos...
 	for(const auto& p : puntos_ruta)
 	{
-		Nodo_ruta nr{p};
-		
-		for(const auto& op : puntos_ruta)
+		nodos_ruta.push_back(Nodo_ruta{p});
+	}
+
+	//Ahora los recorremos y los conectamos...
+	for(auto& n : nodos_ruta)
+	{
+		for(const auto& on : nodos_ruta)
 		{
-			if(p.id != op.id)
+			if(n.origen.id != on.origen.id)
 			{
-				if(visibilidad_entre_puntos(p.pt, op.pt))
+				if(visibilidad_entre_puntos(n.origen.pt, on.origen.pt))
 				{
-					nr.conexiones.push_back(Nodo_ruta::conexion{op, p.pt.distancia_hasta(op.pt)});
+					n.conexiones.push_back(Nodo_ruta::conexion{on, n.origen.pt.distancia_hasta(on.origen.pt)});
 				}
 			}
 		}
 
 		//TODO: Quizás eliminar los duplicados...
-
-		nodos_ruta.push_back(nr);
 	}
 
 /*

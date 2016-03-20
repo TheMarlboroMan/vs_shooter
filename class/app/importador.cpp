@@ -2,7 +2,7 @@
 
 using namespace App;
 
-void Importador::importar(const std::string& fichero, std::vector<Obstaculo>& obstaculos, std::vector<DLibH::Punto_2d<double>>& inicios, std::vector<Generador_items>& generadores)
+void Importador::importar(const std::string& fichero, std::vector<Obstaculo>& obstaculos, std::vector<DLibH::Punto_2d<double>>& inicios, std::vector<Punto_ruta>& puntos_ruta, std::vector<Generador_items>& generadores)
 {
 	using namespace Herramientas_proyecto;
 
@@ -12,7 +12,10 @@ void Importador::importar(const std::string& fichero, std::vector<Obstaculo>& ob
 	for(const auto& i : array_geometria) deserializar_obstaculo(i, obstaculos);
 
 	auto& array_inicios=raiz["inicios"].acc_lista();
-	for(const auto& i : array_inicios) deserializar_inicio(i, inicios);
+	for(const auto& i : array_inicios) deserializar_punto(i, inicios);
+
+	auto& array_puntos_ruta=raiz["puntos_ruta"].acc_lista();
+	for(const auto& i : array_puntos_ruta) deserializar_punto_ruta(i, puntos_ruta);
 
 	auto& array_generadores=raiz["generadores"].acc_lista();
 	for(const auto& i : array_generadores) deserializar_generador(i, generadores);
@@ -37,10 +40,16 @@ void Importador::deserializar_obstaculo(const Herramientas_proyecto::Dnot_token&
 	obstaculos.push_back({poligono, color});
 }
 
-void Importador::deserializar_inicio(const Herramientas_proyecto::Dnot_token& tok, std::vector<DLibH::Punto_2d<double>>& puntos)
+void Importador::deserializar_punto(const Herramientas_proyecto::Dnot_token& tok, std::vector<DLibH::Punto_2d<double>>& puntos)
 {
 	const auto& pt=tok.acc_lista();
 	puntos.push_back({pt[0], pt[1]});
+}
+
+void Importador::deserializar_punto_ruta(const Herramientas_proyecto::Dnot_token& tok, std::vector<Punto_ruta>& puntos)
+{
+	const auto& pt=tok.acc_lista();
+	puntos.push_back(Punto_ruta({pt[0], pt[1]}));
 }
 
 void Importador::deserializar_generador(const Herramientas_proyecto::Dnot_token& tok, std::vector<Generador_items>& generadores)

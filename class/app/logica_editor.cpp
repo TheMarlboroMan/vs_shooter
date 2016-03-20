@@ -53,6 +53,11 @@ void Logica_editor::loop(DFramework::Input& input, float delta)
 		mapa.construir_nodos_ruta();
 	}
 
+	if(input.es_input_down(Input::TEST_RUTA))
+	{
+		do_crazy_pathfind();
+	}
+
 	if(input.es_input_pulsado(Input::zoom_mas)) 
 	{
 		struct_camara.zoom+=(double)delta;
@@ -118,9 +123,22 @@ void Logica_editor::dibujar(DLibV::Pantalla& pantalla)
 	{
 		for(const auto& c : nr.conexiones)
 		{
-			Segmento_2d<double> s{ {nr.origen.pt.x, nr.origen.pt.y}, {c.destino.pt.x, c.destino.pt.y}};
+			Segmento_2d<double> s{ {nr.origen.pt.x, nr.origen.pt.y}, {c.destino.origen.pt.x, c.destino.origen.pt.y}};
 			r.dibujar_segmento(pantalla, s, {255, 255, 25, 64}, struct_camara.xcam, struct_camara.ycam, struct_camara.zoom);
 		}		
+	}
+
+	if(ruta.size())
+	{
+		size_t i=1, max=ruta.size();
+
+		while(i < max)
+		{
+			auto pt1=ruta[i-1], pt2=ruta[i];
+			Segmento_2d<double> s{ {pt1.x, pt1.y}, {pt2.x, pt2.y}};
+			r.dibujar_segmento(pantalla, s, {255, 25, 25, 128}, struct_camara.xcam, struct_camara.ycam, struct_camara.zoom);
+			++i;
+		}
 	}
 
 	std::string texto=std::to_string((int)pt_raton.x)+","+std::to_string((int)pt_raton.y);
@@ -148,14 +166,14 @@ void Logica_editor::cargar_mapa()
 
 
 	Importador importador;
-	importador.importar("mapa.dat", mapa.obstaculos, mapa.puntos_inicio, mapa.generadores_items);
+	importador.importar("mapa.dat", mapa.obstaculos, mapa.puntos_inicio, mapa.puntos_ruta, mapa.generadores_items);
 }
 
 void Logica_editor::grabar_mapa()
 {
 	std::ofstream fichero("mapa.dat");
 	Exportador exportador;
-	fichero<<exportador.serializar(mapa.obstaculos, mapa.puntos_inicio, mapa.generadores_items);
+	fichero<<exportador.serializar(mapa.obstaculos, mapa.puntos_inicio, mapa.puntos_ruta, mapa.generadores_items);
 }
 
 void Logica_editor::intercambiar_objeto_creado()
@@ -253,3 +271,68 @@ void Logica_editor::cerrar_poligono()
 	poligono_construccion=Poligono_2d<double>{};
 }
 
+void Logica_editor::do_crazy_pathfind()
+{
+	ruta.clear();
+
+	if(mapa.puntos_inicio.size() < 2) 
+	{
+		std::cout<<"ES NECESARIO SETEAR PUNTOS DE INICIO"<<std::endl;
+		return;
+	}
+
+	auto localizar=[this](Espaciable::tpunto pt, const std::vector<Nodo_ruta>& nr)
+	{
+		const Nodo_ruta * res=nullptr;
+		double dist=pt.distancia_hasta(nr.front().origen.pt);
+		for(const auto& n : nr)
+		{
+			double d=pt.distancia_hasta(n.origen.pt);
+
+			if(d <= dist && mapa.visibilidad_entre_puntos(pt, n.origen.pt))
+			{
+				res=&n;
+			}
+		}
+
+		return res;
+	};
+
+	const auto& nr=mapa.acc_nodos_ruta();
+
+	const Nodo_ruta * ini=localizar(mapa.puntos_inicio.front(), nr);
+	const Nodo_ruta * fin=localizar(mapa.puntos_inicio.back(), nr);
+
+	if(!ini)
+	{
+		std::cout<<"NO SE HA LOCALIZADO NODO VISIBLE PARA INICIO"<<std::endl;
+		return;
+	}
+
+	if(!fin)
+	{
+		std::cout<<"NO SE HA LOCALIZADO NODO VISIBLE PARA FIN"<<std::endl;
+		return;
+	}
+
+	Trazador_ruta t;
+	auto res=t.trazar_ruta(*ini, *fin);
+
+	if(!res.resuelto) 
+	{
+		std::cout<<"NO SE HA PODIDO RESOLVER"<<std::endl;
+	}
+	else
+	{
+		std::cout<<"DISTANCIA DE "<<res.distancia<<std::endl;
+
+		ruta.push_back(mapa.puntos_inicio.front());
+		for(const auto& pt: res.ruta)
+		{
+			ruta.push_back({pt.x, pt.y});
+			std::cout<<pt.x<<","<<pt.y<<std::endl;
+		}
+		ruta.push_back(mapa.puntos_inicio.back());
+	}
+
+}
