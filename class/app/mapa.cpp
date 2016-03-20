@@ -38,12 +38,24 @@ void Mapa::construir_nodos_ruta()
 			{
 				if(visibilidad_entre_puntos(p.pt, op.pt))
 				{
-					double dist=1;
-					nr.conexiones.push_back(Nodo_ruta::conexion{op, dist});
+					nr.conexiones.push_back(Nodo_ruta::conexion{op, p.pt.distancia_hasta(op.pt)});
 				}
 			}
 		}
 
+		//TODO: Quizás eliminar los duplicados...
+
 		nodos_ruta.push_back(nr);
 	}
+
+/*
+	for(const auto& n : nodos_ruta)
+	{
+std::cout<<"ORIGEN EN "<<n.origen.id<<":"<<std::endl;
+		for(const auto& c : n.conexiones)
+		{
+std::cout<<"\t"<<c.destino.id<<" ["<<c.distancia<<"]"<<std::endl;
+		}
+	}
+*/
 }

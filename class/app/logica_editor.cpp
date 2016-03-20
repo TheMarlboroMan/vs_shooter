@@ -110,7 +110,7 @@ void Logica_editor::dibujar(DLibV::Pantalla& pantalla)
 	for(const auto& p : mapa.puntos_ruta)
 	{
 		Espaciable::tpoligono poli=cuadrado(p.pt.x, p.pt.y, 5);
-		r.dibujar_poligono(pantalla, poli, {255, 0, 0, 128}, struct_camara.xcam, struct_camara.ycam, struct_camara.zoom);
+		r.dibujar_poligono(pantalla, poli, {255, 255, 25, 128}, struct_camara.xcam, struct_camara.ycam, struct_camara.zoom);
 	}
 
 	//Nodos ruta...
@@ -119,7 +119,7 @@ void Logica_editor::dibujar(DLibV::Pantalla& pantalla)
 		for(const auto& c : nr.conexiones)
 		{
 			Segmento_2d<double> s{ {nr.origen.pt.x, nr.origen.pt.y}, {c.destino.pt.x, c.destino.pt.y}};
-			r.dibujar_segmento(pantalla, s, {255, 255, 25, 255}, struct_camara.xcam, struct_camara.ycam, struct_camara.zoom);
+			r.dibujar_segmento(pantalla, s, {255, 255, 25, 64}, struct_camara.xcam, struct_camara.ycam, struct_camara.zoom);
 		}		
 	}
 
