@@ -39,12 +39,15 @@ void Mapa::construir_nodos_ruta()
 	//Ahora los recorremos y los conectamos...
 	for(auto& n : nodos_ruta)
 	{
+std::cout<<"BUSCANDO CONEXIONES DE NODO "<<n.origen.pt.x<<","<<n.origen.pt.y<<std::endl;
+
 		for(const auto& on : nodos_ruta)
 		{
 			if(n.origen.id != on.origen.id)
 			{
 				if(visibilidad_entre_puntos(n.origen.pt, on.origen.pt))
 				{
+std::cout<<"\tDETERMINADO VISIBLE: "<<on.origen.pt.x<<","<<on.origen.pt.y<<std::endl;
 					n.conexiones.push_back(Nodo_ruta::conexion{on, n.origen.pt.distancia_hasta(on.origen.pt)});
 				}
 			}
