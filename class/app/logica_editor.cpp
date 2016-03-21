@@ -40,13 +40,22 @@ void Logica_editor::finalizar()
 void Logica_editor::loop(DFramework::Input& input, float delta)
 {
 	pos_raton=input.acc_posicion_raton();
-	if(input.es_input_down(Input::tab)) intercambiar_objeto_creado();
 
+	localizar_elementos_bajo_cursor();
+
+	if(input.es_input_down(Input::tab)) intercambiar_objeto_creado();
 	if(input.es_input_down(Input::cargar_mapa)) cargar_mapa();	
 	else if(input.es_input_down(Input::grabar_mapa)) grabar_mapa();	
 
 	if(input.es_input_down(Input::click_i)) click_izq();
 	else if(input.es_input_down(Input::click_d)) click_der();
+
+	//TODO: Constantes...
+	if(input.es_input_pulsado(Input::cursor_arriba)) struct_camara.ycam+=100.0 * (double) delta;
+	else if(input.es_input_pulsado(Input::cursor_abajo)) struct_camara.ycam-=100.0 * (double) delta;
+
+	if(input.es_input_pulsado(Input::cursor_derecha)) struct_camara.xcam+=100.0 * (double) delta;
+	else if(input.es_input_pulsado(Input::cursor_izquierda)) struct_camara.xcam-=100.0 * (double) delta;
 
 	if(input.es_input_down(Input::TEST_VISIBILIDAD))
 	{
@@ -81,17 +90,17 @@ void Logica_editor::dibujar(DLibV::Pantalla& pantalla)
 	Representador r;
 	r.dibujar_rejilla(pantalla, grid, {255, 255, 255, 64}, struct_camara.xcam, struct_camara.ycam, struct_camara.zoom);
 
-	auto pt_raton=punto_desde_pos_pantalla(pos_raton.x, pos_raton.y);	
+	auto pt_raton=punto_desde_pos_pantalla(pos_raton.x, pos_raton.y);
 
 	for(const auto& o : mapa.obstaculos)
-	{
 		r.dibujar_poligono(pantalla, o.acc_poligono(), o.acc_color(), struct_camara.xcam, struct_camara.ycam, struct_camara.zoom);
-	}
+
+	//Obstáculos bajo el cursor...
+	for(const auto& o : obstaculos_cursor)
+		r.dibujar_poligono(pantalla, o->acc_poligono(), {255, 255, 64, 128}, struct_camara.xcam, struct_camara.ycam, struct_camara.zoom, false);
 
 	for(const auto& s : poligono_construccion.acc_segmentos())
-	{
 		r.dibujar_segmento(pantalla, s, {0, 255, 0, 128}, struct_camara.xcam, struct_camara.ycam, struct_camara.zoom);		
-	}
 	
 	//Segmento en construcción...	
 	if(poligono_construccion.acc_vertices().size())
@@ -108,9 +117,7 @@ void Logica_editor::dibujar(DLibV::Pantalla& pantalla)
 	}
 
 	for(const auto& g : mapa.generadores_items)
-	{
 		r.dibujar_poligono(pantalla, g.acc_poligono(), {0, 0, 255, 128}, struct_camara.xcam, struct_camara.ycam, struct_camara.zoom);
-	}	
 
 	for(const auto& p : mapa.puntos_ruta)
 	{
@@ -119,6 +126,7 @@ void Logica_editor::dibujar(DLibV::Pantalla& pantalla)
 	}
 
 	//Nodos ruta...
+	//TODO: Poder desactivar esto...
 	for(const auto& nr : mapa.acc_nodos_ruta())
 	{
 		for(const auto& c : nr.conexiones)
@@ -128,6 +136,7 @@ void Logica_editor::dibujar(DLibV::Pantalla& pantalla)
 		}		
 	}
 
+	//TODO: Esto es temporal...
 	if(ruta.size())
 	{
 		size_t i=1, max=ruta.size();
@@ -140,6 +149,8 @@ void Logica_editor::dibujar(DLibV::Pantalla& pantalla)
 			++i;
 		}
 	}
+
+	//TODO: Mostrar el objeto actual seleccionado...
 
 	std::string texto=std::to_string((int)pt_raton.x)+","+std::to_string((int)pt_raton.y);
 
@@ -239,13 +250,16 @@ void Logica_editor::crear_punto_generador_items(DLibH::Punto_2d<double> pt)
 	mapa.generadores_items.push_back(gi);
 }
 
-DLibH::Punto_2d<double>	Logica_editor::punto_desde_pos_pantalla(int x, int y)
+DLibH::Punto_2d<double>	Logica_editor::punto_desde_pos_pantalla(int x, int y, bool a_rejilla)
 {
 	int px=struct_camara.xcam+(x/struct_camara.zoom);
 	int py=struct_camara.ycam-(y/struct_camara.zoom);
 
-	px=round(px / grid) * grid;
-	py=round(py / grid) * grid;
+	if(a_rejilla)
+	{
+		px=round(px / grid) * grid;
+		py=round(py / grid) * grid;
+	}
 
 	return DLibH::Punto_2d<double>{(double)px, (double)py};
 }
@@ -334,5 +348,30 @@ void Logica_editor::do_crazy_pathfind()
 		}
 		ruta.push_back(mapa.puntos_inicio.back());
 	}
+}
 
+void Logica_editor::localizar_elementos_bajo_cursor()
+{
+	auto pt_raton=punto_desde_pos_pantalla(pos_raton.x, pos_raton.y, false);
+
+	switch(tobjeto)
+	{
+		case tobjetocreado::vertice:
+			obstaculos_cursor.clear();
+			for(const auto& o : mapa.obstaculos)
+			{
+				if(punto_en_poligono(o.acc_poligono(), pt_raton))
+				{
+					obstaculos_cursor.push_back(&o);
+				}
+			}
+
+		break;
+		case tobjetocreado::inicio:
+		case tobjetocreado::arma:
+		case tobjetocreado::punto_ruta:
+			
+		break;
+	}
+	
 }

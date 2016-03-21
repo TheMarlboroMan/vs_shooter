@@ -12,10 +12,15 @@ tab,
 cambio_logica,
 cargar_mapa,
 grabar_mapa,
-
-TEST_VISIBILIDAD,
-TEST_RUTA,
-
+cursor_izquierda,
+cursor_derecha,
+cursor_arriba,
+cursor_abajo,
+suprimir,
+zoom_mas,
+zoom_menos,
+click_i,
+click_d,
 j1_registrar,
 j1_disparo,
 j1_izquierda,
@@ -34,10 +39,8 @@ j3_izquierda,
 j3_derecha,
 j3_arriba,
 j3_abajo,
-zoom_mas,
-zoom_menos,
-click_i,
-click_d
+TEST_VISIBILIDAD,
+TEST_RUTA
 };
 
 };

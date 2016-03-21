@@ -32,12 +32,13 @@ class Logica_editor:
 	void					click_izq();
 	void					click_der();
 	void					intercambiar_objeto_creado();
-	DLibH::Punto_2d<double>			punto_desde_pos_pantalla(int x, int y);
+	DLibH::Punto_2d<double>			punto_desde_pos_pantalla(int x, int y, bool=true);
 	void					nuevo_punto(DLibH::Punto_2d<double>);
 	void					cerrar_poligono();
 	void					crear_punto_inicio(DLibH::Punto_2d<double>);
 	void					crear_punto_ruta(DLibH::Punto_2d<double>);
 	void					crear_punto_generador_items(DLibH::Punto_2d<double>);
+	void					localizar_elementos_bajo_cursor();
 	void					do_crazy_pathfind();
 
 	Mapa&					mapa;
@@ -51,6 +52,7 @@ class Logica_editor:
 	enum class tobjetocreado		{vertice, punto_ruta, inicio, arma} tobjeto;
 
 	std::vector<DLibH::Punto_2d<double>>	ruta;
+	std::vector<const Obstaculo *>		obstaculos_cursor;
 
 };
 }

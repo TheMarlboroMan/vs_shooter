@@ -13,13 +13,13 @@ class Representador
 {
 	public:
 
-	void dibujar_poligono(DLibV::Pantalla&, const DLibH::Poligono_2d<double>&, tcolor, int nx, int ny, double zoom);
-	void dibujar_segmento(DLibV::Pantalla&, const DLibH::Segmento_2d<double>&, tcolor, int nx, int ny, double zoom);
-	void dibujar_rejilla(DLibV::Pantalla&, int grid, tcolor, int nx, int ny, double zoom);
+	void dibujar_poligono(DLibV::Pantalla&, const DLibH::Poligono_2d<double>&, tcolor, double nx, double ny, double zoom, bool relleno=true);
+	void dibujar_segmento(DLibV::Pantalla&, const DLibH::Segmento_2d<double>&, tcolor, double nx, double ny, double zoom);
+	void dibujar_rejilla(DLibV::Pantalla&, int grid, tcolor, double nx, double ny, double zoom);
 
 	private:
 
-	DLibH::Punto_2d<double> transformar(const DLibH::Punto_2d<double>& pt, int nx, int ny, double zoom);
+	DLibH::Punto_2d<double> transformar(const DLibH::Punto_2d<double>& pt, double nx, double ny, double zoom);
 };
 
 }

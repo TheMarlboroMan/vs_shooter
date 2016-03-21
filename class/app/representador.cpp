@@ -2,7 +2,7 @@
 
 using namespace App;
 
-void Representador::dibujar_poligono(DLibV::Pantalla& pantalla, const DLibH::Poligono_2d<double>& poligono, tcolor color, int nx, int ny, double zoom)
+void Representador::dibujar_poligono(DLibV::Pantalla& pantalla, const DLibH::Poligono_2d<double>& poligono, tcolor color, double nx, double ny, double zoom, bool relleno)
 {
 	std::vector<DLibV::Representacion_primitiva_poligono::punto> puntos;
 
@@ -12,12 +12,21 @@ void Representador::dibujar_poligono(DLibV::Pantalla& pantalla, const DLibH::Pol
 		puntos.push_back({(int)pt.x, (int)pt.y});
 	}
 
-	DLibV::Representacion_primitiva_poligono poli(puntos, color.r, color.g, color.b);
-	poli.establecer_alpha(color.a);
-	poli.volcar(pantalla);
+	if(relleno)
+	{
+		DLibV::Representacion_primitiva_poligono poli(puntos, color.r, color.g, color.b);
+		poli.establecer_alpha(color.a);
+		poli.volcar(pantalla);
+	}
+	else
+	{
+		DLibV::Representacion_primitiva_poligono_lineas poli(puntos, color.r, color.g, color.b);
+		poli.establecer_alpha(color.a);
+		poli.volcar(pantalla);
+	}
 }
 
-void Representador::dibujar_segmento(DLibV::Pantalla& pantalla, const DLibH::Segmento_2d<double>& seg, tcolor color, int nx, int ny, double zoom)
+void Representador::dibujar_segmento(DLibV::Pantalla& pantalla, const DLibH::Segmento_2d<double>& seg, tcolor color, double nx, double ny, double zoom)
 {
 	const auto p1=transformar(seg.v1, nx, ny, zoom);
 	const auto p2=transformar(seg.v2, nx, ny, zoom);
@@ -27,7 +36,7 @@ void Representador::dibujar_segmento(DLibV::Pantalla& pantalla, const DLibH::Seg
 	lin.volcar(pantalla);
 }
 
-void Representador::dibujar_rejilla(DLibV::Pantalla& pantalla, int grid, tcolor color, int nx, int ny, double zoom)
+void Representador::dibujar_rejilla(DLibV::Pantalla& pantalla, int grid, tcolor color, double nx, double ny, double zoom)
 {
 	DLibV::Representacion_primitiva_linea lin(0, 0, 0, 0, color.r, color.g, color.b);
 	lin.establecer_alpha(color.a);
@@ -37,8 +46,8 @@ void Representador::dibujar_rejilla(DLibV::Pantalla& pantalla, int grid, tcolor 
 	double 	longx=640 / zoom,
 		longy=400 / zoom;
 
-	double 	inix=-(nx % grid) * zoom, 
-		finx=inix + longx;
+	double 	inix=-(fmod(nx, grid)) * zoom, 
+		finx=inix + 640;
 
 	while(inix < finx)
 	{
@@ -47,8 +56,8 @@ void Representador::dibujar_rejilla(DLibV::Pantalla& pantalla, int grid, tcolor 
 		inix+=(grid * zoom);
 	}
 
-	double 	iniy=(ny % grid) * zoom,
-		finy=iniy + longy;
+	double 	iniy=(fmod(ny, grid)) * zoom,
+		finy=iniy + 400;
 
 	while(iniy < finy)
 	{
@@ -58,7 +67,7 @@ void Representador::dibujar_rejilla(DLibV::Pantalla& pantalla, int grid, tcolor 
 	}
 }
 
-DLibH::Punto_2d<double> Representador::transformar(const DLibH::Punto_2d<double>& pt, int nx, int ny, double zoom)
+DLibH::Punto_2d<double> Representador::transformar(const DLibH::Punto_2d<double>& pt, double nx, double ny, double zoom)
 {
 	double x=(pt.x - nx) * zoom;
 	double y=(-pt.y + ny) * zoom;

@@ -5,10 +5,10 @@ namespace App
 {
 struct Struct_camara
 {
-	double  				zoom;
-	int 					xcam, ycam;
+	double  				zoom,
+	 					xcam, ycam;
 
-	Struct_camara(double z, int x, int y):
+	Struct_camara(double z, double x, double y):
 		zoom(z), xcam(x), ycam(y)
 	{}
 };
