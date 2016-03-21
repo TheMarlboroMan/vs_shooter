@@ -59,6 +59,7 @@ void Logica_editor::loop(DFramework::Input& input, float delta)
 
 	if(input.es_input_down(Input::TEST_VISIBILIDAD))
 	{
+		//TODO: Antes habría que aplicar????...
 		mapa.construir_nodos_ruta();
 	}
 
@@ -92,12 +93,17 @@ void Logica_editor::dibujar(DLibV::Pantalla& pantalla)
 
 	auto pt_raton=punto_desde_pos_pantalla(pos_raton.x, pos_raton.y);
 
-	for(const auto& o : mapa.obstaculos)
+//	for(const auto& o : mapa.obstaculos)
+	for(const auto& eo : obstaculos)
+	{
+		const auto& o=eo->elemento;
 		r.dibujar_poligono(pantalla, o.acc_poligono(), o.acc_color(), struct_camara.xcam, struct_camara.ycam, struct_camara.zoom);
+	}
 
 	//Obstáculos bajo el cursor...
-	for(const auto& o : obstaculos_cursor)
-		r.dibujar_poligono(pantalla, o->acc_poligono(), {255, 255, 64, 128}, struct_camara.xcam, struct_camara.ycam, struct_camara.zoom, false);
+//TODO...
+//	for(const auto& o : obstaculos_cursor)
+//		r.dibujar_poligono(pantalla, o->acc_poligono(), {255, 255, 64, 128}, struct_camara.xcam, struct_camara.ycam, struct_camara.zoom, false);
 
 	for(const auto& s : poligono_construccion.acc_segmentos())
 		r.dibujar_segmento(pantalla, s, {0, 255, 0, 128}, struct_camara.xcam, struct_camara.ycam, struct_camara.zoom);		
@@ -174,14 +180,15 @@ void Logica_editor::dibujar(DLibV::Pantalla& pantalla)
 void Logica_editor::cargar_mapa()
 {
 	mapa.limpiar();
-
-
 	Importador importador;
 	importador.importar("mapa.dat", mapa.obstaculos, mapa.puntos_inicio, mapa.puntos_ruta, mapa.generadores_items);
+	obtener_desde_mapa();
 }
 
 void Logica_editor::grabar_mapa()
 {
+	//TODO: Retocar cuando tengamos interface común...
+
 	std::ofstream fichero("mapa.dat");
 	Exportador exportador;
 	fichero<<exportador.serializar(mapa.obstaculos, mapa.puntos_inicio, mapa.puntos_ruta, mapa.generadores_items);
@@ -271,15 +278,15 @@ void Logica_editor::nuevo_punto(DLibH::Punto_2d<double> p)
 
 void Logica_editor::cerrar_poligono()
 {
-	if(poligono_construccion.size() == 3)
+	if( (poligono_construccion.size() == 3) ||
+		(poligono_construccion.size() > 3 && !poligono_construccion.es_concavo() )
+	)
 	{
 		poligono_construccion.cerrar();
-		mapa.obstaculos.push_back({poligono_construccion, {64, 64, 64, 255}});
-	}
-	else if(poligono_construccion.size() > 3 && !poligono_construccion.es_concavo())
-	{
-		poligono_construccion.cerrar();
-		mapa.obstaculos.push_back({poligono_construccion, {64, 64, 64, 255}});
+//		mapa.obstaculos.push_back({poligono_construccion, {64, 64, 64, 255}});
+
+		std::unique_ptr<Obstaculo_editor> ptr(new Obstaculo_editor(Obstaculo(poligono_construccion, {64, 64, 64, 255})));
+		obstaculos.push_back(std::move(ptr));
 	}
 
 	poligono_construccion=Poligono_2d<double>{};
@@ -357,14 +364,15 @@ void Logica_editor::localizar_elementos_bajo_cursor()
 	switch(tobjeto)
 	{
 		case tobjetocreado::vertice:
-			obstaculos_cursor.clear();
-			for(const auto& o : mapa.obstaculos)
-			{
-				if(punto_en_poligono(o.acc_poligono(), pt_raton))
-				{
-					obstaculos_cursor.push_back(&o);
-				}
-			}
+//TODO
+//			obstaculos_cursor.clear();
+//			for(const auto& o : mapa.obstaculos)
+//			{
+//				if(punto_en_poligono(o.acc_poligono(), pt_raton))
+//				{
+//					obstaculos_cursor.push_back(&o);
+//				}
+//			}
 
 		break;
 		case tobjetocreado::inicio:
@@ -374,4 +382,17 @@ void Logica_editor::localizar_elementos_bajo_cursor()
 		break;
 	}
 	
+}
+
+void Logica_editor::obtener_desde_mapa()
+{
+	for(auto& o : mapa.obstaculos)
+	{
+//TODO...		obstaculos.push_back(Obstaculo_editor(o));
+	}
+}
+
+void Logica_editor::aplicar_a_mapa()
+{
+
 }

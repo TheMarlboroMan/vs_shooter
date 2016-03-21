@@ -14,6 +14,33 @@
 namespace App
 {
 
+//TODO: Move into another header...
+
+class Objeto_editor
+{
+	public:
+
+	virtual void		mover()=0;
+	void			borrar() {para_borrar=true;}
+	bool			es_borrar() const {return para_borrar;}
+	
+	private:
+
+	bool			para_borrar=false;
+};
+
+class Obstaculo_editor:
+	public Objeto_editor
+{
+	public:
+
+	Obstaculo_editor(const Obstaculo& o):elemento(o) {}
+
+	Obstaculo		elemento;
+	void			mover() {};
+	
+};
+
 class Logica_editor:
 	public Logica_interface
 {
@@ -39,9 +66,14 @@ class Logica_editor:
 	void					crear_punto_ruta(DLibH::Punto_2d<double>);
 	void					crear_punto_generador_items(DLibH::Punto_2d<double>);
 	void					localizar_elementos_bajo_cursor();
+	void					obtener_desde_mapa();
+	void					aplicar_a_mapa();
 	void					do_crazy_pathfind();
 
 	Mapa&					mapa;
+
+	//TODO: Añadir el resto si todo va bien :).
+	std::vector<std::unique_ptr<Obstaculo_editor>>		obstaculos;
 
 	//TODO: Usar un único gestor de fuentes...
 	DLibV::Fuente_TTF			fuente_akashi;
@@ -50,6 +82,8 @@ class Logica_editor:
 	Espaciable::tpoligono			poligono_construccion;
 	int					grid;
 	enum class tobjetocreado		{vertice, punto_ruta, inicio, arma} tobjeto;
+
+	
 
 	std::vector<DLibH::Punto_2d<double>>	ruta;
 	std::vector<const Obstaculo *>		obstaculos_cursor;
