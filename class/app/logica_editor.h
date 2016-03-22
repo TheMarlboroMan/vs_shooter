@@ -181,6 +181,7 @@ class Logica_editor:
 	Struct_camara				struct_camara;
 	Espaciable::tpoligono			poligono_construccion;
 	int					grid;
+	bool					ver_conexiones;
 	enum class tobjetocreado		{vertice, punto_ruta, inicio, arma} tobjeto;
 
 	

@@ -18,7 +18,7 @@ using namespace App;
 Logica_editor::Logica_editor(Mapa& m)
 	:mapa(m),
 	fuente_akashi("data/fuentes/Akashi.ttf", 16),
-	struct_camara({1.0, 0, 0}), grid(20), 
+	struct_camara({1.0, 0, 0}), grid(20), ver_conexiones(true),
 	tobjeto(tobjetocreado::vertice)
 {
 
@@ -46,7 +46,9 @@ void Logica_editor::loop(DFramework::Input& input, float delta)
 
 	if(input.es_input_down(Input::tab)) intercambiar_objeto_creado();
 	if(input.es_input_down(Input::cargar_mapa)) cargar_mapa();	
-	else if(input.es_input_down(Input::grabar_mapa)) grabar_mapa();	
+	else if(input.es_input_down(Input::grabar_mapa)) grabar_mapa();
+
+	if(input.es_input_down(Input::intercambiar_ver_conexiones)) ver_conexiones=!ver_conexiones;	
 
 	if(input.es_input_down(Input::click_i)) 
 	{
@@ -85,7 +87,8 @@ void Logica_editor::loop(DFramework::Input& input, float delta)
 
 	if(input.es_input_down(Input::TEST_RUTA))
 	{
-		do_crazy_pathfind();
+		if(!ruta.size()) do_crazy_pathfind();
+		else ruta.clear();
 	}
 
 	if(input.es_input_pulsado(Input::zoom_mas)) 
@@ -115,18 +118,19 @@ void Logica_editor::dibujar(DLibV::Pantalla& pantalla)
 	for(const auto& oc : objetos_cursor) oc->dibujar(r, pantalla, struct_camara, false);
 	for(const auto& os : objetos_seleccionados) os->dibujar(r, pantalla, struct_camara, false);
 
-	//Nodos ruta...
-	//TODO: Poder desactivar esto...
-	for(const auto& nr : mapa.acc_nodos_ruta())
+	if(ver_conexiones)
 	{
-		for(const auto& c : nr.conexiones)
+		for(const auto& nr : mapa.acc_nodos_ruta())
 		{
-			Segmento_2d<double> s{ {nr.origen.pt.x, nr.origen.pt.y}, {c.destino.origen.pt.x, c.destino.origen.pt.y}};
-			r.dibujar_segmento(pantalla, s, {255, 255, 25, 64}, struct_camara.xcam, struct_camara.ycam, struct_camara.zoom);
-		}		
+			for(const auto& c : nr.conexiones)
+			{
+				Segmento_2d<double> s{ {nr.origen.pt.x, nr.origen.pt.y}, {c.destino.origen.pt.x, c.destino.origen.pt.y}};
+				r.dibujar_segmento(pantalla, s, {255, 255, 25, 64}, struct_camara.xcam, struct_camara.ycam, struct_camara.zoom);
+			}		
+		}
 	}
 
-	//TODO: Esto es temporal...
+	//TODO: Temporal: mostrar ruta.
 	if(ruta.size())
 	{
 		size_t i=1, max=ruta.size();

@@ -69,6 +69,8 @@ std::vector<DFramework::Par_input> Kernel_config::obtener_pares_input() const
 		Par_input{Par_input::tipos::teclado, Input::cursor_abajo, SDL_SCANCODE_DOWN, 0},
 		Par_input{Par_input::tipos::teclado, Input::suprimir, SDL_SCANCODE_DELETE, 0},
 		Par_input{Par_input::tipos::teclado, Input::control_izquierdo, SDL_SCANCODE_LCTRL, 0},
+		Par_input{Par_input::tipos::teclado, Input::intercambiar_ver_conexiones, SDL_SCANCODE_V, 0},
+
 
 		Par_input{Par_input::tipos::raton, Input::click_i, SDL_BUTTON_LEFT, 0},
 		Par_input{Par_input::tipos::raton, Input::click_d, SDL_BUTTON_RIGHT, 0}};
