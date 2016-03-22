@@ -6,45 +6,45 @@ config:{
 			zoom_mas:0, zoom_menos:0
 		}, jugador_1:{
 			abajo:[
-				1, 1, 14
+				0, 0, 81
 			], arriba:[
-				1, 1, 12
-			], derecha:[
-				1, 1, 13
-			], disparo:[
-				1, 1, 2
-			], izquierda:[
-				1, 1, 15
-			], registrar:[
-				1, 1, 9
-			]
-		}, jugador_2:{
-			abajo:[
-				1, 0, 14
-			], arriba:[
-				1, 0, 12
-			], derecha:[
-				1, 0, 13
-			], disparo:[
-				1, 0, 2
-			], izquierda:[
-				1, 0, 15
-			], registrar:[
-				1, 0, 9
-			]
-		}, jugador_3:{
-			abajo:[
 				0, 0, 82
-			], arriba:[
-				0, 0, 229
 			], derecha:[
 				0, 0, 79
 			], disparo:[
 				0, 0, 44
 			], izquierda:[
-				0, 0, 75
+				0, 0, 80
 			], registrar:[
 				0, 0, 30
+			]
+		}, jugador_2:{
+			abajo:[
+				0, 0, 19
+			], arriba:[
+				0, 0, 19
+			], derecha:[
+				0, 0, 19
+			], disparo:[
+				0, 0, 19
+			], izquierda:[
+				0, 0, 19
+			], registrar:[
+				0, 0, 19
+			]
+		}, jugador_3:{
+			abajo:[
+				0, 0, 19
+			], arriba:[
+				0, 0, 19
+			], derecha:[
+				0, 0, 19
+			], disparo:[
+				0, 0, 19
+			], izquierda:[
+				0, 0, 19
+			], registrar:[
+				0, 0, 19
 			]
 		}
 	}, meta:{

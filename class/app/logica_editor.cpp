@@ -301,16 +301,25 @@ void Logica_editor::do_crazy_pathfind()
 		return;
 	}
 
+	//TODO: Este algoritmo se puede mejorar añadiendo los dos nuevos puntos como
+	//puntos de ruta temporales: volvemos a computar y luego los borramos. De esta
+	//forma evitaríamos desde el punto de inicio al siguiente más cercano aunque luego
+	//tengamos que dar la vuelta. Resolver el primer punto es sencillo: lo tratamos como
+	//un punto de ruta normal sin que el resto se vinculen a él.
+	//Resolver el último ya es más complicado sin reconstruir el mapa cada vez, puesto
+	//que los nodos reales tienen que vincularse y al terminar habría que desvincularlos.
+	
 	auto localizar=[this](Espaciable::tpunto pt, const std::vector<Nodo_ruta>& nr)
 	{
 		const Nodo_ruta * res=nullptr;
-		double dist=pt.distancia_hasta(nr.front().origen.pt);
+		double dist=-1.0;
 		for(const auto& n : nr)
 		{
 			double d=pt.distancia_hasta(n.origen.pt);
 
-			if(d <= dist && mapa.visibilidad_entre_puntos(pt, n.origen.pt))
+			if((dist < 0.0 || d <= dist) && mapa.visibilidad_entre_puntos(pt, n.origen.pt))
 			{
+				dist=d;
 				res=&n;
 			}
 		}
@@ -343,14 +352,11 @@ void Logica_editor::do_crazy_pathfind()
 	}
 	else
 	{
-		std::cout<<"DISTANCIA DE "<<res.distancia<<std::endl;
-
 		ruta.push_back(mapa.puntos_inicio.front());
+
 		for(const auto& pt: res.ruta)
-		{
 			ruta.push_back({pt.x, pt.y});
-			std::cout<<pt.x<<","<<pt.y<<std::endl;
-		}
+
 		ruta.push_back(mapa.puntos_inicio.back());
 	}
 }
