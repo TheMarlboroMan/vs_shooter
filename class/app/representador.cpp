@@ -6,10 +6,22 @@ void Representador::dibujar_poligono(DLibV::Pantalla& pantalla, const DLibH::Pol
 {
 	std::vector<DLibV::Representacion_primitiva_poligono::punto> puntos;
 
+	//TODO: Comprobar bounding box del poligono para no dibujar si no está...
+
 	for(const auto& v : poligono.acc_vertices())
 	{
 		const auto pt=transformar(v, nx, ny, zoom);
 		puntos.push_back({(int)pt.x, (int)pt.y});
+	}
+
+	float minx=puntos[0].x, maxx=minx, maxy=puntos[0].y, miny=maxy;
+	for(const auto& p : puntos)
+	{
+		if(p.x < minx) minx=p.x;
+		else if(p.x > maxx) maxx=p.x;
+
+		if(p.y < miny) miny=p.y;
+		else if(p.y > maxy) maxy=p.y;
 	}
 
 	if(relleno)

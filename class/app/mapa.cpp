@@ -64,3 +64,35 @@ std::cout<<"\t"<<c.destino.id<<" ["<<c.distancia<<"]"<<std::endl;
 	}
 */
 }
+
+void Mapa::inicializar()
+{
+	for(auto& g : generadores_items) g.reiniciar();
+	construir_nodos_ruta();
+}
+
+	//TODO: Este algoritmo se puede mejorar añadiendo los dos nuevos puntos como
+	//puntos de ruta temporales: volvemos a computar y luego los borramos. De esta
+	//forma evitaríamos desde el punto de inicio al siguiente más cercano aunque luego
+	//tengamos que dar la vuelta. Resolver el primer punto es sencillo: lo tratamos como
+	//un punto de ruta normal sin que el resto se vinculen a él.
+	//Resolver el último ya es más complicado sin reconstruir el mapa cada vez, puesto
+	//que los nodos reales tienen que vincularse y al terminar habría que desvincularlos.
+		
+const Nodo_ruta * Mapa::localizar_nodo_cercano(Espaciable::tpunto pt) const
+{
+	const Nodo_ruta * res=nullptr;
+	double dist=-1.0;
+	for(const auto& n : nodos_ruta)
+	{
+		double d=pt.distancia_hasta(n.origen.pt);
+
+		if((dist < 0.0 || d <= dist) && visibilidad_entre_puntos(pt, n.origen.pt))
+		{
+			dist=d;
+			res=&n;
+		}
+	}
+
+	return res;
+}

@@ -39,7 +39,7 @@ Logica_juego::Logica_juego(Mapa& m)
 
 void Logica_juego::iniciar()
 {
-
+	mapa.inicializar();
 }
 
 void Logica_juego::finalizar()
@@ -110,6 +110,7 @@ void Logica_juego::loop(DFramework::Input& input, float delta)
 		else ++p_ini;
 	}
 
+	bot.turno(mapa, delta);
 
 	//TODO: Separar...
 	auto ini_j=std::begin(jugadores);
@@ -219,6 +220,8 @@ void Logica_juego::dibujar(DLibV::Pantalla& pantalla)
 		r.dibujar_poligono(pantalla, j.acc_poligono(), j.acc_color(), struct_camara.xcam, struct_camara.ycam, struct_camara.zoom);
 	}
 
+	r.dibujar_poligono(pantalla, bot.acc_poligono(), {255, 255, 255, 255}, struct_camara.xcam, struct_camara.ycam, struct_camara.zoom, false);
+
 	for(const auto& p : proyectiles)
 	{
 		r.dibujar_poligono(pantalla, p->acc_poligono(), p->acc_color(), struct_camara.xcam, struct_camara.ycam, struct_camara.zoom);
@@ -317,6 +320,27 @@ void Logica_juego::registrar_jugador(int indice)
 
 		j.establecer_arma(new Jugador_arma_normal());
 		jugadores.push_back(std::move(j));
+
+		//TODO: Esto es experimental...
+		//Comprobar que está vacío (posible bucle infinito).
+		while(true)
+		{
+			auto pt=mapa.puntos_inicio[gen()];
+			bot.establecer_posicion(pt.x, pt.y);
+			bot.establecer_destino(jugadores.back());
+
+			bool colision=false;
+			for(auto& oj : jugadores)
+			{
+				if(bot.en_colision_con(oj))
+				{
+					colision=true;
+					break;
+				}
+			}
+
+			if(!colision) break;
+		};
 	}
 }
 
@@ -330,42 +354,43 @@ void Logica_juego::ajustar_camara()
 
 	if(jugadores.size())
 	{
-		if(jugadores.size()==1)
+		int xmin=jugadores[0].acc_poligono().acc_centro().x, xmax=xmin,
+			ymin=jugadores[0].acc_poligono().acc_centro().y, ymax=ymin;
+
+		//Localizar punto central.
+		for(const auto&j : jugadores)
 		{
-			const auto& c=jugadores[0].acc_poligono().acc_centro();
-			struct_camara.xcam=c.x - (mitad_w_pantalla / struct_camara.zoom), 
-			struct_camara.ycam=c.y + (mitad_h_pantalla / struct_camara.zoom);
+			const auto& c=j.acc_poligono().acc_centro();
+			if(c.x < xmin) xmin=c.x;
+			else if(c.x > xmax) xmax=c.x;
+
+			if(c.y < ymin) ymin=c.y;
+			else if(c.y > ymax) ymax=c.y;
 		}
-		else 
+
+		//TODO: Experimental: centrando con bot.
 		{
-			int xmin=jugadores[0].acc_poligono().acc_centro().x, xmax=xmin,
-				ymin=jugadores[0].acc_poligono().acc_centro().y, ymax=ymin;
+			const auto& c=bot.acc_poligono().acc_centro();
+			if(c.x < xmin) xmin=c.x;
+			else if(c.x > xmax) xmax=c.x;
 
-			//Localizar punto central.
-			for(const auto&j : jugadores)
-			{
-				const auto& c=j.acc_poligono().acc_centro();
-				if(c.x < xmin) xmin=c.x;
-				else if(c.x > xmax) xmax=c.x;
-	
-				if(c.y < ymin) ymin=c.y;
-				else if(c.y > ymax) ymax=c.y;
-			}
+			if(c.y < ymin) ymin=c.y;
+			else if(c.y > ymax) ymax=c.y;
+		}		
 
-			struct_camara.xcam=( xmin + ( (xmax-xmin) / 2) ) - (mitad_w_pantalla / struct_camara.zoom), 
-			struct_camara.ycam=( ymin + ( (ymax-ymin) / 2) ) + (mitad_h_pantalla / struct_camara.zoom);
+		struct_camara.xcam=( xmin + ( (xmax-xmin) / 2) ) - (mitad_w_pantalla / struct_camara.zoom), 
+		struct_camara.ycam=( ymin + ( (ymax-ymin) / 2) ) + (mitad_h_pantalla / struct_camara.zoom);
 
-			
-			//Establecer zoom...
-			double 	distx=xmax-xmin,
-				disty=ymax-ymin;
+		
+		//Establecer zoom...
+		double 	distx=xmax-xmin,
+			disty=ymax-ymin;
 
-			double zoomx=distx < mitad_w_pantalla ? 1.0 : (double)mitad_w_pantalla / distx;
-			double zoomy=disty < mitad_h_pantalla ? 1.0 : (double)mitad_h_pantalla / disty;
+		double zoomx=distx < mitad_w_pantalla ? 1.0 : (double)mitad_w_pantalla / distx;
+		double zoomy=disty < mitad_h_pantalla ? 1.0 : (double)mitad_h_pantalla / disty;
 
-			struct_camara.zoom=zoomx < zoomy ? zoomx : zoomy;
-			if(struct_camara.zoom > 1.0) struct_camara.zoom=1.0;
-		}
+		struct_camara.zoom=zoomx < zoomy ? zoomx : zoomy;
+		if(struct_camara.zoom > 1.0) struct_camara.zoom=1.0;
 	}
 	
 }

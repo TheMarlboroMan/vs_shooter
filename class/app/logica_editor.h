@@ -149,6 +149,7 @@ class Logica_editor:
 		v.erase(std::remove_if(std::begin(v), std::end(v), [](T& o){return o.es_borrar();}), std::end(v));
 	}
 	void					intercambiar_objeto_creado();
+	void					cambiar_grid(int);
 	DLibH::Punto_2d<double>			punto_desde_pos_pantalla(int x, int y, bool=true);
 	void					nuevo_punto(DLibH::Punto_2d<double>);
 	void					cerrar_poligono();

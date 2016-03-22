@@ -72,11 +72,11 @@ void Logica_editor::loop(DFramework::Input& input, float delta)
 	else
 	{
 	//TODO: Constantes...
-		if(input.es_input_pulsado(Input::cursor_arriba)) struct_camara.ycam+=100.0 * (double) delta;
-		else if(input.es_input_pulsado(Input::cursor_abajo)) struct_camara.ycam-=100.0 * (double) delta;
+		if(input.es_input_pulsado(Input::cursor_arriba)) struct_camara.ycam+=200.0 * (double) delta;
+		else if(input.es_input_pulsado(Input::cursor_abajo)) struct_camara.ycam-=200.0 * (double) delta;
 
-		if(input.es_input_pulsado(Input::cursor_derecha)) struct_camara.xcam+=100.0 * (double) delta;
-		else if(input.es_input_pulsado(Input::cursor_izquierda)) struct_camara.xcam-=100.0 * (double) delta;
+		if(input.es_input_pulsado(Input::cursor_derecha)) struct_camara.xcam+=200.0 * (double) delta;
+		else if(input.es_input_pulsado(Input::cursor_izquierda)) struct_camara.xcam-=200.0 * (double) delta;
 	}
 
 	if(input.es_input_down(Input::TEST_VISIBILIDAD))
@@ -100,6 +100,9 @@ void Logica_editor::loop(DFramework::Input& input, float delta)
 		struct_camara.zoom-=(double)delta;
 		if(struct_camara.zoom < 0.10) struct_camara.zoom=0.10;
 	}
+
+	if(input.es_input_down(Input::grid_menos)) cambiar_grid(-1);
+	else if(input.es_input_down(Input::grid_mas)) cambiar_grid(1);
 }
 
 void Logica_editor::dibujar(DLibV::Pantalla& pantalla)
@@ -155,7 +158,7 @@ void Logica_editor::dibujar(DLibV::Pantalla& pantalla)
 		r.dibujar_segmento(pantalla, s, {0, 255, 0, 128}, struct_camara.xcam, struct_camara.ycam, struct_camara.zoom);		
 	}
 
-	std::string texto=std::to_string((int)pt_raton.x)+","+std::to_string((int)pt_raton.y);
+	std::string texto="GRID: "+std::to_string((int)grid)+" POS: "+std::to_string((int)pt_raton.x)+","+std::to_string((int)pt_raton.y);
 	switch(tobjeto)
 	{
 		case tobjetocreado::vertice: texto+=" [vertex]"; break;
@@ -299,62 +302,18 @@ void Logica_editor::do_crazy_pathfind()
 {
 	ruta.clear();
 
-	if(mapa.puntos_inicio.size() < 2) 
-	{
-		std::cout<<"ES NECESARIO SETEAR PUNTOS DE INICIO"<<std::endl;
-		return;
-	}
+	if(mapa.puntos_inicio.size() < 2) return;
 
-	//TODO: Este algoritmo se puede mejorar añadiendo los dos nuevos puntos como
-	//puntos de ruta temporales: volvemos a computar y luego los borramos. De esta
-	//forma evitaríamos desde el punto de inicio al siguiente más cercano aunque luego
-	//tengamos que dar la vuelta. Resolver el primer punto es sencillo: lo tratamos como
-	//un punto de ruta normal sin que el resto se vinculen a él.
-	//Resolver el último ya es más complicado sin reconstruir el mapa cada vez, puesto
-	//que los nodos reales tienen que vincularse y al terminar habría que desvincularlos.
-	
-	auto localizar=[this](Espaciable::tpunto pt, const std::vector<Nodo_ruta>& nr)
-	{
-		const Nodo_ruta * res=nullptr;
-		double dist=-1.0;
-		for(const auto& n : nr)
-		{
-			double d=pt.distancia_hasta(n.origen.pt);
+	const Nodo_ruta * ini=mapa.localizar_nodo_cercano(mapa.puntos_inicio.front());
+	if(!ini) return;
 
-			if((dist < 0.0 || d <= dist) && mapa.visibilidad_entre_puntos(pt, n.origen.pt))
-			{
-				dist=d;
-				res=&n;
-			}
-		}
-
-		return res;
-	};
-
-	const auto& nr=mapa.acc_nodos_ruta();
-
-	const Nodo_ruta * ini=localizar(mapa.puntos_inicio.front(), nr);
-	const Nodo_ruta * fin=localizar(mapa.puntos_inicio.back(), nr);
-
-	if(!ini)
-	{
-		std::cout<<"NO SE HA LOCALIZADO NODO VISIBLE PARA INICIO"<<std::endl;
-		return;
-	}
-
-	if(!fin)
-	{
-		return;
-	}
+	const Nodo_ruta * fin=mapa.localizar_nodo_cercano(mapa.puntos_inicio.back());
+	if(!fin) return;
 
 	Trazador_ruta t;
 	auto res=t.trazar_ruta(*ini, *fin);
 
-	if(!res.resuelto) 
-	{
-		std::cout<<"NO SE HA PODIDO RESOLVER"<<std::endl;
-	}
-	else
+	if(res.resuelto) 
 	{
 		ruta.push_back(mapa.puntos_inicio.front());
 
@@ -412,4 +371,13 @@ void Logica_editor::eliminar()
 	eliminar_helper(puntos_ruta);
 	eliminar_helper(puntos_inicio);
 	eliminar_helper(generadores_items);
+}
+
+void Logica_editor::cambiar_grid(int dir)
+{
+	if(dir < 0) grid-=10.0;
+	else grid+=10;
+
+	if(grid < 10.0) grid=10.0;
+	else if(grid > 50.0) grid=50.0;
 }

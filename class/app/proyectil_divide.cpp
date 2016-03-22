@@ -4,7 +4,7 @@ using namespace App;
 
 Proyectil_divide::Proyectil_divide(int indice):
 	//TODO: Constantes???
-	Proyectil(indice, 3.8, 0.5),
+	Proyectil(indice, 600.0, 0.5),
 	color({255, 32, 32, 192})
 {
 
@@ -44,7 +44,7 @@ void Proyectil_divide::preparar(double ang, DLibH::Punto_2d<double> pt)
 void Proyectil_divide::turno(float delta)
 {
 	tiempo-=delta;
-	desplazar_angulo_velocidad(angulo, velocidad);
+	desplazar_angulo_velocidad(angulo, velocidad*delta);
 }
 
 void Proyectil_divide::formar_poligono()

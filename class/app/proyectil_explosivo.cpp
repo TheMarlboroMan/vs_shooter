@@ -4,7 +4,7 @@ using namespace App;
 
 Proyectil_explosivo::Proyectil_explosivo(int indice):
 	//TODO: Constantes???
-	Proyectil(indice, 5.0, 1.0),
+	Proyectil(indice, 800.0, 1.0),
 	color({255, 16, 16, 192})
 {
 
@@ -42,12 +42,12 @@ void Proyectil_explosivo::preparar(double ang, DLibH::Punto_2d<double> pt)
 
 void Proyectil_explosivo::turno(float delta)
 {
-	velocidad-=delta * 100.0;
-	if(velocidad <= 2.0) velocidad=2.0;
+	velocidad-=delta * 1000.0;
+	if(velocidad <= 100.0) velocidad=100.0;
 	rot+=delta * 100.0;
 	poligono.rotar(angulo);
 	tiempo-=delta;
-	desplazar_angulo_velocidad(angulo, velocidad);
+	desplazar_angulo_velocidad(angulo, velocidad*delta);
 }
 
 void Proyectil_explosivo::formar_poligono()

@@ -4,7 +4,7 @@ using namespace App;
 
 Proyectil_normal::Proyectil_normal(int indice):
 	//TODO: Constantes???
-	Proyectil(indice, 4.0, 2.0),
+	Proyectil(indice, 500.0, 1.0),
 	color({128, 128, 64, 192})
 {
 
@@ -31,7 +31,7 @@ void Proyectil_normal::preparar(double ang, DLibH::Punto_2d<double> pt)
 void Proyectil_normal::turno(float delta)
 {
 	tiempo-=delta;
-	desplazar_angulo_velocidad(angulo, velocidad);
+	desplazar_angulo_velocidad(angulo, velocidad*delta);
 }
 
 void Proyectil_normal::formar_poligono()

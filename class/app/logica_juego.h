@@ -11,6 +11,9 @@
 #include "mapa.h"
 #include "jugador.h"
 
+//TODO: Experimental...
+#include "bot.h"
+
 #include "bloque_input.h"
 
 //TODO: Quitar con factoría de disparos.
@@ -50,6 +53,8 @@ class Logica_juego:
 	std::vector<Jugador>			jugadores;
 	std::vector<std::unique_ptr<Proyectil>>	proyectiles;
 	std::vector<Disparador>			disparadores;
+
+	Bot					bot;
 };
 }
 

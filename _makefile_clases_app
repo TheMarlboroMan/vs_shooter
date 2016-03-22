@@ -136,6 +136,14 @@ $(DIR_CLASES_APP)representador.h \
 $(DIR_CLASES_APP)representador.cpp
 	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CLASES_APP)representador.cpp -o $(DIR_O)representador.o
 
+$(DIR_O)bot.o:\
+$(DIR_O)espaciable.o\
+$(DIR_O)mapa.o\
+$(DIR_O)trazador_ruta.o\
+$(DIR_CLASES_APP)bot.h \
+$(DIR_CLASES_APP)bot.cpp
+	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CLASES_APP)bot.cpp -o $(DIR_O)bot.o
+
 $(DIR_O)generador_items.o:\
 $(DIR_O)espaciable.o\
 $(DIR_CLASES_APP)generador_items.h \

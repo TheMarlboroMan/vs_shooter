@@ -3,7 +3,7 @@
 using namespace App;
 
 Jugador::Jugador(int indice, tcolor color)
-	:arma(nullptr), indice(indice), angulo(0.0), angulo_anterior(angulo), velocidad(0.0f), 
+	:arma(nullptr), indice(indice), angulo(0.0), angulo_anterior(angulo), velocidad(3.0f), 
 	salud(100), color(color)
 {
 	formar_poligono();
@@ -33,7 +33,8 @@ void Jugador::confirmar_movimiento()
 
 void Jugador::colisionar()
 {
-	salud-=velocidad;
+	restar_salud(velocidad / 4.0);
+
 	poligono=posicion_anterior;
 	angulo=angulo_anterior;
 	velocidad=-velocidad / 2.0;
@@ -47,22 +48,27 @@ void Jugador::restar_salud(int v)
 
 void Jugador::girar(int dir, float delta)
 {
-	//TODO. A otro lado???
+	//TODO. A otro lado???	
 	const double factor_rotacion=180.0;
 
-	double factor=((double)delta * factor_rotacion) * (double)dir;
-	angulo+=factor;
-	poligono.rotar(factor);
+	//La velocidad afecta a la capacidad de giro. No afecta parado o marcha atrás.	
+	double factor=velocidad <= 0.0 ? factor_rotacion : factor_rotacion - (velocidad / 3.0);
+	if(factor < 60.0) factor=60.0;
+
+	double giro=((double)delta * factor) * (double)dir;
+	angulo+=giro;
+	poligono.rotar(giro);
 }
 
 void Jugador::cambiar_velocidad(int dir, float delta)
 {
 	//TODO: A otro lado???
-	const float max_vel=3.0f;
-	const float min_vel=-1.0f;
-	const float factor_aceleracion=1.0f;
-	const float factor_freno=-5.0;
+	const float max_vel=300.0f;
+	const float min_vel=-100.0f;
+	const float factor_aceleracion=180.0f;
+	const float factor_freno=-500.0;
 
+	//TODO: ¿Cómo es eso de la velocidad máxima?
 	velocidad+=dir > 0 ? delta * factor_aceleracion : delta * factor_freno;
 
 	if(velocidad > max_vel) velocidad=max_vel;
@@ -71,14 +77,19 @@ void Jugador::cambiar_velocidad(int dir, float delta)
 
 void Jugador::detener_velocidad(float delta)
 {
-	float vel=fabs(velocidad)-delta;
+	const float factor_perdida=100.0;
+	float vel=fabs(velocidad)-(delta * factor_perdida);
+
 	if(vel < 0.0f) vel=0.0f;
 	velocidad=vel* (velocidad > 0.f ? 1.0 : -1.0);
 }
 
 void Jugador::movimiento_tentativo(float delta)
 {
-	desplazar_angulo_velocidad(angulo, velocidad);
+	desplazar_angulo_velocidad(angulo, velocidad*delta);
+
+	DLibH::Vector_2d<double> v=vector_unidad_para_angulo_cartesiano(angulo);
+	DLibH::Punto_2d<double> pd{v.x * velocidad, v.y * velocidad};
 }
 
 void Jugador::formar_poligono()
