@@ -1,12 +1,10 @@
 #include "logica_editor.h"
 
 #include <fstream>
-#include <algorithm>
 #include <string>
 
 #include "exportador.h"
 #include "importador.h"
-#include "representador.h"
 
 #include "framework_impl/input.h"
 
@@ -28,13 +26,16 @@ Logica_editor::Logica_editor(Mapa& m)
 
 void Logica_editor::iniciar()
 {
-
+	//No es necesario hacer nada...
 }
 
 void Logica_editor::finalizar()
 {
 	tobjeto=tobjetocreado::vertice;
 	poligono_construccion=Poligono_2d<double>{};
+
+	//Aplicar al mapa...
+	aplicar_a_mapa();
 }
 
 void Logica_editor::loop(DFramework::Input& input, float delta)
@@ -47,19 +48,38 @@ void Logica_editor::loop(DFramework::Input& input, float delta)
 	if(input.es_input_down(Input::cargar_mapa)) cargar_mapa();	
 	else if(input.es_input_down(Input::grabar_mapa)) grabar_mapa();	
 
-	if(input.es_input_down(Input::click_i)) click_izq();
-	else if(input.es_input_down(Input::click_d)) click_der();
+	if(input.es_input_down(Input::click_i)) 
+	{
+		if(input.es_input_pulsado(Input::control_izquierdo)) seleccionar();
+		else crear();
+	}	
+	else if(input.es_input_down(Input::click_d)) 
+	{
+		//Nothing yet...
+	}
+	
+	if(input.es_input_pulsado(Input::suprimir)) eliminar();
 
+	if(input.es_input_pulsado(Input::control_izquierdo))
+	{
+		if(input.es_input_down(Input::cursor_arriba)) mover_seleccion(0.0, grid);
+		else if(input.es_input_down(Input::cursor_abajo)) mover_seleccion(0.0, -grid);
+		else if(input.es_input_down(Input::cursor_derecha)) mover_seleccion(grid, 0.0);
+		else if(input.es_input_down(Input::cursor_izquierda)) mover_seleccion(-grid, 0.0);
+	}
+	else
+	{
 	//TODO: Constantes...
-	if(input.es_input_pulsado(Input::cursor_arriba)) struct_camara.ycam+=100.0 * (double) delta;
-	else if(input.es_input_pulsado(Input::cursor_abajo)) struct_camara.ycam-=100.0 * (double) delta;
+		if(input.es_input_pulsado(Input::cursor_arriba)) struct_camara.ycam+=100.0 * (double) delta;
+		else if(input.es_input_pulsado(Input::cursor_abajo)) struct_camara.ycam-=100.0 * (double) delta;
 
-	if(input.es_input_pulsado(Input::cursor_derecha)) struct_camara.xcam+=100.0 * (double) delta;
-	else if(input.es_input_pulsado(Input::cursor_izquierda)) struct_camara.xcam-=100.0 * (double) delta;
+		if(input.es_input_pulsado(Input::cursor_derecha)) struct_camara.xcam+=100.0 * (double) delta;
+		else if(input.es_input_pulsado(Input::cursor_izquierda)) struct_camara.xcam-=100.0 * (double) delta;
+	}
 
 	if(input.es_input_down(Input::TEST_VISIBILIDAD))
 	{
-		//TODO: Antes habría que aplicar????...
+		aplicar_a_mapa();
 		mapa.construir_nodos_ruta();
 	}
 
@@ -81,11 +101,6 @@ void Logica_editor::loop(DFramework::Input& input, float delta)
 
 void Logica_editor::dibujar(DLibV::Pantalla& pantalla)
 {
-	auto cuadrado=[](double x, double y, int rad)
-	{
-		return Espaciable::tpoligono { {{x-rad, y-rad}, {x-rad, y+rad}, {x+rad, y+rad}, {x+rad, y-rad}}, {x, y}};
-	};
-
 	pantalla.limpiar(0, 0, 0, 255);
 
 	Representador r;
@@ -93,43 +108,12 @@ void Logica_editor::dibujar(DLibV::Pantalla& pantalla)
 
 	auto pt_raton=punto_desde_pos_pantalla(pos_raton.x, pos_raton.y);
 
-//	for(const auto& o : mapa.obstaculos)
-	for(const auto& eo : obstaculos)
-	{
-		const auto& o=eo->elemento;
-		r.dibujar_poligono(pantalla, o.acc_poligono(), o.acc_color(), struct_camara.xcam, struct_camara.ycam, struct_camara.zoom);
-	}
-
-	//Obstáculos bajo el cursor...
-//TODO...
-//	for(const auto& o : obstaculos_cursor)
-//		r.dibujar_poligono(pantalla, o->acc_poligono(), {255, 255, 64, 128}, struct_camara.xcam, struct_camara.ycam, struct_camara.zoom, false);
-
-	for(const auto& s : poligono_construccion.acc_segmentos())
-		r.dibujar_segmento(pantalla, s, {0, 255, 0, 128}, struct_camara.xcam, struct_camara.ycam, struct_camara.zoom);		
-	
-	//Segmento en construcción...	
-	if(poligono_construccion.acc_vertices().size())
-	{
-		const auto& v=poligono_construccion.acc_vertices().back();
-		Segmento_2d<double> s{ {v.x, v.y}, {pt_raton.x, pt_raton.y}};
-		r.dibujar_segmento(pantalla, s, {0, 255, 0, 128}, struct_camara.xcam, struct_camara.ycam, struct_camara.zoom);		
-	}
-
-	for(const auto& p : mapa.puntos_inicio)
-	{
-		Espaciable::tpoligono poli={ {{p.x, p.y}, {p.x+10, p.y}, {p.x+10, p.y+10}, {p.x, p.y+10}}, {p.x, p.y}};
-		r.dibujar_poligono(pantalla, poli, {255, 0, 0, 128}, struct_camara.xcam, struct_camara.ycam, struct_camara.zoom);
-	}
-
-	for(const auto& g : mapa.generadores_items)
-		r.dibujar_poligono(pantalla, g.acc_poligono(), {0, 0, 255, 128}, struct_camara.xcam, struct_camara.ycam, struct_camara.zoom);
-
-	for(const auto& p : mapa.puntos_ruta)
-	{
-		Espaciable::tpoligono poli=cuadrado(p.pt.x, p.pt.y, 5);
-		r.dibujar_poligono(pantalla, poli, {255, 255, 25, 128}, struct_camara.xcam, struct_camara.ycam, struct_camara.zoom);
-	}
+	for(const auto& eo : obstaculos) eo.dibujar(r, pantalla, struct_camara);
+	for(const auto& pi : puntos_inicio) pi.dibujar(r, pantalla, struct_camara);
+	for(const auto& eg : generadores_items) eg.dibujar(r, pantalla, struct_camara);
+	for(const auto& op : puntos_ruta) op.dibujar(r, pantalla, struct_camara);
+	for(const auto& oc : objetos_cursor) oc->dibujar(r, pantalla, struct_camara, false);
+	for(const auto& os : objetos_seleccionados) os->dibujar(r, pantalla, struct_camara, false);
 
 	//Nodos ruta...
 	//TODO: Poder desactivar esto...
@@ -156,10 +140,18 @@ void Logica_editor::dibujar(DLibV::Pantalla& pantalla)
 		}
 	}
 
-	//TODO: Mostrar el objeto actual seleccionado...
+	for(const auto& s : poligono_construccion.acc_segmentos())
+		r.dibujar_segmento(pantalla, s, {0, 255, 0, 128}, struct_camara.xcam, struct_camara.ycam, struct_camara.zoom);		
+	
+	//Segmento en construcción...	
+	if(poligono_construccion.acc_vertices().size())
+	{
+		const auto& v=poligono_construccion.acc_vertices().back();
+		Segmento_2d<double> s{ {v.x, v.y}, {pt_raton.x, pt_raton.y}};
+		r.dibujar_segmento(pantalla, s, {0, 255, 0, 128}, struct_camara.xcam, struct_camara.ycam, struct_camara.zoom);		
+	}
 
 	std::string texto=std::to_string((int)pt_raton.x)+","+std::to_string((int)pt_raton.y);
-
 	switch(tobjeto)
 	{
 		case tobjetocreado::vertice: texto+=" [vertex]"; break;
@@ -173,7 +165,7 @@ void Logica_editor::dibujar(DLibV::Pantalla& pantalla)
 	txt.volcar(pantalla);
 
 	//Punto actual...
-	Espaciable::tpoligono poli=cuadrado(pt_raton.x, pt_raton.y, 5);
+	Espaciable::tpoligono poli=Objeto_editor::cuadrado(pt_raton.x, pt_raton.y, 3);
 	r.dibujar_poligono(pantalla, poli, {255, 255, 255, 128}, struct_camara.xcam, struct_camara.ycam, struct_camara.zoom);
 }
 
@@ -187,10 +179,9 @@ void Logica_editor::cargar_mapa()
 
 void Logica_editor::grabar_mapa()
 {
-	//TODO: Retocar cuando tengamos interface común...
-
 	std::ofstream fichero("mapa.dat");
 	Exportador exportador;
+	aplicar_a_mapa();
 	fichero<<exportador.serializar(mapa.obstaculos, mapa.puntos_inicio, mapa.puntos_ruta, mapa.generadores_items);
 }
 
@@ -205,11 +196,11 @@ void Logica_editor::intercambiar_objeto_creado()
 	}
 }
 
-void Logica_editor::click_izq()
+void Logica_editor::crear()
 {
 	switch(tobjeto)
 	{
-		case tobjetocreado::vertice: 
+		case tobjetocreado::vertice:
 			nuevo_punto(punto_desde_pos_pantalla(pos_raton.x, pos_raton.y));
 		break;
 		case tobjetocreado::punto_ruta: 
@@ -219,42 +210,48 @@ void Logica_editor::click_izq()
 			crear_punto_inicio(punto_desde_pos_pantalla(pos_raton.x, pos_raton.y));
 		break;
 		case tobjetocreado::arma:
-			crear_punto_generador_items(punto_desde_pos_pantalla(pos_raton.x, pos_raton.y));
+			crear_generador_items(punto_desde_pos_pantalla(pos_raton.x, pos_raton.y));
 		break;
 	}
 }
 
-void Logica_editor::click_der()
+void Logica_editor::seleccionar()
 {	
-	switch(tobjeto)
+	if(objetos_cursor.size())
 	{
-		case tobjetocreado::vertice:
-			if(poligono_construccion.acc_vertices().size())
-				cerrar_poligono();
-		break;
-		case tobjetocreado::inicio:
-		case tobjetocreado::arma:
-		case tobjetocreado::punto_ruta:
-			
-		break;
+		for(auto& o : objetos_cursor)
+		{
+			auto it=std::find(std::begin(objetos_seleccionados), std::end(objetos_seleccionados), o);
+
+			if(it!=std::end(objetos_seleccionados))
+			{
+				objetos_seleccionados.erase(it);
+			}
+			else
+			{
+				objetos_seleccionados.push_back(o);
+			}
+		}
+	}
+	else
+	{
+		objetos_seleccionados.clear();
 	}
 }
 
 void Logica_editor::crear_punto_inicio(DLibH::Punto_2d<double> pt)
 {
-	mapa.puntos_inicio.push_back(pt);
+	puntos_inicio.push_back(Punto_inicio_editor{pt});
 }
 
 void Logica_editor::crear_punto_ruta(DLibH::Punto_2d<double> pt)
 {
-	mapa.puntos_ruta.push_back(Punto_ruta{pt});
+	puntos_ruta.push_back(Punto_ruta_editor{pt});
 }
 
-void Logica_editor::crear_punto_generador_items(DLibH::Punto_2d<double> pt)
+void Logica_editor::crear_generador_items(DLibH::Punto_2d<double> pt)
 {
-	Generador_items gi(pt);
-	gi.reiniciar();
-	mapa.generadores_items.push_back(gi);
+	generadores_items.push_back(Generador_items_editor{pt});
 }
 
 DLibH::Punto_2d<double>	Logica_editor::punto_desde_pos_pantalla(int x, int y, bool a_rejilla)
@@ -273,20 +270,22 @@ DLibH::Punto_2d<double>	Logica_editor::punto_desde_pos_pantalla(int x, int y, bo
 
 void Logica_editor::nuevo_punto(DLibH::Punto_2d<double> p)
 {
-	poligono_construccion.insertar_vertice(p);
+	if(poligono_construccion.acc_vertices().size() > 2 && p==poligono_construccion.acc_vertices()[0])
+	{
+		cerrar_poligono();
+	}
+	else
+	{
+		poligono_construccion.insertar_vertice(p);
+	}
 }
 
 void Logica_editor::cerrar_poligono()
 {
-	if( (poligono_construccion.size() == 3) ||
-		(poligono_construccion.size() > 3 && !poligono_construccion.es_concavo() )
-	)
+	if(poligono_construccion.size() >= 3 && !poligono_construccion.es_concavo())
 	{
 		poligono_construccion.cerrar();
-//		mapa.obstaculos.push_back({poligono_construccion, {64, 64, 64, 255}});
-
-		std::unique_ptr<Obstaculo_editor> ptr(new Obstaculo_editor(Obstaculo(poligono_construccion, {64, 64, 64, 255})));
-		obstaculos.push_back(std::move(ptr));
+		obstaculos.push_back(Obstaculo_editor(Obstaculo(poligono_construccion, {64, 64, 64, 255})));
 	}
 
 	poligono_construccion=Poligono_2d<double>{};
@@ -332,7 +331,6 @@ void Logica_editor::do_crazy_pathfind()
 
 	if(!fin)
 	{
-		std::cout<<"NO SE HA LOCALIZADO NODO VISIBLE PARA FIN"<<std::endl;
 		return;
 	}
 
@@ -360,39 +358,48 @@ void Logica_editor::do_crazy_pathfind()
 void Logica_editor::localizar_elementos_bajo_cursor()
 {
 	auto pt_raton=punto_desde_pos_pantalla(pos_raton.x, pos_raton.y, false);
+	objetos_cursor.clear();
 
-	switch(tobjeto)
-	{
-		case tobjetocreado::vertice:
-//TODO
-//			obstaculos_cursor.clear();
-//			for(const auto& o : mapa.obstaculos)
-//			{
-//				if(punto_en_poligono(o.acc_poligono(), pt_raton))
-//				{
-//					obstaculos_cursor.push_back(&o);
-//				}
-//			}
-
-		break;
-		case tobjetocreado::inicio:
-		case tobjetocreado::arma:
-		case tobjetocreado::punto_ruta:
-			
-		break;
-	}
-	
+	localizar_elementos_bajo_cursor_helper(obstaculos, pt_raton);
+	localizar_elementos_bajo_cursor_helper(puntos_inicio, pt_raton);
+	localizar_elementos_bajo_cursor_helper(generadores_items, pt_raton);
+	localizar_elementos_bajo_cursor_helper(puntos_ruta, pt_raton);
 }
 
-void Logica_editor::obtener_desde_mapa()
+void Logica_editor::mover_seleccion(double x, double y)
 {
-	for(auto& o : mapa.obstaculos)
-	{
-//TODO...		obstaculos.push_back(Obstaculo_editor(o));
-	}
+	for(auto& o : objetos_seleccionados) o->mover(x, y);
 }
 
 void Logica_editor::aplicar_a_mapa()
 {
+	mapa.limpiar();
+	for(auto& o : obstaculos) mapa.obstaculos.push_back(o.elemento);
+	for(auto& o : puntos_ruta) mapa.puntos_ruta.push_back(o.elemento);
+	for(auto& o : puntos_inicio) mapa.puntos_inicio.push_back(o.elemento);
+	for(auto& o : generadores_items) mapa.generadores_items.push_back(o.elemento);	
+}
 
+void Logica_editor::obtener_desde_mapa()
+{
+	for(auto& o : mapa.obstaculos) obstaculos.push_back(Obstaculo_editor(o));
+	for(auto& o : mapa.puntos_ruta) puntos_ruta.push_back(Punto_ruta_editor(o));
+	for(auto& o : mapa.puntos_inicio) puntos_inicio.push_back(Punto_inicio_editor(o));
+	for(auto& o : mapa.generadores_items) generadores_items.push_back(Generador_items_editor(o));
+}
+
+void Logica_editor::eliminar()
+{
+	//Esto los marca para borrar...
+	for(auto& o : objetos_seleccionados) o->borrar();
+	for(auto& o : objetos_cursor) o->borrar();
+
+	objetos_seleccionados.clear();
+	objetos_cursor.clear();
+
+	//Esto los borra...
+	eliminar_helper(obstaculos);
+	eliminar_helper(puntos_ruta);
+	eliminar_helper(puntos_inicio);
+	eliminar_helper(generadores_items);
 }

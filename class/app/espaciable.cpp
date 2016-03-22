@@ -18,6 +18,13 @@ void Espaciable::establecer_posicion(double x, double y)
 	poligono.centrar_en({x, y});
 }
 
+void Espaciable::mover(double x, double y)
+{
+	auto c=poligono.acc_centro();
+	poligono.centrar_en({c.x+x, c.y+y});
+}
+
+
 bool Espaciable::en_colision_con(const Espaciable& e) const
 {
 	return colision_poligono_SAT(poligono, e.poligono);
