@@ -7,8 +7,11 @@
 #include <def_video.h>
 #include <herramientas/log_base/log_base.h>
 
-#include "../framework/controlador_interface.h"
 #include "../app/framework_impl/app_config.h"
+#include "../app/fuentes.h"
+
+#include "estados_controladores.h"
+#include "../framework/controlador_interface.h"
 
 namespace App
 {
@@ -18,7 +21,7 @@ class Controlador_controles:
 {
 	public:
 
-					Controlador_controles(DLibH::Log_base&, App::App_config&);
+					Controlador_controles(DLibH::Log_base&, App_config&, const Fuentes&);
 
 	virtual void 			preloop(DFramework::Input& input, float delta);
 	virtual void 			loop(DFramework::Input& input, float delta);
@@ -42,12 +45,11 @@ class Controlador_controles:
 		DFramework::Input::Entrada 	entrada;
 	};
 
-	std::map<int, tinput>			controles;
-	
 	DLibH::Log_base&			log;
 	App::App_config& 			config;
+	const DLibV::Fuente_TTF&		fuente_akashi;
 
-	DLibV::Fuente_TTF			fuente_akashi;
+	std::map<int, tinput>			controles;
 	std::string				str_controles, str_actual;
 	int					kactual;
 

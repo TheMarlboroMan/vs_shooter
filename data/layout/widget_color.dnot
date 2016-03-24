@@ -1,0 +1,66 @@
+layout:
+[
+	{tipo:"const", clave:"y_selector", valor:78},
+	{tipo:"const", clave:"x_selector", valor:130},
+	{tipo:"const", clave:"salto_selector", valor:20},
+	{
+		tipo:"caja",
+		pos:[100, 50, 440, 300], rgb:[255,255,255]
+	},
+	{
+		tipo:"caja",
+		pos:[102, 52, 436, 296], rgb:[128,128,128]
+	},
+	{
+		tipo:"caja",
+		pos:[398, 78, 54, 54], rgb:[0,0,0]
+	},
+	{
+		tipo:"caja",
+		pos:[400, 80, 50, 50], rgb:[0,0,0], id:"caja_frente"
+	},
+	{
+		tipo:"caja",
+		pos:[398, 178, 54, 54], rgb:[0,0,0]
+	},
+	{
+		tipo:"caja",
+		pos:[400, 180, 50, 50], rgb:[0,0,0], id:"caja_linea"
+	},
+	{
+		tipo:"ttf", pos:[140, 80], fuente:"akashi", rgba:[0, 0, 0, 255],
+		texto:"R: 0", id:"txt_r_frente"
+	},
+	{
+		tipo:"ttf", pos:[140,100], fuente:"akashi", rgba:[0, 0, 0, 255],
+		texto:"G: 0", id:"txt_g_frente"
+	},
+	{
+		tipo:"ttf", pos:[140,120], fuente:"akashi", rgba:[0, 0, 0, 255],
+		texto:"B: 0", id:"txt_b_frente"
+	},
+	{
+		tipo:"ttf", pos:[140,140], fuente:"akashi", rgba:[0, 0, 0, 255],
+		texto:"A: 0", id:"txt_a_frente"
+	},
+	{
+		tipo:"ttf", pos:[140, 160], fuente:"akashi", rgba:[0, 0, 0, 255],
+		texto:"R: 0", id:"txt_r_linea"
+	},
+	{
+		tipo:"ttf", pos:[140,180], fuente:"akashi", rgba:[0, 0, 0, 255],
+		texto:"G: 0", id:"txt_g_linea"
+	},
+	{
+		tipo:"ttf", pos:[140,200], fuente:"akashi", rgba:[0, 0, 0, 255],
+		texto:"B: 0", id:"txt_b_linea"
+	},
+	{
+		tipo:"ttf", pos:[140,220], fuente:"akashi", rgba:[0, 0, 0, 255],
+		texto:"A: 0", id:"txt_a_linea"
+	},
+	{
+		tipo:"caja",
+		pos:[130, 78, 100, 16], rgb:[255,255,255,128], id:"selector", alpha:128
+	}
+]

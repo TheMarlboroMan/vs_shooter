@@ -32,11 +32,20 @@ Herramientas_proyecto::Dnot_token Exportador::serializar_obstaculo(const Obstacu
 
 	auto centro=o.acc_poligono().acc_centro();
 	auto color=o.acc_color();
+	auto colorl=o.acc_color_linea();
 
 	Dnot_token::t_mapa mapa_polig;
 	mapa_polig["p"].asignar(puntos);
 	mapa_polig["cen"].asignar(generar_punto(centro.x, centro.y));
-	mapa_polig["col"].asignar(generar_color(color.r, color.g, color.b, color.a));
+
+	auto ncolor=generar_color(color.r, color.g, color.b, color.a);
+	auto ncolorl=generar_color(colorl.r, colorl.g, colorl.b, colorl.a);
+
+	Dnot_token::t_vector arr_colores;
+	arr_colores.push_back(Dnot_token(ncolor));
+	arr_colores.push_back(Dnot_token(ncolorl));
+
+	mapa_polig["col"].asignar(arr_colores);
 
 	return Dnot_token(mapa_polig);
 }

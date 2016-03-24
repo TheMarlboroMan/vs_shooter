@@ -35,9 +35,25 @@ void Importador::deserializar_obstaculo(const Herramientas_proyecto::Dnot_token&
 	const auto& centro=tok["cen"].acc_lista();
 	poligono.mut_centro({centro[0], centro[1]});
 
-	const auto& vcolor=tok["col"].acc_lista();
-	tcolor color{vcolor[0], vcolor[1], vcolor[2], vcolor[3]};
-	obstaculos.push_back({poligono, color});
+	tcolor color={128, 128, 128, 255};
+	tcolor clinea=color;
+
+	try
+	{
+		const auto& colores=tok["col"].acc_lista();
+		const auto& vcolor=colores[0].acc_lista();
+		const auto& vcolorl=colores[1].acc_lista();
+
+		color={vcolor[0], vcolor[1], vcolor[2], vcolor[3]};
+		clinea={vcolorl[0], vcolorl[1], vcolorl[2], vcolorl[3]};
+
+	}
+	catch(std::exception& e)
+	{
+		//Do nothing... This is only for map compatibility sake.	
+	}
+
+	obstaculos.push_back({poligono, color, clinea});
 }
 
 void Importador::deserializar_punto(const Herramientas_proyecto::Dnot_token& tok, std::vector<DLibH::Punto_2d<double>>& puntos)

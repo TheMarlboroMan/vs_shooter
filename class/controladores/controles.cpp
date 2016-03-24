@@ -12,9 +12,9 @@
 
 using namespace App;
 
-Controlador_controles::Controlador_controles(DLibH::Log_base& log, App::App_config& c)
+Controlador_controles::Controlador_controles(DLibH::Log_base& log, App_config& c, const Fuentes& f)
 	:log(log), config(c), 
-	fuente_akashi("data/fuentes/Akashi.ttf", 16), kactual(Input::j1_registrar)
+	fuente_akashi(f.obtener_fuente("akashi", 16)), kactual(Input::j1_registrar)
 {
 	
 }
@@ -102,37 +102,36 @@ void Controlador_controles::loop(DFramework::Input& input, float delta)
 	if(input.es_senal_salida())
 	{
 		abandonar_aplicacion();
+		return; 
 	}
-	else
+
+	if(input.es_input_down(Input::escape))
 	{
-		if(input.es_input_down(Input::escape))
+		solicitar_cambio_estado(editor);
+		return;
+	}
+
+	auto c=input.obtener_entrada();
+
+	using E=DFramework::Input::Entrada;
+
+	if(c.tipo!=E::ttipo::nada)
+	{
+		input.limpiar(kactual);
+
+		controles[kactual].entrada=c;
+		input.configurar(input.desde_entrada(c, kactual));
+
+		++kactual;
+
+		if(!controles.count(kactual))
 		{
-			solicitar_cambio_estado(principal);
-			return;
+			finalizar_configuracion();
 		}
-
-		auto c=input.obtener_entrada();
-
-		using E=DFramework::Input::Entrada;
-
-		if(c.tipo!=E::ttipo::nada)
+		else
 		{
-			input.limpiar(kactual);
-
-			controles[kactual].entrada=c;
-			input.configurar(input.desde_entrada(c, kactual));
-
-			++kactual;
-
-			if(!controles.count(kactual))
-			{
-				finalizar_configuracion();
-			}
-			else
-			{
-				recomponer_str_controles();
-				asignar_str_control_actual();
-			}
+			recomponer_str_controles();
+			asignar_str_control_actual();
 		}
 	}
 }

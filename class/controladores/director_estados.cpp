@@ -7,12 +7,12 @@ using namespace App;
 extern DLibH::Log_base LOG;
 
 Director_estados::Director_estados(DFramework::Kernel& kernel, App::App_config& c, DLibH::Log_base& log)
-	:Director_estados_interface(t_estados::controles, std::function<bool(int)>([](int v){return v >= principal && v < estado_max;})),
+	:Director_estados_interface(t_estados::controles, std::function<bool(int)>([](int v){return v > estado_min && v < estado_max;})),
 	config(c), log(log)
 {
 	preparar_video(kernel);
+	registrar_fuentes();	
 	registrar_controladores();
-	
 	virtualizar_joysticks(kernel.acc_input());
 }
 
@@ -32,19 +32,24 @@ void Director_estados::preparar_video(DFramework::Kernel& kernel)
 
 void Director_estados::registrar_controladores()
 {
-	controlador_principal.reset(new Controlador_principal(log));
-	controlador_controles.reset(new Controlador_controles(log, config));
+	controlador_principal.reset(new Controlador_principal(log, fuentes));
+	controlador_controles.reset(new Controlador_controles(log, config, fuentes));
+	controlador_editor.reset(new Controlador_editor(log, fuentes));
 
 	registrar_controlador(t_estados::principal, *controlador_principal);
 	registrar_controlador(t_estados::controles, *controlador_controles);
+	registrar_controlador(t_estados::editor, *controlador_editor);
 }
 
 void Director_estados::preparar_cambio_estado(int deseado, int actual)
 {
 	switch(deseado)
 	{
-		case t_estados::principal: break;
+		case t_estados::principal: 
+			controlador_editor->aplicar_a_mapa(controlador_principal->acc_mapa());
+		break;
 		case t_estados::controles: break;
+		case t_estados::editor: break;
 	}
 }
 
@@ -65,4 +70,9 @@ void Director_estados::virtualizar_joysticks(DFramework::Input& input)
 		input.virtualizar_ejes_joystick(i,15000);
 		log<<"Virtualizado joystick "<<i<<std::endl;
 	}
+}
+
+void Director_estados::registrar_fuentes()
+{
+	fuentes.registrar_fuente("akashi", 16);
 }

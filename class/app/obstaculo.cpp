@@ -2,8 +2,8 @@
 
 using namespace App;
 
-Obstaculo::Obstaculo(const tpoligono& p, tcolor c)
-	:Espaciable(p), color(c)
+Obstaculo::Obstaculo(const tpoligono& p, tcolor c, tcolor cl)
+	:Espaciable(p), color(c), color_linea(cl)
 {
 
 }

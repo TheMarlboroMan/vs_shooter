@@ -18,6 +18,8 @@ $(DIR_O)app_config.o\
 $(DIR_O)representador.o\
 $(DIR_O)espaciable.o\
 $(DIR_O)generador_items.o\
+$(DIR_O)fuentes.o\
+$(DIR_O)mensajes.o\
 $(DIR_O)jugador.o\
 $(DIR_O)jugador_arma.o\
 $(DIR_O)jugador_arma_normal.o\
@@ -34,17 +36,17 @@ $(DIR_O)proyectil_explosivo.o\
 $(DIR_O)disparador.o\
 $(DIR_O)exportador.o\
 $(DIR_O)importador.o\
-$(DIR_O)logica_editor.o\
-$(DIR_O)logica_juego.o\
 $(DIR_O)mapa.o\
 $(DIR_O)punto_ruta.o\
 $(DIR_O)trazador_ruta.o\
 $(DIR_O)bot.o\
+$(DIR_O)widget_editor_color.o\
 
 DEP_CONTROLADORES=\
 $(DIR_O)director_estados.o \
 $(DIR_O)controlador_principal.o \
 $(DIR_O)controlador_controles.o \
+$(DIR_O)controlador_editor.o \
 
 DEP_FRAMEWORK=\
 $(DIR_O)fw_kernel.o \

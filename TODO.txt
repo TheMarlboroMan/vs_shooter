@@ -1,0 +1,15 @@
+Editor:
+
+Game:
+	- There should be sound.
+	- There should be music.
+	- There should be a certain amount of lives.
+	- We should get rid of the register player button, fire should be enough.
+	- We could have some kind of "handicap" mode.
+	- We should have a "select map" thingy.
+
+Bots:
+
+	- Bots can shoot you.
+	- There can be many bots.
+	- Bots can be shot.

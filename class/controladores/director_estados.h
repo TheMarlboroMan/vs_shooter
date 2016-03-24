@@ -12,6 +12,7 @@
 #include "estados_controladores.h"
 #include "principal.h"
 #include "controles.h"
+#include "editor.h"
 
 
 namespace App
@@ -31,13 +32,18 @@ class Director_estados:
 
 	void						preparar_video(DFramework::Kernel& kernel);
 	void						registrar_controladores();
+	void						registrar_fuentes();
 	void 						virtualizar_joysticks(DFramework::Input& input);
 
-	App::App_config					config;
+
+	App::App_config&				config;
 	DLibH::Log_base&				log;
 
+	App::Fuentes					fuentes;
+	
 	std::unique_ptr<Controlador_principal>		controlador_principal;
 	std::unique_ptr<Controlador_controles>		controlador_controles;
+	std::unique_ptr<Controlador_editor>		controlador_editor;
 };
 
 }

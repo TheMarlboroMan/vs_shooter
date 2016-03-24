@@ -11,6 +11,8 @@ DIR_CLASES_EVENTOS=./class/app/eventos/
 
 $(DIR_O)director_estados.o :\
 $(DIR_O)controlador_principal.o \
+$(DIR_O)controlador_editor.o \
+$(DIR_O)controlador_controles.o \
 $(DIR_CONTROLADORES)director_estados.h \
 $(DIR_CONTROLADORES)director_estados.cpp
 	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CONTROLADORES)director_estados.cpp -o $(DIR_O)director_estados.o 
@@ -20,6 +22,12 @@ $(DEP_CLASES_APP)\
 $(DIR_CONTROLADORES)controles.h \
 $(DIR_CONTROLADORES)controles.cpp
 	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CONTROLADORES)controles.cpp -o $(DIR_O)controlador_controles.o 
+
+$(DIR_O)controlador_editor.o :\
+$(DEP_CLASES_APP)\
+$(DIR_CONTROLADORES)editor.h \
+$(DIR_CONTROLADORES)editor.cpp
+	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CONTROLADORES)editor.cpp -o $(DIR_O)controlador_editor.o 
 
 $(DIR_O)controlador_principal.o :\
 $(DEP_CLASES_APP)\

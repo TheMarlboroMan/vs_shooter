@@ -9,7 +9,13 @@ struct Input
 	enum inputs{
 escape=0,
 tab,
+
+//Editor...
+
 cambio_logica,
+seleccion_color,
+copiar_color,
+pegar_color,
 cargar_mapa,
 grabar_mapa,
 cursor_izquierda,
@@ -25,6 +31,8 @@ grid_mas,
 grid_menos,
 click_i,
 click_d,
+
+//De juego...
 j1_registrar,
 j1_disparo,
 j1_izquierda,
@@ -43,6 +51,8 @@ j3_izquierda,
 j3_derecha,
 j3_arriba,
 j3_abajo,
+
+//Tests...
 TEST_VISIBILIDAD,
 TEST_RUTA
 };

@@ -1,12 +1,12 @@
-#include "logica_editor.h"
+#include "editor.h"
 
 #include <fstream>
 #include <string>
 
-#include "exportador.h"
-#include "importador.h"
+#include "../app/exportador.h"
+#include "../app/importador.h"
 
-#include "framework_impl/input.h"
+#include "../app/framework_impl/input.h"
 
 #ifdef WINCOMPIL
 /* Localización del parche mingw32... Esto debería estar en otro lado, supongo. */
@@ -15,31 +15,66 @@
 
 using namespace App;
 
-Logica_editor::Logica_editor(Mapa& m)
-	:mapa(m),
-	fuente_akashi("data/fuentes/Akashi.ttf", 16),
-	struct_camara({1.0, 0, 0}), grid(20), ver_conexiones(true),
+const tcolor Objeto_editor::color_punto_ruta_editor={255, 255, 25, 128};
+const tcolor Objeto_editor::color_generador_items_editor={0, 0, 255, 128};
+const tcolor Objeto_editor::color_punto_inicio_editor={255, 0, 0, 128};
+const tcolor Objeto_editor::color_seleccion={255, 255, 255, 255};
+
+Controlador_editor::Controlador_editor(DLibH::Log_base& l, const Fuentes& f)
+	:log(l), 
+	fuente_akashi(f.obtener_fuente("akashi", 16)),
+	mensajes(fuente_akashi, 4, 16, 0),
+	widget(nullptr),
+	struct_camara({1.0, 0, 0}), color_relleno({64, 64, 64, 255}), 
+	color_linea({128, 128, 128, 255}), grid(20), ver_conexiones(true),
 	tobjeto(tobjetocreado::vertice)
 {
 
 }
 
-void Logica_editor::iniciar()
+void Controlador_editor::preloop(DFramework::Input& input, float delta)
 {
-	//No es necesario hacer nada...
+
 }
 
-void Logica_editor::finalizar()
+void Controlador_editor::loop(DFramework::Input& input, float delta)
 {
-	tobjeto=tobjetocreado::vertice;
-	poligono_construccion=Poligono_2d<double>{};
+	mensajes.turno(delta);
 
-	//Aplicar al mapa...
-	aplicar_a_mapa();
-}
+	if(input.es_senal_salida())
+	{
+		abandonar_aplicacion();
+		return;
+	}
 
-void Logica_editor::loop(DFramework::Input& input, float delta)
-{
+	if(input.es_input_down(Input::cambio_logica))
+	{
+		solicitar_cambio_estado(principal);
+		return;
+	}
+
+	if(widget.get())
+	{
+		if(widget->es_cerrar())
+		{
+			widget.reset(nullptr);
+		}
+		else
+		{
+			widget->input(input, delta);
+			return;
+		}
+	}
+	
+	if(input.es_input_down(Input::escape)) poligono_construccion=Poligono_2d<double>{};
+
+	if(input.es_input_down(Input::seleccion_color))
+	{
+		widget.reset(new Widget_editor_color(fuente_akashi, color_relleno, color_linea));
+	}
+
+	if(input.es_input_down(Input::tab)) intercambiar_objeto_creado();
+
 	pos_raton=input.acc_posicion_raton();
 
 	localizar_elementos_bajo_cursor();
@@ -62,6 +97,9 @@ void Logica_editor::loop(DFramework::Input& input, float delta)
 	
 	if(input.es_input_pulsado(Input::suprimir)) eliminar();
 
+	if(input.es_input_down(Input::copiar_color)) copiar_color();
+	else if(input.es_input_down(Input::pegar_color)) pegar_color();
+
 	if(input.es_input_pulsado(Input::control_izquierdo))
 	{
 		if(input.es_input_down(Input::cursor_arriba)) mover_seleccion(0.0, grid);
@@ -81,7 +119,7 @@ void Logica_editor::loop(DFramework::Input& input, float delta)
 
 	if(input.es_input_down(Input::TEST_VISIBILIDAD))
 	{
-		aplicar_a_mapa();
+		aplicar_a_mapa(mapa);
 		mapa.construir_nodos_ruta();
 	}
 
@@ -105,7 +143,12 @@ void Logica_editor::loop(DFramework::Input& input, float delta)
 	else if(input.es_input_down(Input::grid_mas)) cambiar_grid(1);
 }
 
-void Logica_editor::dibujar(DLibV::Pantalla& pantalla)
+void Controlador_editor::postloop(DFramework::Input& input, float delta)
+{
+
+}
+
+void Controlador_editor::dibujar(DLibV::Pantalla& pantalla)
 {
 	pantalla.limpiar(0, 0, 0, 255);
 
@@ -118,8 +161,8 @@ void Logica_editor::dibujar(DLibV::Pantalla& pantalla)
 	for(const auto& pi : puntos_inicio) pi.dibujar(r, pantalla, struct_camara);
 	for(const auto& eg : generadores_items) eg.dibujar(r, pantalla, struct_camara);
 	for(const auto& op : puntos_ruta) op.dibujar(r, pantalla, struct_camara);
-	for(const auto& oc : objetos_cursor) oc->dibujar(r, pantalla, struct_camara, false);
-	for(const auto& os : objetos_seleccionados) os->dibujar(r, pantalla, struct_camara, false);
+	for(const auto& oc : objetos_cursor) oc->dibujar(r, pantalla, struct_camara, true);
+	for(const auto& os : objetos_seleccionados) os->dibujar(r, pantalla, struct_camara, true);
 
 	if(ver_conexiones)
 	{
@@ -128,7 +171,7 @@ void Logica_editor::dibujar(DLibV::Pantalla& pantalla)
 			for(const auto& c : nr.conexiones)
 			{
 				Segmento_2d<double> s{ {nr.origen.pt.x, nr.origen.pt.y}, {c.destino.origen.pt.x, c.destino.origen.pt.y}};
-				r.dibujar_segmento(pantalla, s, {255, 255, 25, 64}, struct_camara.xcam, struct_camara.ycam, struct_camara.zoom);
+				r.dibujar_segmento(pantalla, s, {255, 255, 25, 64}, struct_camara);
 			}		
 		}
 	}
@@ -142,20 +185,20 @@ void Logica_editor::dibujar(DLibV::Pantalla& pantalla)
 		{
 			auto pt1=ruta[i-1], pt2=ruta[i];
 			Segmento_2d<double> s{ {pt1.x, pt1.y}, {pt2.x, pt2.y}};
-			r.dibujar_segmento(pantalla, s, {255, 25, 25, 128}, struct_camara.xcam, struct_camara.ycam, struct_camara.zoom);
+			r.dibujar_segmento(pantalla, s, {255, 25, 25, 128}, struct_camara);
 			++i;
 		}
 	}
 
 	for(const auto& s : poligono_construccion.acc_segmentos())
-		r.dibujar_segmento(pantalla, s, {0, 255, 0, 128}, struct_camara.xcam, struct_camara.ycam, struct_camara.zoom);		
+		r.dibujar_segmento(pantalla, s, {0, 255, 0, 128}, struct_camara);
 	
 	//Segmento en construcción...	
 	if(poligono_construccion.acc_vertices().size())
 	{
 		const auto& v=poligono_construccion.acc_vertices().back();
 		Segmento_2d<double> s{ {v.x, v.y}, {pt_raton.x, pt_raton.y}};
-		r.dibujar_segmento(pantalla, s, {0, 255, 0, 128}, struct_camara.xcam, struct_camara.ycam, struct_camara.zoom);		
+		r.dibujar_segmento(pantalla, s, {0, 255, 0, 128}, struct_camara);
 	}
 
 	std::string texto="GRID: "+std::to_string((int)grid)+" POS: "+std::to_string((int)pt_raton.x)+","+std::to_string((int)pt_raton.y);
@@ -168,31 +211,64 @@ void Logica_editor::dibujar(DLibV::Pantalla& pantalla)
 	}
 
 	DLibV::Representacion_TTF txt(fuente_akashi, {255, 255, 255, 255}, texto);
-	txt.ir_a(16, 16);
+	txt.ir_a(16, 380);
 	txt.volcar(pantalla);
 
 	//Punto actual...
-	Espaciable::tpoligono poli=Objeto_editor::cuadrado(pt_raton.x, pt_raton.y, 3);
-	r.dibujar_poligono(pantalla, poli, {255, 255, 255, 128}, struct_camara.xcam, struct_camara.ycam, struct_camara.zoom);
+	r.dibujar_poligono(pantalla, Objeto_editor::cuadrado(pt_raton.x, pt_raton.y, 3), {255, 255, 255, 128}, struct_camara);
+
+	//Color fondo y de línea...
+	r.dibujar_poligono(pantalla, Objeto_editor::cuadrado(570, 30, 10), color_relleno);
+	r.dibujar_poligono(pantalla, Objeto_editor::cuadrado(580, 40, 10), color_linea);
+
+	mensajes.dibujar(pantalla);
+	if(widget.get()) widget->dibujar(pantalla);
 }
 
-void Logica_editor::cargar_mapa()
+void Controlador_editor::despertar()
 {
+
+}
+
+void Controlador_editor::dormir()
+{
+	tobjeto=tobjetocreado::vertice;
+	poligono_construccion=Poligono_2d<double>{};
+}
+
+bool Controlador_editor::es_posible_abandonar_estado() const
+{
+	return true;
+}
+
+//////////////////////
+
+void Controlador_editor::cargar_mapa()
+{
+	const std::string nombre_fichero="mapa.dat";
+
 	mapa.limpiar();
 	Importador importador;
-	importador.importar("mapa.dat", mapa.obstaculos, mapa.puntos_inicio, mapa.puntos_ruta, mapa.generadores_items);
+	importador.importar(nombre_fichero.c_str(), mapa.obstaculos, mapa.puntos_inicio, mapa.puntos_ruta, mapa.generadores_items);
 	obtener_desde_mapa();
+	mapa.limpiar();
+
+	mensajes.insertar_mensaje(nombre_fichero+" cargado de disco", 2.f);
 }
 
-void Logica_editor::grabar_mapa()
+void Controlador_editor::grabar_mapa()
 {
-	std::ofstream fichero("mapa.dat");
+	const std::string nombre_fichero="mapa.dat";
+
+	std::ofstream fichero(nombre_fichero.c_str());
 	Exportador exportador;
-	aplicar_a_mapa();
+	aplicar_a_mapa(mapa);
 	fichero<<exportador.serializar(mapa.obstaculos, mapa.puntos_inicio, mapa.puntos_ruta, mapa.generadores_items);
+
+	mensajes.insertar_mensaje(nombre_fichero+" guardado en disco", 2.f);
 }
 
-void Logica_editor::intercambiar_objeto_creado()
+void Controlador_editor::intercambiar_objeto_creado()
 {
 	switch(tobjeto)
 	{
@@ -203,7 +279,7 @@ void Logica_editor::intercambiar_objeto_creado()
 	}
 }
 
-void Logica_editor::crear()
+void Controlador_editor::crear()
 {
 	switch(tobjeto)
 	{
@@ -222,7 +298,7 @@ void Logica_editor::crear()
 	}
 }
 
-void Logica_editor::seleccionar()
+void Controlador_editor::seleccionar()
 {	
 	if(objetos_cursor.size())
 	{
@@ -246,22 +322,22 @@ void Logica_editor::seleccionar()
 	}
 }
 
-void Logica_editor::crear_punto_inicio(DLibH::Punto_2d<double> pt)
+void Controlador_editor::crear_punto_inicio(DLibH::Punto_2d<double> pt)
 {
 	puntos_inicio.push_back(Punto_inicio_editor{pt});
 }
 
-void Logica_editor::crear_punto_ruta(DLibH::Punto_2d<double> pt)
+void Controlador_editor::crear_punto_ruta(DLibH::Punto_2d<double> pt)
 {
 	puntos_ruta.push_back(Punto_ruta_editor{pt});
 }
 
-void Logica_editor::crear_generador_items(DLibH::Punto_2d<double> pt)
+void Controlador_editor::crear_generador_items(DLibH::Punto_2d<double> pt)
 {
 	generadores_items.push_back(Generador_items_editor{pt});
 }
 
-DLibH::Punto_2d<double>	Logica_editor::punto_desde_pos_pantalla(int x, int y, bool a_rejilla)
+DLibH::Punto_2d<double>	Controlador_editor::punto_desde_pos_pantalla(int x, int y, bool a_rejilla)
 {
 	int px=struct_camara.xcam+(x/struct_camara.zoom);
 	int py=struct_camara.ycam-(y/struct_camara.zoom);
@@ -275,7 +351,7 @@ DLibH::Punto_2d<double>	Logica_editor::punto_desde_pos_pantalla(int x, int y, bo
 	return DLibH::Punto_2d<double>{(double)px, (double)py};
 }
 
-void Logica_editor::nuevo_punto(DLibH::Punto_2d<double> p)
+void Controlador_editor::nuevo_punto(DLibH::Punto_2d<double> p)
 {
 	if(poligono_construccion.acc_vertices().size() > 2 && p==poligono_construccion.acc_vertices()[0])
 	{
@@ -287,18 +363,22 @@ void Logica_editor::nuevo_punto(DLibH::Punto_2d<double> p)
 	}
 }
 
-void Logica_editor::cerrar_poligono()
+void Controlador_editor::cerrar_poligono()
 {
 	if(poligono_construccion.size() >= 3 && !poligono_construccion.es_concavo())
 	{
 		poligono_construccion.cerrar();
-		obstaculos.push_back(Obstaculo_editor(Obstaculo(poligono_construccion, {64, 64, 64, 255})));
+		obstaculos.push_back(Obstaculo_editor(Obstaculo(poligono_construccion, color_relleno, color_linea)));
+	}
+	else
+	{
+		mensajes.insertar_mensaje("Polígono convexo o erróneo", 2.f);
 	}
 
 	poligono_construccion=Poligono_2d<double>{};
 }
 
-void Logica_editor::do_crazy_pathfind()
+void Controlador_editor::do_crazy_pathfind()
 {
 	ruta.clear();
 
@@ -324,40 +404,45 @@ void Logica_editor::do_crazy_pathfind()
 	}
 }
 
-void Logica_editor::localizar_elementos_bajo_cursor()
+void Controlador_editor::localizar_elementos_bajo_cursor()
 {
 	auto pt_raton=punto_desde_pos_pantalla(pos_raton.x, pos_raton.y, false);
 	objetos_cursor.clear();
 
-	localizar_elementos_bajo_cursor_helper(obstaculos, pt_raton);
-	localizar_elementos_bajo_cursor_helper(puntos_inicio, pt_raton);
-	localizar_elementos_bajo_cursor_helper(generadores_items, pt_raton);
-	localizar_elementos_bajo_cursor_helper(puntos_ruta, pt_raton);
+	localizar_elementos_bajo_cursor_helper(obstaculos, objetos_cursor, pt_raton);
+	localizar_elementos_bajo_cursor_helper(puntos_inicio, objetos_cursor, pt_raton);
+	localizar_elementos_bajo_cursor_helper(generadores_items, objetos_cursor, pt_raton);
+	localizar_elementos_bajo_cursor_helper(puntos_ruta, objetos_cursor, pt_raton);
 }
 
-void Logica_editor::mover_seleccion(double x, double y)
+void Controlador_editor::mover_seleccion(double x, double y)
 {
 	for(auto& o : objetos_seleccionados) o->mover(x, y);
 }
 
-void Logica_editor::aplicar_a_mapa()
+void Controlador_editor::aplicar_a_mapa(Mapa& m)
 {
-	mapa.limpiar();
-	for(auto& o : obstaculos) mapa.obstaculos.push_back(o.elemento);
-	for(auto& o : puntos_ruta) mapa.puntos_ruta.push_back(o.elemento);
-	for(auto& o : puntos_inicio) mapa.puntos_inicio.push_back(o.elemento);
-	for(auto& o : generadores_items) mapa.generadores_items.push_back(o.elemento);	
+	m.limpiar();
+	for(auto& o : obstaculos) m.obstaculos.push_back(o.elemento);
+	for(auto& o : puntos_ruta) m.puntos_ruta.push_back(o.elemento);
+	for(auto& o : puntos_inicio) m.puntos_inicio.push_back(o.elemento);
+	for(auto& o : generadores_items) m.generadores_items.push_back(o.elemento);	
 }
 
-void Logica_editor::obtener_desde_mapa()
+void Controlador_editor::obtener_desde_mapa()
 {
+	obstaculos.clear();
+	puntos_ruta.clear();
+	puntos_inicio.clear();
+	generadores_items.clear();
+
 	for(auto& o : mapa.obstaculos) obstaculos.push_back(Obstaculo_editor(o));
 	for(auto& o : mapa.puntos_ruta) puntos_ruta.push_back(Punto_ruta_editor(o));
 	for(auto& o : mapa.puntos_inicio) puntos_inicio.push_back(Punto_inicio_editor(o));
 	for(auto& o : mapa.generadores_items) generadores_items.push_back(Generador_items_editor(o));
 }
 
-void Logica_editor::eliminar()
+void Controlador_editor::eliminar()
 {
 	//Esto los marca para borrar...
 	for(auto& o : objetos_seleccionados) o->borrar();
@@ -373,11 +458,35 @@ void Logica_editor::eliminar()
 	eliminar_helper(generadores_items);
 }
 
-void Logica_editor::cambiar_grid(int dir)
+void Controlador_editor::cambiar_grid(int dir)
 {
 	if(dir < 0) grid-=10.0;
 	else grid+=10;
 
 	if(grid < 10.0) grid=10.0;
 	else if(grid > 50.0) grid=50.0;
+}
+
+void Controlador_editor::pegar_color()
+{
+	if(objetos_seleccionados.size() || objetos_cursor.size())
+	{
+		mensajes.insertar_mensaje("Color pegado", 2.0f);
+		for(auto& o : objetos_seleccionados) o->colorear(color_relleno, color_linea);
+		for(auto& o : objetos_cursor) o->colorear(color_relleno, color_linea);		
+	}
+}
+
+void Controlador_editor::copiar_color()
+{
+	std::vector<Obstaculo_editor *> v;
+	auto pt=punto_desde_pos_pantalla(pos_raton.x, pos_raton.y, false);
+	for(auto& o : obstaculos) if(o.es_bajo_cursor(pt)) v.push_back(&o);
+
+	if(v.size()==1)
+	{
+		mensajes.insertar_mensaje("Color copiado", 2.0f);
+		color_relleno=v[0]->elemento.acc_color();
+		color_linea=v[0]->elemento.acc_color_linea();
+	}
 }
