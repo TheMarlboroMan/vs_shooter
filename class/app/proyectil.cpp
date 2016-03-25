@@ -8,3 +8,8 @@ Proyectil::Proyectil(int ij, double v, double t)
 {
 
 }
+
+void Proyectil::dibujar(Representador& r, DLibV::Pantalla& pantalla, const Struct_camara& struct_camara) const
+{
+	r.dibujar_poligono(pantalla, poligono, acc_color(), struct_camara);
+}

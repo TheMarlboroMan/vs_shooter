@@ -3,6 +3,7 @@
 
 #include "color.h"
 #include "espaciable.h"
+#include "representable.h"
 #include "bloque_input.h"
 
 #include "disparador.h"
@@ -12,7 +13,8 @@ namespace App
 {
 
 class Jugador:
-	public Espaciable
+	public Espaciable,
+	public Representable
 {
 	public:
 
@@ -22,8 +24,7 @@ class Jugador:
 	int				acc_salud() const {return salud;}
 	tcolor				acc_color() const {return color;}
 
-	bool				es_y_puede_disparar() const {return input_actual.disparo && arma!=nullptr && arma->es_preparada();
-	}
+	bool				es_y_puede_disparar() const {return input_actual.disparo && arma!=nullptr && arma->es_preparada();}
 
 	bool				es_arma_agotada() const;	
 	int				acc_municion_restante() const;
@@ -35,6 +36,8 @@ class Jugador:
 	void				colisionar();
 	void				restar_salud(int);
 	void				establecer_arma(Jugador_arma * a);
+
+	virtual void 			dibujar(Representador&, DLibV::Pantalla&, const Struct_camara&) const;
 
 	private:
 

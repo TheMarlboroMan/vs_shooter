@@ -280,18 +280,14 @@ void  Controlador_principal::dibujar(DLibV::Pantalla& pantalla)
 	Representador r;
 	ajustar_camara();
 
-	for(const auto& o : mapa.obstaculos)
-		r.dibujar_poligono(pantalla, o.acc_poligono(), o.acc_color(), struct_camara);
+	for(const auto& o : mapa.obstaculos) 		o.dibujar(r, pantalla, struct_camara);
+	for(const auto& g : mapa.generadores_items) 	g.dibujar(r, pantalla, struct_camara);
+	for(const auto& j : jugadores) 			j.dibujar(r, pantalla, struct_camara);
+	for(const auto& b : bots) 			b.dibujar(r, pantalla, struct_camara);
+	for(const auto& p : proyectiles) 		p->dibujar(r, pantalla, struct_camara);
 
-	for(const auto& g : mapa.generadores_items)
-		if(g.es_activo()) r.dibujar_poligono(pantalla, g.acc_poligono(), g.acc_color(), struct_camara);
-
-	for(const auto& j : jugadores)
-		r.dibujar_poligono(pantalla, j.acc_poligono(), j.acc_color(), struct_camara);
-
-	for(const auto& bot : bots)
-	{
-		r.dibujar_poligono_lineas(pantalla, bot.acc_poligono(), {255, 255, 255, 255}, struct_camara);
+	for(const auto& j : jugadores) 			dibujar_info_jugador(pantalla, j);
+	
 /*
 auto cuadrado=[](double x, double y, int rad)
 {
@@ -304,14 +300,6 @@ auto cuadrado=[](double x, double y, int rad)
 			r.dibujar_poligono(pantalla, cuadrado(pt.x, pt.y, 10), {255, 0, 0,255}, struct_camara);
 		}
 */
-	}
-
-
-	for(const auto& p : proyectiles)
-		r.dibujar_poligono(pantalla, p->acc_poligono(), p->acc_color(), struct_camara);
-	
-	for(const auto& j : jugadores) 
-		dibujar_info_jugador(pantalla, j);
 }
 
 void  Controlador_principal::despertar()

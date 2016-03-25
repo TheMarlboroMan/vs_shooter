@@ -15,6 +15,14 @@ struct tcolor
 			o.b==b &&
 			o.a==a;
 	}
+
+	bool operator!=(const tcolor& o) const
+	{
+		return o.r!=r ||
+			o.g!=g ||
+			o.b!=b ||
+			o.a!=a;
+	}
 };
 
 }

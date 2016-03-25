@@ -28,6 +28,7 @@ $(DIR_CLASES_IMPLEMENTACION_FRAMEWORK)app_config.cpp
 
 $(DIR_O)jugador.o:\
 $(DIR_O)espaciable.o\
+$(DIR_O)representable.o\
 $(DIR_O)proyectil_normal.o\
 $(DIR_CLASES_APP)color.h \
 $(DIR_CLASES_APP)bloque_input.h \
@@ -72,6 +73,7 @@ $(DIR_CLASES_APP)logica_juego.cpp
 $(DIR_O)mapa.o:\
 $(DIR_O)obstaculo.o\
 $(DIR_O)punto_ruta.o\
+$(DIR_O)representable.o\
 $(DIR_O)generador_items.o\
 $(DIR_CLASES_APP)mapa.h \
 $(DIR_CLASES_APP)mapa.cpp
@@ -103,6 +105,7 @@ $(DIR_CLASES_APP)proyectil_normal.cpp
 	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CLASES_APP)proyectil_normal.cpp -o $(DIR_O)proyectil_normal.o
 
 $(DIR_O)proyectil.o:\
+$(DIR_O)representable.o\
 $(DIR_O)espaciable.o\
 $(DIR_O)disparador.o\
 $(DIR_CLASES_APP)color.h \
@@ -140,6 +143,7 @@ $(DIR_CLASES_APP)representador.cpp
 
 $(DIR_O)bot.o:\
 $(DIR_O)espaciable.o\
+$(DIR_O)representable.o\
 $(DIR_O)disparador.o\
 $(DIR_O)mapa.o\
 $(DIR_O)trazador_ruta.o\
@@ -149,6 +153,7 @@ $(DIR_CLASES_APP)bot.cpp
 
 $(DIR_O)generador_items.o:\
 $(DIR_O)espaciable.o\
+$(DIR_O)representable.o\
 $(DIR_CLASES_APP)generador_items.h \
 $(DIR_CLASES_APP)generador_items.cpp
 	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CLASES_APP)generador_items.cpp -o $(DIR_O)generador_items.o
@@ -222,6 +227,12 @@ $(DIR_O)fuentes.o:\
 $(DIR_CLASES_APP)fuentes.h \
 $(DIR_CLASES_APP)fuentes.cpp
 	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CLASES_APP)fuentes.cpp -o $(DIR_O)fuentes.o
+
+$(DIR_O)representable.o:\
+$(DIR_O)representador.o\
+$(DIR_CLASES_APP)representable.h \
+$(DIR_CLASES_APP)representable.cpp
+	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CLASES_APP)representable.cpp -o $(DIR_O)representable.o
 
 $(DIR_O)disparador.o:\
 $(DIR_CLASES_APP)disparador.h \

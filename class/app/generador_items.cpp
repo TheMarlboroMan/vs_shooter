@@ -75,3 +75,12 @@ void Generador_items::formar_poligono()
 	poligono.cerrar();
 	poligono.mut_centro({-10.0, -10.0});
 }
+
+void Generador_items::dibujar(Representador& r, DLibV::Pantalla& pantalla, const Struct_camara& struct_camara) const
+{
+	if(!tiempo_restante) 
+	{
+		r.dibujar_poligono(pantalla, poligono, acc_color(), struct_camara);
+	}
+
+}

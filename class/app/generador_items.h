@@ -3,6 +3,7 @@
 
 #include "espaciable.h"
 #include "color.h"
+#include "representable.h"
 
 namespace App
 {
@@ -13,7 +14,8 @@ namespace App
 */
 
 class Generador_items:
-	public Espaciable
+	public Espaciable,
+	public Representable
 {
 	public:
 
@@ -27,6 +29,8 @@ class Generador_items:
 
 	void				turno(float);
 	void				reiniciar();
+
+	virtual void 			dibujar(Representador&, DLibV::Pantalla&, const Struct_camara&) const;
 
 	private:
 

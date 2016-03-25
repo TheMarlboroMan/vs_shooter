@@ -3,6 +3,7 @@
 
 #include <class/generador_numeros.h>
 #include "espaciable.h"
+#include "representable.h"
 #include "trazador_ruta.h"
 #include "mapa.h"
 #include "disparador.h"
@@ -11,7 +12,8 @@ namespace App
 {
 
 class Bot:
-	public Espaciable
+	public Espaciable,
+	public Representable
 {
 	public:
 
@@ -25,6 +27,8 @@ class Bot:
 	void				restar_salud(int);
 	int				acc_salud() const {return salud;}
 	const std::vector<Espaciable::tpunto>&	acc_ruta() const {return ruta;}
+
+	virtual void 			dibujar(Representador&, DLibV::Pantalla&, const Struct_camara&) const;
 
 	private:
 

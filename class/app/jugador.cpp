@@ -140,3 +140,8 @@ bool Jugador::es_arma_agotada() const
 	if(arma!=nullptr) return arma->es_agotada();
 	else return true;
 }
+
+void Jugador::dibujar(Representador& r, DLibV::Pantalla& pantalla, const Struct_camara& struct_camara) const
+{
+	r.dibujar_poligono(pantalla, poligono, color, struct_camara);
+}

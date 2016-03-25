@@ -4,12 +4,14 @@
 #include "color.h"
 #include "espaciable.h"
 #include "disparador.h"
+#include "representable.h"
 
 namespace App
 {
 
 class Proyectil:
-	public Espaciable
+	public Espaciable,
+	public Representable
 {
 	public:
 
@@ -25,6 +27,8 @@ class Proyectil:
 	virtual void		turno(float)=0;
 	virtual void		formar_poligono()=0;
 	virtual void		preparar(double, DLibH::Punto_2d<double>)=0;
+
+	virtual void 		dibujar(Representador&, DLibV::Pantalla&, const Struct_camara&) const;
 
 	protected:
 

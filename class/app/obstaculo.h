@@ -3,12 +3,14 @@
 
 #include "color.h"
 #include "espaciable.h"
+#include "representable.h"
 
 namespace App
 {
 
 class Obstaculo:
-	public Espaciable
+	public Espaciable,
+	public Representable
 {
 	public:
 
@@ -18,6 +20,8 @@ class Obstaculo:
 
 	void				mut_color(tcolor c) {color=c;}
 	void				mut_color_linea(tcolor c) {color_linea=c;}
+
+	virtual void 			dibujar(Representador&, DLibV::Pantalla&, const Struct_camara&) const;
 
 	private:
 
