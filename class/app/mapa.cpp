@@ -6,6 +6,7 @@ void Mapa::limpiar()
 {
 	obstaculos.clear();
 	puntos_inicio.clear();
+	puntos_bot.clear();
 	generadores_items.clear();
 	puntos_ruta.clear();
 	nodos_ruta.clear();
@@ -43,7 +44,9 @@ void Mapa::construir_nodos_ruta()
 		{
 			if(n.origen.id != on.origen.id)
 			{
-				if(visibilidad_entre_puntos(n.origen.pt, on.origen.pt))
+				auto pta=n.origen.pt, ptb=on.origen.pt;
+
+				if(visibilidad_entre_puntos(pta, ptb) && comprobacion_ancho(pta, ptb, 12.0) )
 				{
 					n.conexiones.push_back(Nodo_ruta::conexion{on, n.origen.pt.distancia_hasta(on.origen.pt)});
 				}
@@ -52,17 +55,6 @@ void Mapa::construir_nodos_ruta()
 
 		//TODO: Quizás eliminar los duplicados...
 	}
-
-/*
-	for(const auto& n : nodos_ruta)
-	{
-std::cout<<"ORIGEN EN "<<n.origen.id<<":"<<std::endl;
-		for(const auto& c : n.conexiones)
-		{
-std::cout<<"\t"<<c.destino.id<<" ["<<c.distancia<<"]"<<std::endl;
-		}
-	}
-*/
 }
 
 void Mapa::inicializar()
@@ -71,14 +63,6 @@ void Mapa::inicializar()
 	construir_nodos_ruta();
 }
 
-	//TODO: Este algoritmo se puede mejorar añadiendo los dos nuevos puntos como
-	//puntos de ruta temporales: volvemos a computar y luego los borramos. De esta
-	//forma evitaríamos desde el punto de inicio al siguiente más cercano aunque luego
-	//tengamos que dar la vuelta. Resolver el primer punto es sencillo: lo tratamos como
-	//un punto de ruta normal sin que el resto se vinculen a él.
-	//Resolver el último ya es más complicado sin reconstruir el mapa cada vez, puesto
-	//que los nodos reales tienen que vincularse y al terminar habría que desvincularlos.
-		
 const Nodo_ruta * Mapa::localizar_nodo_cercano(Espaciable::tpunto pt) const
 {
 	const Nodo_ruta * res=nullptr;
@@ -87,7 +71,7 @@ const Nodo_ruta * Mapa::localizar_nodo_cercano(Espaciable::tpunto pt) const
 	{
 		double d=pt.distancia_hasta(n.origen.pt);
 
-		if((dist < 0.0 || d <= dist) && visibilidad_entre_puntos(pt, n.origen.pt))
+		if((dist < 0.0 || d <= dist) && visibilidad_entre_puntos(pt, n.origen.pt) && comprobacion_ancho(pt, n.origen.pt, 12.0))
 		{
 			dist=d;
 			res=&n;
@@ -95,4 +79,46 @@ const Nodo_ruta * Mapa::localizar_nodo_cercano(Espaciable::tpunto pt) const
 	}
 
 	return res;
+}
+
+//La razón para recibir directamente un punto de ruta es porque el nodo necesita
+//una REFERENCIA a un punto de ruta. No podemos crearlo aquí y dejarlo 
+//apuntando a memoria inválida.
+Nodo_ruta Mapa::crear_inicio_temporal(Punto_ruta& pr) const
+{
+	Nodo_ruta nr{pr};
+
+	for(const auto& n : nodos_ruta)
+	{
+		auto pta=pr.pt, ptb=n.origen.pt; 
+
+		if(visibilidad_entre_puntos(pta, ptb) && comprobacion_ancho(pta, ptb, 12.0))
+		{
+			nr.conexiones.push_back(Nodo_ruta::conexion{n, n.origen.pt.distancia_hasta(n.origen.pt)});
+		}
+	}
+
+	return nr;
+}
+
+bool Mapa::comprobacion_ancho(Espaciable::tpunto pta, Espaciable::tpunto ptb, double ancho) const
+{
+	auto pt_mas_vector=[](Punto_2d<double> pt, Vector_2d<double> v, double fac)
+	{
+		auto res=pt;
+		res.x+=v.x * fac;
+		res.y+=v.y * fac;
+		return res;
+	};
+
+	//Coger el vector entre los puntos, desplazar perpendicularmente, probar más posiciones.
+	auto v=obtener_para_puntos_cartesiano(pta.x, pta.y, ptb.x, ptb.y).perpendicular();
+
+	auto ptc=pt_mas_vector(pta, v, ancho), ptd=pt_mas_vector(ptb, v, ancho);
+	if(!visibilidad_entre_puntos(ptc, ptd)) return false;
+	
+	auto pte=pt_mas_vector(pta, v, -ancho), ptf=pt_mas_vector(ptb, v, -ancho);
+	if(!visibilidad_entre_puntos(pte, ptf)) return false;
+
+	return true;
 }

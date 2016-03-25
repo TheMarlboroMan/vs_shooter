@@ -13,7 +13,7 @@ class Importador
 {
 	public:
 
-	void 		importar(const std::string&, std::vector<Obstaculo>&, std::vector<DLibH::Punto_2d<double>>&, std::vector<Punto_ruta>&, std::vector<Generador_items>&);
+	void 		importar(const std::string&, std::vector<Obstaculo>&, std::vector<DLibH::Punto_2d<double>>&, std::vector<DLibH::Punto_2d<double>>&, std::vector<Punto_ruta>&, std::vector<Generador_items>&);
 
 	private:
 

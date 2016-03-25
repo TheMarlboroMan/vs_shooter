@@ -16,6 +16,7 @@ class Proyectil:
 				Proyectil(int, double, double);
 
 	bool			es_activo() const {return tiempo > 0.0f;}
+	int			acc_indice_jugador() const {return indice_jugador;}
 
 	virtual void		extinguir(std::vector<Disparador>&)=0;
 	virtual void		colisionar(std::vector<Disparador>&)=0;

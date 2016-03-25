@@ -59,6 +59,7 @@ class Controlador_editor:
 	void					nuevo_punto(DLibH::Punto_2d<double>);
 	void					cerrar_poligono();
 	void					crear_punto_inicio(DLibH::Punto_2d<double>);
+	void 					crear_punto_bot(DLibH::Punto_2d<double>);
 	void					crear_punto_ruta(DLibH::Punto_2d<double>);
 	void					crear_generador_items(DLibH::Punto_2d<double>);
 	void					localizar_elementos_bajo_cursor();
@@ -84,6 +85,7 @@ class Controlador_editor:
 	std::unique_ptr<Widget_editor_interface>	widget;
 	std::vector<Obstaculo_editor>		obstaculos;
 	std::vector<Punto_inicio_editor>	puntos_inicio;
+	std::vector<Punto_bot_editor>		puntos_bot;
 	std::vector<Punto_ruta_editor>		puntos_ruta;
 	std::vector<Generador_items_editor>	generadores_items;
 
@@ -94,7 +96,7 @@ class Controlador_editor:
 						color_linea;
 	int					grid;
 	bool					ver_conexiones;
-	enum class tobjetocreado		{vertice, punto_ruta, inicio, arma} tobjeto;
+	enum class tobjetocreado		{vertice, punto_ruta, inicio, bot, arma} tobjeto;
 
 	std::vector<DLibH::Punto_2d<double>>	ruta;
 	std::vector<Objeto_editor *>		objetos_cursor;

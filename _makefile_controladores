@@ -2,6 +2,8 @@
 #Definiciones...
 
 DIR_CONTROLADORES=./class/controladores/
+DIR_HEADERS_APP=./class/app/
+DIR_HEADERS_IMPL=./class/app/framework_impl/
 DIR_FRAMEWORK=./class/framework/
 DIR_CLASES_EVENTOS=./class/app/eventos/
 
@@ -18,19 +20,52 @@ $(DIR_CONTROLADORES)director_estados.cpp
 	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CONTROLADORES)director_estados.cpp -o $(DIR_O)director_estados.o 
 
 $(DIR_O)controlador_controles.o :\
-$(DEP_CLASES_APP)\
+$(DIR_O)fuentes.o\
+$(DIR_O)app_config.o\
+$(DIR_HEADERS_IMPL)input.h\
+$(DIR_CONTROLADORES)estados_controladores.h \
 $(DIR_CONTROLADORES)controles.h \
 $(DIR_CONTROLADORES)controles.cpp
 	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CONTROLADORES)controles.cpp -o $(DIR_O)controlador_controles.o 
 
 $(DIR_O)controlador_editor.o :\
-$(DEP_CLASES_APP)\
+$(DIR_O)exportador.o\
+$(DIR_O)importador.o\
+$(DIR_O)mapa.o\
+$(DIR_O)mensajes.o\
+$(DIR_O)trazador_ruta.o\
+$(DIR_O)representador.o\
+$(DIR_O)fuentes.o\
+$(DIR_O)widget_editor_color.o\
+$(DIR_HEADERS_APP)struct_camara.h\
+$(DIR_HEADERS_APP)logica_editor_objetos.h\
+$(DIR_HEADERS_IMPL)input.h\
+$(DIR_CONTROLADORES)estados_controladores.h \
 $(DIR_CONTROLADORES)editor.h \
 $(DIR_CONTROLADORES)editor.cpp
 	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CONTROLADORES)editor.cpp -o $(DIR_O)controlador_editor.o 
 
 $(DIR_O)controlador_principal.o :\
-$(DEP_CLASES_APP)\
+$(DIR_O)fuentes.o\
+$(DIR_O)mapa.o\
+$(DIR_O)jugador.o\
+$(DIR_O)bot.o\
+$(DIR_O)proyectil.o\
+$(DIR_O)disparador.o\
+$(DIR_O)representador.o\
+$(DIR_O)importador.o\
+$(DIR_O)jugador_arma_divide.o\
+$(DIR_O)jugador_arma_explosivo.o\
+$(DIR_O)jugador_arma_normal.o\
+$(DIR_O)jugador_arma_trasero.o\
+$(DIR_O)jugador_arma_triple.o\
+$(DIR_O)proyectil_normal.o\
+$(DIR_O)proyectil_peq.o\
+$(DIR_O)proyectil_divide.o\
+$(DIR_O)proyectil_explosivo.o\
+$(DIR_HEADERS_APP)struct_camara.h\
+$(DIR_HEADERS_APP)bloque_input.h\
+$(DIR_HEADERS_IMPL)input.h\
 $(DIR_CONTROLADORES)principal.h \
 $(DIR_CONTROLADORES)principal.cpp
 	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CONTROLADORES)principal.cpp -o $(DIR_O)controlador_principal.o 

@@ -18,7 +18,9 @@ using namespace App;
 const tcolor Objeto_editor::color_punto_ruta_editor={255, 255, 25, 128};
 const tcolor Objeto_editor::color_generador_items_editor={0, 0, 255, 128};
 const tcolor Objeto_editor::color_punto_inicio_editor={255, 0, 0, 128};
+const tcolor Objeto_editor::color_punto_bot_editor={0, 0, 255, 255};
 const tcolor Objeto_editor::color_seleccion={255, 255, 255, 255};
+
 
 Controlador_editor::Controlador_editor(DLibH::Log_base& l, const Fuentes& f)
 	:log(l), 
@@ -76,10 +78,8 @@ void Controlador_editor::loop(DFramework::Input& input, float delta)
 	if(input.es_input_down(Input::tab)) intercambiar_objeto_creado();
 
 	pos_raton=input.acc_posicion_raton();
-
 	localizar_elementos_bajo_cursor();
 
-	if(input.es_input_down(Input::tab)) intercambiar_objeto_creado();
 	if(input.es_input_down(Input::cargar_mapa)) cargar_mapa();	
 	else if(input.es_input_down(Input::grabar_mapa)) grabar_mapa();
 
@@ -159,6 +159,7 @@ void Controlador_editor::dibujar(DLibV::Pantalla& pantalla)
 
 	for(const auto& eo : obstaculos) eo.dibujar(r, pantalla, struct_camara);
 	for(const auto& pi : puntos_inicio) pi.dibujar(r, pantalla, struct_camara);
+	for(const auto& pb : puntos_bot) pb.dibujar(r, pantalla, struct_camara);
 	for(const auto& eg : generadores_items) eg.dibujar(r, pantalla, struct_camara);
 	for(const auto& op : puntos_ruta) op.dibujar(r, pantalla, struct_camara);
 	for(const auto& oc : objetos_cursor) oc->dibujar(r, pantalla, struct_camara, true);
@@ -207,6 +208,7 @@ void Controlador_editor::dibujar(DLibV::Pantalla& pantalla)
 		case tobjetocreado::vertice: texto+=" [vertex]"; break;
 		case tobjetocreado::punto_ruta: texto+=" [waypoint]"; break;
 		case tobjetocreado::inicio: texto+=" [spawn]"; break;
+		case tobjetocreado::bot: texto+=" [bot]"; break;
 		case tobjetocreado::arma: texto+=" [weapon]"; break;
 	}
 
@@ -249,7 +251,7 @@ void Controlador_editor::cargar_mapa()
 
 	mapa.limpiar();
 	Importador importador;
-	importador.importar(nombre_fichero.c_str(), mapa.obstaculos, mapa.puntos_inicio, mapa.puntos_ruta, mapa.generadores_items);
+	importador.importar(nombre_fichero.c_str(), mapa.obstaculos, mapa.puntos_inicio, mapa.puntos_bot, mapa.puntos_ruta, mapa.generadores_items);
 	obtener_desde_mapa();
 	mapa.limpiar();
 
@@ -263,7 +265,7 @@ void Controlador_editor::grabar_mapa()
 	std::ofstream fichero(nombre_fichero.c_str());
 	Exportador exportador;
 	aplicar_a_mapa(mapa);
-	fichero<<exportador.serializar(mapa.obstaculos, mapa.puntos_inicio, mapa.puntos_ruta, mapa.generadores_items);
+	fichero<<exportador.serializar(mapa.obstaculos, mapa.puntos_inicio, mapa.puntos_bot, mapa.puntos_ruta, mapa.generadores_items);
 
 	mensajes.insertar_mensaje(nombre_fichero+" guardado en disco", 2.f);
 }
@@ -272,10 +274,11 @@ void Controlador_editor::intercambiar_objeto_creado()
 {
 	switch(tobjeto)
 	{
-		case tobjetocreado::vertice: tobjeto=tobjetocreado::punto_ruta; break;
+		case tobjetocreado::vertice: 	tobjeto=tobjetocreado::punto_ruta; break;
 		case tobjetocreado::punto_ruta: tobjeto=tobjetocreado::inicio; break;
-		case tobjetocreado::inicio: tobjeto=tobjetocreado::arma; break;
-		case tobjetocreado::arma: tobjeto=tobjetocreado::vertice; break;
+		case tobjetocreado::inicio: 	tobjeto=tobjetocreado::bot; break;
+		case tobjetocreado::bot: 	tobjeto=tobjetocreado::arma; break;
+		case tobjetocreado::arma: 	tobjeto=tobjetocreado::vertice; break;
 	}
 }
 
@@ -291,6 +294,9 @@ void Controlador_editor::crear()
 		break;
 		case tobjetocreado::inicio:
 			crear_punto_inicio(punto_desde_pos_pantalla(pos_raton.x, pos_raton.y));
+		break;
+		case tobjetocreado::bot:
+			crear_punto_bot(punto_desde_pos_pantalla(pos_raton.x, pos_raton.y));
 		break;
 		case tobjetocreado::arma:
 			crear_generador_items(punto_desde_pos_pantalla(pos_raton.x, pos_raton.y));
@@ -325,6 +331,11 @@ void Controlador_editor::seleccionar()
 void Controlador_editor::crear_punto_inicio(DLibH::Punto_2d<double> pt)
 {
 	puntos_inicio.push_back(Punto_inicio_editor{pt});
+}
+
+void Controlador_editor::crear_punto_bot(DLibH::Punto_2d<double> pt)
+{
+	puntos_bot.push_back(Punto_bot_editor{pt});
 }
 
 void Controlador_editor::crear_punto_ruta(DLibH::Punto_2d<double> pt)
@@ -411,6 +422,7 @@ void Controlador_editor::localizar_elementos_bajo_cursor()
 
 	localizar_elementos_bajo_cursor_helper(obstaculos, objetos_cursor, pt_raton);
 	localizar_elementos_bajo_cursor_helper(puntos_inicio, objetos_cursor, pt_raton);
+	localizar_elementos_bajo_cursor_helper(puntos_bot, objetos_cursor, pt_raton);
 	localizar_elementos_bajo_cursor_helper(generadores_items, objetos_cursor, pt_raton);
 	localizar_elementos_bajo_cursor_helper(puntos_ruta, objetos_cursor, pt_raton);
 }
@@ -426,6 +438,7 @@ void Controlador_editor::aplicar_a_mapa(Mapa& m)
 	for(auto& o : obstaculos) m.obstaculos.push_back(o.elemento);
 	for(auto& o : puntos_ruta) m.puntos_ruta.push_back(o.elemento);
 	for(auto& o : puntos_inicio) m.puntos_inicio.push_back(o.elemento);
+	for(auto& o : puntos_bot) m.puntos_bot.push_back(o.elemento);
 	for(auto& o : generadores_items) m.generadores_items.push_back(o.elemento);	
 }
 
@@ -434,11 +447,13 @@ void Controlador_editor::obtener_desde_mapa()
 	obstaculos.clear();
 	puntos_ruta.clear();
 	puntos_inicio.clear();
+	puntos_bot.clear();
 	generadores_items.clear();
 
 	for(auto& o : mapa.obstaculos) obstaculos.push_back(Obstaculo_editor(o));
 	for(auto& o : mapa.puntos_ruta) puntos_ruta.push_back(Punto_ruta_editor(o));
 	for(auto& o : mapa.puntos_inicio) puntos_inicio.push_back(Punto_inicio_editor(o));
+	for(auto& o : mapa.puntos_bot) puntos_bot.push_back(Punto_bot_editor(o));
 	for(auto& o : mapa.generadores_items) generadores_items.push_back(Generador_items_editor(o));
 }
 
@@ -455,6 +470,7 @@ void Controlador_editor::eliminar()
 	eliminar_helper(obstaculos);
 	eliminar_helper(puntos_ruta);
 	eliminar_helper(puntos_inicio);
+	eliminar_helper(puntos_bot);
 	eliminar_helper(generadores_items);
 }
 

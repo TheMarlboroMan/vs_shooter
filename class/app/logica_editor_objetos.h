@@ -26,6 +26,7 @@ class Objeto_editor
 	static const tcolor	color_punto_ruta_editor;
 	static const tcolor	color_generador_items_editor;
 	static const tcolor 	color_punto_inicio_editor;
+	static const tcolor	color_punto_bot_editor;
 	static const tcolor	color_seleccion;
 
 	protected:
@@ -104,7 +105,7 @@ class Punto_inicio_editor:
 	virtual bool		es_bajo_cursor(punto pt) const {return punto_en_poligono(poligono, pt);}
 	virtual void		dibujar(Representador& r,DLibV::Pantalla& pantalla, const Struct_camara& struct_camara, bool seleccionado=false) const
 	{
-		dibujar_poligono(r, pantalla, poligono, color_punto_inicio_editor, color_punto_ruta_editor, struct_camara, seleccionado);
+		dibujar_poligono(r, pantalla, poligono, color_punto_inicio_editor, color_punto_inicio_editor, struct_camara, seleccionado);
 	}
 
 	private:
@@ -155,6 +156,36 @@ class Punto_ruta_editor:
 
 	Espaciable::tpoligono	poligono;
 };
+
+class Punto_bot_editor:
+	public Objeto_editor
+{
+	public:
+
+	Punto_bot_editor(const Espaciable::tpunto& pi)
+		:elemento(pi), poligono(cuadrado(pi.x, pi.y, 6))
+	{
+	}
+
+	Espaciable::tpunto	elemento;
+	virtual void		colorear(const tcolor&, const tcolor&) {}
+	virtual void		mover(double x, double y) 
+	{
+		elemento.x+=x; elemento.y+=y;
+		poligono=cuadrado(elemento.x, elemento.y, 6);
+	}
+	virtual bool		es_bajo_cursor(punto pt) const {return punto_en_poligono(poligono, pt);}
+	virtual void		dibujar(Representador& r,DLibV::Pantalla& pantalla, const Struct_camara& struct_camara, bool seleccionado=false) const
+	{
+		dibujar_poligono(r, pantalla, poligono, color_punto_bot_editor, color_punto_bot_editor, struct_camara, seleccionado);
+	}
+
+	private:
+
+	Espaciable::tpoligono	poligono;
+};
+
+
 }
 
 #endif

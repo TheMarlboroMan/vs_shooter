@@ -107,7 +107,7 @@ void Controlador_controles::loop(DFramework::Input& input, float delta)
 
 	if(input.es_input_down(Input::escape))
 	{
-		solicitar_cambio_estado(editor);
+		solicitar_cambio_estado(principal);
 		return;
 	}
 

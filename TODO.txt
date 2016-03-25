@@ -10,6 +10,3 @@ Game:
 
 Bots:
 
-	- Bots can shoot you.
-	- There can be many bots.
-	- Bots can be shot.

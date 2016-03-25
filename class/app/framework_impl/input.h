@@ -33,6 +33,7 @@ click_i,
 click_d,
 
 //De juego...
+cambio_controles,
 j1_registrar,
 j1_disparo,
 j1_izquierda,
@@ -54,7 +55,8 @@ j3_abajo,
 
 //Tests...
 TEST_VISIBILIDAD,
-TEST_RUTA
+TEST_RUTA,
+NUEVO_BOT
 };
 
 };

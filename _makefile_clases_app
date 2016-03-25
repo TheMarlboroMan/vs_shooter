@@ -140,6 +140,7 @@ $(DIR_CLASES_APP)representador.cpp
 
 $(DIR_O)bot.o:\
 $(DIR_O)espaciable.o\
+$(DIR_O)disparador.o\
 $(DIR_O)mapa.o\
 $(DIR_O)trazador_ruta.o\
 $(DIR_CLASES_APP)bot.h \

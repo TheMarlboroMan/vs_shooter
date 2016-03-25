@@ -57,9 +57,16 @@ void Controlador_principal::loop(DFramework::Input& input, float delta)
 		return;
 	}
 
+	if(input.es_input_down(Input::cambio_controles))
+	{
+		solicitar_cambio_estado(controles);
+		return;
+	}
+
 	if(input.es_input_down(Input::j1_registrar)) registrar_jugador(1);
 	if(input.es_input_down(Input::j2_registrar)) registrar_jugador(2);
 	if(input.es_input_down(Input::j3_registrar)) registrar_jugador(3);
+	if(input.es_input_down(Input::NUEVO_BOT)) registrar_bot();
 
 	//Procesar generadores...
 	for(auto& g : mapa.generadores_items)
@@ -102,6 +109,20 @@ void Controlador_principal::loop(DFramework::Input& input, float delta)
 
 		if(!borrar)
 		{
+			for(auto& bot : bots)
+			{
+				//Los proyectiles de los bots no afectan a otros bots.
+				if(p.acc_indice_jugador() && p.en_colision_con(bot))
+				{
+					bot.restar_salud(p.acc_potencia());
+					p.colisionar(disparadores);		
+					borrar=true;
+				}
+			}
+		}
+
+		if(!borrar)
+		{
 			for(auto& o : mapa.obstaculos)
 			{
 				if(p.en_colision_con(o))
@@ -116,7 +137,39 @@ void Controlador_principal::loop(DFramework::Input& input, float delta)
 		else ++p_ini;
 	}
 
-	bot.turno(mapa, delta);
+	{
+		auto inib=std::begin(bots);
+		while(inib < std::end(bots))
+		{
+			auto& bot=*inib;
+
+			if(!bot.es_activo())
+			{
+				if(jugadores.size())
+				{
+					//TODO: Código repetido.
+					Herramientas_proyecto::Generador_int genj(0, jugadores.size()-1);
+					bot.establecer_destino(jugadores[genj()]);
+				}
+				else
+				{
+					//TODO: Forzar vuelta a algún punto???
+					//TODO: La vuelta debería ser "pacifica", que no dispare...
+				}
+			}
+			
+
+			if(!bot.acc_salud())
+			{
+				inib=bots.erase(inib);
+			}
+			else
+			{	
+				bot.turno(mapa, disparadores, delta);
+				++inib;
+			}
+		}
+	}
 
 	//TODO: Separar...
 	auto ini_j=std::begin(jugadores);
@@ -177,8 +230,19 @@ void Controlador_principal::loop(DFramework::Input& input, float delta)
 			}
 		}
 
+		for(auto& ob : bots)
+		{
+			if(j.en_colision_con(ob))
+			{
+				j.colisionar();
+				colision=true;
+				break;
+			}
+		}
+
 		if(!j.acc_salud())
 		{
+			pre_eliminar_jugador(j);
 			ini_j=jugadores.erase(ini_j);
 			continue;
 		}
@@ -217,28 +281,37 @@ void  Controlador_principal::dibujar(DLibV::Pantalla& pantalla)
 	ajustar_camara();
 
 	for(const auto& o : mapa.obstaculos)
-	{
 		r.dibujar_poligono(pantalla, o.acc_poligono(), o.acc_color(), struct_camara);
-	}
 
 	for(const auto& g : mapa.generadores_items)
-	{
 		if(g.es_activo()) r.dibujar_poligono(pantalla, g.acc_poligono(), g.acc_color(), struct_camara);
-	}
 
 	for(const auto& j : jugadores)
-	{
 		r.dibujar_poligono(pantalla, j.acc_poligono(), j.acc_color(), struct_camara);
+
+	for(const auto& bot : bots)
+	{
+		r.dibujar_poligono_lineas(pantalla, bot.acc_poligono(), {255, 255, 255, 255}, struct_camara);
+/*
+auto cuadrado=[](double x, double y, int rad)
+{
+	return Espaciable::tpoligono { {{x-rad, y-rad}, {x-rad, y+rad}, {x+rad, y+rad}, {x+rad, y-rad}}, {x, y}};
+};
+
+		auto& pts=bot.acc_ruta();
+		for(const auto& pt : pts)
+		{
+			r.dibujar_poligono(pantalla, cuadrado(pt.x, pt.y, 10), {255, 0, 0,255}, struct_camara);
+		}
+*/
 	}
 
-	r.dibujar_poligono_lineas(pantalla, bot.acc_poligono(), {255, 255, 255, 255}, struct_camara);
 
 	for(const auto& p : proyectiles)
-	{
 		r.dibujar_poligono(pantalla, p->acc_poligono(), p->acc_color(), struct_camara);
-	}
 	
-	for(const auto& j : jugadores) dibujar_info_jugador(pantalla, j);
+	for(const auto& j : jugadores) 
+		dibujar_info_jugador(pantalla, j);
 }
 
 void  Controlador_principal::despertar()
@@ -265,28 +338,13 @@ Bloque_input Controlador_principal::obtener_bloque_input(DFramework::Input& inpu
 {
 	Bloque_input res{0, 0, false};
 
-	if(input.es_input_pulsado(traduccion.arriba))
-	{
-		res.aceleracion=1;
-	}
-	else if(input.es_input_pulsado(traduccion.abajo))
-	{
-		res.aceleracion=-1;
-	}
+	if(input.es_input_pulsado(traduccion.arriba)) res.aceleracion=1;
+	else if(input.es_input_pulsado(traduccion.abajo)) res.aceleracion=-1;
 
-	if(input.es_input_pulsado(traduccion.izquierda))
-	{
-		res.giro=1;
-	}
-	else if(input.es_input_pulsado(traduccion.derecha))
-	{
-		res.giro=-1;
-	}
+	if(input.es_input_pulsado(traduccion.izquierda)) res.giro=1;
+	else if(input.es_input_pulsado(traduccion.derecha)) res.giro=-1;
 
-	if(input.es_input_down(traduccion.disparo))
-	{
-		res.disparo=true;
-	}
+	if(input.es_input_down(traduccion.disparo)) res.disparo=true;
 
 	return res;
 }
@@ -329,15 +387,18 @@ void Controlador_principal::registrar_jugador(int indice)
 
 		Jugador j={indice, color};
 
-		Herramientas_proyecto::Generador_int gen(0, mapa.puntos_inicio.size()-1);
+		size_t capacidad=mapa.puntos_inicio.size()-1;
+		std::vector<size_t> indices(capacidad);
+		std::iota(std::begin(indices), std::end(indices), 0);
+		std::random_shuffle(std::begin(indices), std::end(indices));
 
-		//Comprobar que está vacío (posible bucle infinito).
-		while(true)
+		for(size_t indice : indices)
 		{
-			auto pt=mapa.puntos_inicio[gen()];
+			bool colision=false;
+
+			auto pt=mapa.puntos_inicio[indice];
 			j.establecer_posicion(pt.x, pt.y);
 
-			bool colision=false;
 			for(auto& oj : jugadores)
 			{
 				if(j.en_colision_con(oj))
@@ -346,33 +407,14 @@ void Controlador_principal::registrar_jugador(int indice)
 					break;
 				}
 			}
-
-			if(!colision) break;
-		};
-
-		j.establecer_arma(new Jugador_arma_normal());
-		jugadores.push_back(std::move(j));
-
-		//TODO: Esto es experimental...
-		//Comprobar que está vacío (posible bucle infinito).
-		while(true)
-		{
-			auto pt=mapa.puntos_inicio[gen()];
-			bot.establecer_posicion(pt.x, pt.y);
-			bot.establecer_destino(jugadores.back());
-
-			bool colision=false;
-			for(auto& oj : jugadores)
-			{
-				if(bot.en_colision_con(oj))
-				{
-					colision=true;
-					break;
-				}
+				
+			if(!colision) 
+			{		
+				j.establecer_arma(new Jugador_arma_normal());
+				jugadores.push_back(std::move(j));
+				break;
 			}
-
-			if(!colision) break;
-		};
+		}
 	}
 }
 
@@ -400,7 +442,8 @@ void Controlador_principal::ajustar_camara()
 			else if(c.y > ymax) ymax=c.y;
 		}
 
-		//TODO: Experimental: centrando con bot.
+		//TODO: Experimental: centrando con bot.		
+		for(const auto& bot : bots)
 		{
 			const auto& c=bot.acc_poligono().acc_centro();
 			if(c.x < xmin) xmin=c.x;
@@ -424,7 +467,6 @@ void Controlador_principal::ajustar_camara()
 		struct_camara.zoom=zoomx < zoomy ? zoomx : zoomy;
 		if(struct_camara.zoom > 1.0) struct_camara.zoom=1.0;
 	}
-	
 }
 
 void Controlador_principal::procesar_disparadores()
@@ -488,4 +530,66 @@ void Controlador_principal::dibujar_info_jugador(DLibV::Pantalla& pantalla, cons
 	DLibV::Representacion_TTF txt(fuente_akashi, {(Uint8)jc.r, (Uint8)jc.g, (Uint8)jc.b, 192}, texto);
 	txt.ir_a(x, y);
 	txt.volcar(pantalla);
+}
+
+void Controlador_principal::registrar_bot()
+{
+	if(!mapa.puntos_bot.size()) return;
+		
+	Bot bot;
+	Herramientas_proyecto::Generador_int gen(0, mapa.puntos_bot.size()-1);
+
+	if(jugadores.size())
+	{
+		Herramientas_proyecto::Generador_int genj(0, jugadores.size()-1);
+		bot.establecer_destino(jugadores[genj()]);
+	}
+
+	//Comprobar que no hay jugadores ni bots.
+	size_t capacidad=mapa.puntos_bot.size()-1;
+	std::vector<size_t> indices(capacidad);
+	std::iota(std::begin(indices), std::end(indices), 0);
+	std::random_shuffle(std::begin(indices), std::end(indices));
+
+	for(size_t indice : indices)
+	{	
+		bool colision=false;
+
+		auto pt=mapa.puntos_bot[indice];
+		bot.establecer_posicion(pt.x, pt.y);
+
+		for(auto& oj : jugadores)
+		{
+			if(bot.en_colision_con(oj))
+			{
+				colision=true;
+				break;
+			}
+		}
+
+		if(!colision)
+		{
+			for(auto& b : bots)
+			{
+				if(bot.en_colision_con(b))
+				{
+					colision=true;
+					break;
+				}
+			}
+		}
+
+		if(!colision)
+		{
+			bots.push_back(bot);
+			break;
+		}
+	}
+}
+
+void Controlador_principal::pre_eliminar_jugador(const Jugador& j)
+{
+	for(auto& bot : bots)
+		if(bot.es_destino(j)) 
+			bot.anular_destino();
 }

@@ -11,7 +11,7 @@ struct Punto_ruta
 	Espaciable::tpunto	pt;
 	unsigned int            id;
 	
-	Punto_ruta(Espaciable::tpunto);
+	Punto_ruta(Espaciable::tpunto, bool=true);
 
 	private:
 

@@ -53,6 +53,8 @@ class Controlador_principal:
 	void					ajustar_camara();
 	void					dibujar_info_jugador(DLibV::Pantalla&, const Jugador&);
 	void					procesar_disparadores();
+	void					registrar_bot();
+	void					pre_eliminar_jugador(const Jugador& j);
 	Traduccion_input			obtener_traduccion_input(int) const;
 	Bloque_input				obtener_bloque_input(DFramework::Input& input, const Traduccion_input&) const;
 
@@ -62,11 +64,10 @@ class Controlador_principal:
 	Mapa					mapa;
 
 	std::vector<Jugador>			jugadores;
+	std::vector<Bot>			bots;
 	Struct_camara				struct_camara;
 	std::vector<std::unique_ptr<Proyectil>>	proyectiles;
 	std::vector<Disparador>			disparadores;
-
-	Bot					bot;
 };
 
 }

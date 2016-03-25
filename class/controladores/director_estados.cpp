@@ -7,7 +7,7 @@ using namespace App;
 extern DLibH::Log_base LOG;
 
 Director_estados::Director_estados(DFramework::Kernel& kernel, App::App_config& c, DLibH::Log_base& log)
-	:Director_estados_interface(t_estados::controles, std::function<bool(int)>([](int v){return v > estado_min && v < estado_max;})),
+	:Director_estados_interface(t_estados::editor, std::function<bool(int)>([](int v){return v > estado_min && v < estado_max;})),
 	config(c), log(log)
 {
 	preparar_video(kernel);

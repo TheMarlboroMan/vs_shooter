@@ -33,7 +33,7 @@ void Jugador::confirmar_movimiento()
 
 void Jugador::colisionar()
 {
-	restar_salud(velocidad / 4.0);
+	restar_salud(fabs(velocidad) / 4.0); //El fabs es importante, sobre todo si vamos marcha atrás...
 
 	poligono=posicion_anterior;
 	angulo=angulo_anterior;

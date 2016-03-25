@@ -2,23 +2,38 @@
 
 using namespace App;
 
-void Importador::importar(const std::string& fichero, std::vector<Obstaculo>& obstaculos, std::vector<DLibH::Punto_2d<double>>& inicios, std::vector<Punto_ruta>& puntos_ruta, std::vector<Generador_items>& generadores)
+void Importador::importar(const std::string& fichero, 
+	std::vector<Obstaculo>& obstaculos, 
+	std::vector<DLibH::Punto_2d<double>>& inicios,
+	std::vector<DLibH::Punto_2d<double>>& bots,  
+	std::vector<Punto_ruta>& puntos_ruta, 
+	std::vector<Generador_items>& generadores)
 {
 	using namespace Herramientas_proyecto;
 
 	auto raiz=parsear_dnot(fichero);
 
-	auto& array_geometria=raiz["geometria"].acc_lista();
-	for(const auto& i : array_geometria) deserializar_obstaculo(i, obstaculos);
+	try
+	{
+		auto& array_geometria=raiz["geometria"].acc_lista();
+		for(const auto& i : array_geometria) deserializar_obstaculo(i, obstaculos);
 
-	auto& array_inicios=raiz["inicios"].acc_lista();
-	for(const auto& i : array_inicios) deserializar_punto(i, inicios);
+		auto& array_inicios=raiz["inicios"].acc_lista();
+		for(const auto& i : array_inicios) deserializar_punto(i, inicios);
 
-	auto& array_puntos_ruta=raiz["puntos_ruta"].acc_lista();
-	for(const auto& i : array_puntos_ruta) deserializar_punto_ruta(i, puntos_ruta);
+		auto& array_puntos_ruta=raiz["puntos_ruta"].acc_lista();
+		for(const auto& i : array_puntos_ruta) deserializar_punto_ruta(i, puntos_ruta);
 
-	auto& array_generadores=raiz["generadores"].acc_lista();
-	for(const auto& i : array_generadores) deserializar_generador(i, generadores);
+		auto& array_generadores=raiz["generadores"].acc_lista();
+		for(const auto& i : array_generadores) deserializar_generador(i, generadores);
+
+		auto& array_bots=raiz["bots"].acc_lista();
+		for(const auto& i : array_bots) deserializar_punto(i, bots);
+	}
+	catch(std::exception &e)
+	{
+		//Simplemente por compatibilidad...
+	}
 }
 
 void Importador::deserializar_obstaculo(const Herramientas_proyecto::Dnot_token& tok, std::vector<Obstaculo>& obstaculos)

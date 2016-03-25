@@ -12,7 +12,7 @@ class Exportador
 {
 	public:
 
-	std::string serializar(const std::vector<Obstaculo>&, const std::vector<DLibH::Punto_2d<double>>&, const std::vector<Punto_ruta>&, const std::vector<Generador_items>&);
+	std::string serializar(const std::vector<Obstaculo>&, const std::vector<DLibH::Punto_2d<double>>&, const std::vector<DLibH::Punto_2d<double>>&, const std::vector<Punto_ruta>&, const std::vector<Generador_items>&);
 
 	private:
 
