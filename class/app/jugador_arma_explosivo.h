@@ -11,13 +11,9 @@ class Jugador_arma_explosivo:
 	public:
 
 						Jugador_arma_explosivo();
+	virtual bool				es_arma_defecto() const {return false;}
 	virtual void				generar_proyectiles(Disparador::v_info&, int, DLibH::Punto_2d<double>, double, double);
 	virtual void				disparar();
-	virtual int				acc_municion_restante() const {return municion;}
-
-	private:
-
-	int					municion;
 };
 }
 

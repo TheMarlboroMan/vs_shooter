@@ -12,25 +12,12 @@ Proyectil_divide::Proyectil_divide(int indice):
 
 void Proyectil_divide::colisionar(std::vector<Disparador>& d)
 {
-	Disparador res;
-
-	auto pt=poligono.acc_centro();
-
-	res.disparos.push_back({Disparador::tproyectiles::peq, indice_jugador, pt, angulo-110.0});
-	res.disparos.push_back({Disparador::tproyectiles::peq, indice_jugador, pt, angulo+110.0});
-
-	d.push_back(res);
+	generar(d, 110.0);
 }
 
 void Proyectil_divide::extinguir(std::vector<Disparador>& d)
 {
-	Disparador res;
-
-	auto pt=poligono.acc_centro();
-	res.disparos.push_back({Disparador::tproyectiles::peq, indice_jugador, pt, angulo-90.0});
-	res.disparos.push_back({Disparador::tproyectiles::peq, indice_jugador, pt, angulo+90.0});
-
-	d.push_back(res);
+	generar(d, 90.0);
 }
 
 void Proyectil_divide::preparar(double ang, DLibH::Punto_2d<double> pt)
@@ -39,6 +26,24 @@ void Proyectil_divide::preparar(double ang, DLibH::Punto_2d<double> pt)
 	formar_poligono();
 	poligono.rotar(angulo);
 	establecer_posicion(pt.x, pt.y);
+}
+
+void Proyectil_divide::generar(std::vector<Disparador>& d, double ang)
+{
+	Disparador res;
+
+	auto ang1=angulo-ang;
+	auto ang2=angulo+ang;
+
+	auto ptc=poligono.acc_centro();
+	
+	auto v1=vector_unidad_para_angulo_cartesiano(ang1);
+	auto v2=vector_unidad_para_angulo_cartesiano(ang2);
+
+	res.disparos.push_back({Disparador::tproyectiles::peq, indice_jugador, ptc+Punto_2d<double>{20.0 * v1.x, 20.0 * v1.y}, ang1});
+	res.disparos.push_back({Disparador::tproyectiles::peq, indice_jugador, ptc+Punto_2d<double>{20.0 * v2.x, 20.0 * v2.y}, ang2});
+
+	d.push_back(res);
 }
 
 void Proyectil_divide::turno(float delta)

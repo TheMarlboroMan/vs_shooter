@@ -25,10 +25,7 @@ void Proyectil_explosivo::extinguir(std::vector<Disparador>& d)
 	while(i < 360.0)
 	{
 		auto vect=vector_unidad_para_angulo_cartesiano(i);
-		auto pt=ptc;
-		pt.x+=20.0 * vect.x;
-		pt.y+=20.0 * vect.y;
-		res.disparos.push_back({Disparador::tproyectiles::peq, indice_jugador, pt, i});
+		res.disparos.push_back({Disparador::tproyectiles::peq, indice_jugador, ptc+Punto_2d<double>{20.0 * vect.x, 20.0 * vect.y}, i});
 		i+=10.0;
 	}
 

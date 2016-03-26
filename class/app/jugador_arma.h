@@ -12,17 +12,20 @@ class Jugador_arma
 {
 	public:
 
+						Jugador_arma(int m);
 	virtual void				generar_proyectiles(Disparador::v_info&, int, DLibH::Punto_2d<double>, double, double)=0;
 	virtual void				disparar()=0;
-	virtual int				acc_municion_restante() const=0;
+	virtual bool				es_arma_defecto() const=0;
+	virtual void				turno(float delta);
 
-	bool					es_agotada() const {return acc_municion_restante()==0;}
+	int					acc_municion_restante() const {return municion;}
+	bool					es_agotada() const {return municion==0;}
 	bool					es_preparada() const {return !cooldown_disparo && !es_agotada();}
 
-	void					turno(float delta);
 
 	protected:
 
+	int					municion;
 	float					cooldown_disparo;
 };
 

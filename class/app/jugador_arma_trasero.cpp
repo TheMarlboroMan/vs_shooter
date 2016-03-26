@@ -3,7 +3,7 @@
 using namespace App;
 
 Jugador_arma_trasero::Jugador_arma_trasero()
-	:municion(20)
+	:Jugador_arma(30)
 {
 
 }
@@ -35,6 +35,6 @@ void Jugador_arma_trasero::generar_proyectiles(Disparador::v_info& info, int ind
 
 void Jugador_arma_trasero::disparar()
 {
-	cooldown_disparo=0.1;
+	cooldown_disparo=0.08;
 	--municion;
 }

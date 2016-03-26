@@ -10,9 +10,15 @@ class Jugador_arma_normal:
 {
 	public:
 
+						Jugador_arma_normal();
 	virtual void				generar_proyectiles(Disparador::v_info&, int, DLibH::Punto_2d<double>, double, double);
+	virtual bool				es_arma_defecto() const {return true;}
 	virtual void				disparar();
-	virtual int				acc_municion_restante() const {return -1;}
+	virtual void				turno(float delta);
+
+	private:
+
+	float					recarga;
 };
 }
 

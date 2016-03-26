@@ -22,6 +22,8 @@ class Proyectil_divide:
 
 	private:
 
+	void			generar(std::vector<Disparador>&, double);
+
 	tcolor			color;
 };
 }

@@ -3,7 +3,7 @@
 using namespace App;
 
 Jugador_arma_triple::Jugador_arma_triple()
-	:municion(20)
+	:Jugador_arma(30)
 {
 
 }
@@ -21,6 +21,6 @@ void Jugador_arma_triple::generar_proyectiles(Disparador::v_info& info, int indi
 
 void Jugador_arma_triple::disparar()
 {
-	cooldown_disparo=0.1;
+	cooldown_disparo=0.08;
 	--municion;
 }

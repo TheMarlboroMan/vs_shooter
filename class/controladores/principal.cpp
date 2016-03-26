@@ -98,7 +98,7 @@ void Controlador_principal::loop(DFramework::Input& input, float delta)
 		{
 			for(auto& j : jugadores)
 			{
-				if(p.en_colision_con(j))
+				if(p.en_colision_con(j) && j.acc_salud())
 				{
 					j.restar_salud(p.acc_potencia());
 					p.colisionar(disparadores);		
@@ -112,7 +112,7 @@ void Controlador_principal::loop(DFramework::Input& input, float delta)
 			for(auto& bot : bots)
 			{
 				//Los proyectiles de los bots no afectan a otros bots.
-				if(p.acc_indice_jugador() && p.en_colision_con(bot))
+				if(p.acc_indice_jugador() && p.en_colision_con(bot) && bot.acc_salud())
 				{
 					bot.restar_salud(p.acc_potencia());
 					p.colisionar(disparadores);		
@@ -255,7 +255,7 @@ void Controlador_principal::loop(DFramework::Input& input, float delta)
 			{
 				disparadores.push_back(j.disparar());
 
-				if(j.es_arma_agotada())
+				if(j.es_arma_agotada() && !j.es_arma_defecto())
 				{
 					j.establecer_arma(new Jugador_arma_normal());
 				}
@@ -513,8 +513,8 @@ void Controlador_principal::dibujar_info_jugador(DLibV::Pantalla& pantalla, cons
 
 	int m=j.acc_municion_restante();
 
-	std::string municion=m==-1 ? "#" : std::to_string(m);
-	std::string texto=std::to_string(j.acc_salud())+" / 100 - "+municion;
+	std::string municion=std::to_string(m);
+	std::string texto=std::to_string(j.acc_salud())+" | "+std::to_string(j.acc_energia())+" - "+municion;
 	DLibV::Representacion_TTF txt(fuente_akashi, {(Uint8)jc.r, (Uint8)jc.g, (Uint8)jc.b, 192}, texto);
 	txt.ir_a(x, y);
 	txt.volcar(pantalla);

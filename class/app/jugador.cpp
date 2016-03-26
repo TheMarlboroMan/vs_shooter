@@ -3,23 +3,106 @@
 using namespace App;
 
 Jugador::Jugador(int indice, tcolor color)
-	:arma(nullptr), indice(indice), angulo(0.0), angulo_anterior(angulo), velocidad(3.0f), 
-	salud(100), color(color)
+	:arma(nullptr), habilidad(nullptr), indice(indice), angulo(0.0), 
+	angulo_anterior(angulo), velocidad(3.0f), 
+	energia(100.f), cooloff_energia(0.0f), 
+	salud(100), divisor_salud(1), color(color)
 {
 	formar_poligono();
+	pulsaciones_input[ttipo_pulsacion::arriba]=Pulsacion_input{};
+	pulsaciones_input[ttipo_pulsacion::abajo]=Pulsacion_input{};
 }
 
 void Jugador::recibir_input(const Bloque_input& bi)
 {
+	//Aceleración desde la nada.
+	if(!habilidad.get())
+	{
+		if(input_actual.aceleracion && !bi.aceleracion)
+		{
+			if(input_actual.aceleracion > 0)
+			{
+				if(pulsaciones_input[ttipo_pulsacion::arriba].t)
+				{
+					if(es_max_energia()) habilidad.reset(new Habilidad_velocidad());
+				}
+				else 
+				{
+					pulsaciones_input[ttipo_pulsacion::arriba].t=0.001f;
+				}
+			}
+			else
+			{
+				if(pulsaciones_input[ttipo_pulsacion::arriba].t)
+				{
+					if(es_max_energia()) habilidad.reset(new Habilidad_escudo());
+				}
+				else 
+				{
+					pulsaciones_input[ttipo_pulsacion::arriba].t=0.001f;
+				}
+			}
+		}
+
+		//TODO... Mejorar con un único método...
+		if(habilidad.get())
+		{
+			energia=0.0f;
+			cooloff_energia=habilidad->obtener_cooloff();
+			Habilidad_base::bloque_efecto beh(velocidad, divisor_salud);
+			habilidad->activar(beh);
+		}
+	}
+
 	input_actual=bi;
 }
 
 void Jugador::turno(float delta)
 {
-	if(input_actual.giro) girar(input_actual.giro, delta);
+	for(auto &par : pulsaciones_input) 
+	{
+		auto& v=par.second;
+		if(v.t) 
+		{
+			v.t+=delta;
+			if(v.t > 0.15f) v.t=0.0f;
+		}
+	}
 
-	if(input_actual.aceleracion) cambiar_velocidad(input_actual.aceleracion, delta);
-	else if(velocidad) detener_velocidad(delta);
+	if(habilidad.get())
+	{
+		habilidad->turno(delta);
+		if(!habilidad->es_activa()) 
+		{
+			Habilidad_base::bloque_efecto beh(velocidad, divisor_salud);
+			habilidad->desactivar(beh);
+			habilidad.reset(nullptr);
+		}
+	}
+
+	if(cooloff_energia)
+	{
+		cooloff_energia-=delta;
+		if(cooloff_energia <= 0.0f) cooloff_energia=0.0f;
+	}
+	else if(!es_max_energia())
+	{
+		energia+=100.0f * delta;
+		if(energia >= 100.0f) energia=100.0f;
+	}
+
+	if(input_actual.giro) girar(input_actual.giro, delta);
+	
+	//Tenemos activada la velocidad... No podemos hacer nada mientras dure...
+	if(habilidad.get() && habilidad->obtener_tipo()==Habilidad_base::ttipo::velocidad) 
+	{
+		//Do nothing :D!.
+	}
+	else
+	{
+		if(input_actual.aceleracion) cambiar_velocidad(input_actual.aceleracion, delta);
+		else if(velocidad) detener_velocidad(delta);
+	}
 
 	if(velocidad) movimiento_tentativo(delta);
 	if(arma) arma->turno(delta);
@@ -33,23 +116,25 @@ void Jugador::confirmar_movimiento()
 
 void Jugador::colisionar()
 {
-	restar_salud(fabs(velocidad) / 4.0); //El fabs es importante, sobre todo si vamos marcha atrás...
+	restar_salud(fabs(velocidad) / 20.0); //El fabs es importante, sobre todo si vamos marcha atrás...
 
 	poligono=posicion_anterior;
 	angulo=angulo_anterior;
 	velocidad=-velocidad / 2.0;
+	const float min_vel=-100.0f;
+	if(velocidad < min_vel) velocidad=min_vel;
 }
 
 void Jugador::restar_salud(int v)
 {
-	salud-=v;
+	salud-=v/divisor_salud;
 	if(salud < 0) salud=0;
 }
 
 void Jugador::girar(int dir, float delta)
 {
 	//TODO. A otro lado???	
-	const double factor_rotacion=180.0;
+	const double factor_rotacion=220.0;
 
 	//La velocidad afecta a la capacidad de giro. No afecta parado o marcha atrás.	
 	double factor=velocidad <= 0.0 ? factor_rotacion : factor_rotacion - (velocidad / 3.0);
@@ -68,7 +153,8 @@ void Jugador::cambiar_velocidad(int dir, float delta)
 	const float factor_aceleracion=180.0f;
 	const float factor_freno=-500.0;
 
-	//TODO: ¿Cómo es eso de la velocidad máxima?
+		
+	
 	velocidad+=dir > 0 ? delta * factor_aceleracion : delta * factor_freno;
 
 	if(velocidad > max_vel) velocidad=max_vel;
@@ -94,11 +180,22 @@ void Jugador::movimiento_tentativo(float delta)
 
 void Jugador::formar_poligono()
 {
-	poligono.insertar_vertice({20.0, 0.0});
-	poligono.insertar_vertice({0.0, -7.0});
-	poligono.insertar_vertice({0.0, 7.0});
+	poligono.insertar_vertice({15.0, 0.0});
+	poligono.insertar_vertice({-5.0, -7.0});
+	poligono.insertar_vertice({-5.0, 7.0});
 	poligono.cerrar();
 	poligono.mut_centro({0.0, 0.0});
+
+	poligono_escudo.insertar_vertice({0.0, 30.0});
+	poligono_escudo.insertar_vertice({20.0, 20.0});
+	poligono_escudo.insertar_vertice({30.0, 0.0});
+	poligono_escudo.insertar_vertice({20.0, -20.0});
+	poligono_escudo.insertar_vertice({0.0, -30.0});
+	poligono_escudo.insertar_vertice({-20.0, -20.0});
+	poligono_escudo.insertar_vertice({-30.0, 0.0});
+	poligono_escudo.insertar_vertice({-20.0, 20.0});
+	poligono_escudo.cerrar();
+	poligono_escudo.mut_centro({0.0, 0.0});
 }
 
 Disparador Jugador::disparar()
@@ -141,7 +238,19 @@ bool Jugador::es_arma_agotada() const
 	else return true;
 }
 
+bool Jugador::es_arma_defecto() const
+{
+	if(arma!=nullptr) return arma->es_arma_defecto();
+	else return true;
+}
+
 void Jugador::dibujar(Representador& r, DLibV::Pantalla& pantalla, const Struct_camara& struct_camara) const
 {
+	if(habilidad.get() && habilidad->obtener_tipo()==Habilidad_base::ttipo::escudo)
+	{
+		poligono_escudo.centrar_en(poligono.acc_centro());
+		r.dibujar_poligono(pantalla, poligono_escudo, {255, 32, 32, 32}, struct_camara);
+	}
+
 	r.dibujar_poligono(pantalla, poligono, color, struct_camara);
 }

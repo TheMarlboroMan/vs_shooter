@@ -3,7 +3,7 @@
 using namespace App;
 
 Jugador_arma_explosivo::Jugador_arma_explosivo()
-	:municion(3)
+	:Jugador_arma(3)
 {
 
 }
@@ -19,6 +19,6 @@ void Jugador_arma_explosivo::generar_proyectiles(Disparador::v_info& info, int i
 
 void Jugador_arma_explosivo::disparar()
 {
-	cooldown_disparo=1.0;
+	cooldown_disparo=0.5;
 	--municion;
 }

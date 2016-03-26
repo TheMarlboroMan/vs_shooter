@@ -2,6 +2,12 @@
 
 using namespace App;
 
+Jugador_arma::Jugador_arma(int m)
+	:municion(m), cooldown_disparo(0.0f)
+{
+
+}
+
 void Jugador_arma::turno(float delta)
 {
 	if(cooldown_disparo)
