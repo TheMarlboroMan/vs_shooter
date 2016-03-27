@@ -13,6 +13,7 @@
 #include "../app/struct_camara.h"
 #include "../app/mapa.h"
 #include "../app/jugador.h"
+#include "../app/jugador_info.h"
 
 //TODO: Experimental...
 #include "../app/bot.h"
@@ -49,13 +50,16 @@ class Controlador_principal:
 
 	private:
 
+	void					registrar_info_jugadores();
 	void					registrar_jugador(int);
 	void					ajustar_camara();
 	void					dibujar_info_jugador(DLibV::Pantalla&, const Jugador&);
+	void					procesar_proyectiles(float);
+	void					procesar_bots(float);
+	void					procesar_jugadores(DFramework::Input&, float);
 	void					procesar_disparadores();
 	void					registrar_bot();
 	void					pre_eliminar_jugador(const Jugador& j);
-	Traduccion_input			obtener_traduccion_input(int) const;
 	Bloque_input				obtener_bloque_input(DFramework::Input& input, const Traduccion_input&) const;
 
 	DLibH::Log_base&			log;
@@ -63,6 +67,7 @@ class Controlador_principal:
 
 	Mapa					mapa;
 
+	std::vector<Jugador_info>		info_jugadores;
 	std::vector<Jugador>			jugadores;
 	std::vector<Bot>			bots;
 	Struct_camara				struct_camara;

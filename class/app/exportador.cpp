@@ -31,6 +31,23 @@ Herramientas_proyecto::Dnot_token Exportador::serializar_obstaculo(const Obstacu
 		puntos.push_back(Dnot_token(generar_punto(v.x, v.y)));
 
 	auto centro=o.acc_poligono().acc_centro();
+
+	Dnot_token::t_mapa mapa_polig;
+	mapa_polig["p"].asignar(puntos);
+	mapa_polig["cen"].asignar(generar_punto(centro.x, centro.y));
+
+	return Dnot_token(mapa_polig);
+}
+
+Herramientas_proyecto::Dnot_token Exportador::serializar_decoracion(const Decoracion& o)
+{
+	using namespace Herramientas_proyecto;
+
+	Dnot_token::t_vector puntos;
+	for(const auto& v : o.acc_poligono().acc_vertices())
+		puntos.push_back(Dnot_token(generar_punto(v.x, v.y)));
+
+	auto centro=o.acc_poligono().acc_centro();
 	auto color=o.acc_color();
 	auto colorl=o.acc_color_linea();
 
@@ -45,7 +62,11 @@ Herramientas_proyecto::Dnot_token Exportador::serializar_obstaculo(const Obstacu
 	arr_colores.push_back(Dnot_token(ncolor));
 	arr_colores.push_back(Dnot_token(ncolorl));
 
+	Dnot_token::t_mapa propiedades;
+	propiedades["fr"].asignar(o.es_frente());
+
 	mapa_polig["col"].asignar(arr_colores);
+	mapa_polig["pr"].asignar(propiedades);
 
 	return Dnot_token(mapa_polig);
 }
@@ -73,7 +94,8 @@ Herramientas_proyecto::Dnot_token Exportador::serializar_generador(const Generad
 	return Dnot_token(puntos);
 }
 
-std::string Exportador::serializar(const std::vector<Obstaculo>& obs, 
+std::string Exportador::serializar(const std::vector<Obstaculo>& obs,
+		const std::vector<Decoracion>& decs,  
 		const std::vector<DLibH::Punto_2d<double>>& inicios, 
 		const std::vector<DLibH::Punto_2d<double>>& bots, 
 		const std::vector<Punto_ruta>& puntos_ruta, 
@@ -83,6 +105,9 @@ std::string Exportador::serializar(const std::vector<Obstaculo>& obs,
 
 	Dnot_token::t_vector vobstaculos;
 	for(const auto& o : obs) vobstaculos.push_back(serializar_obstaculo(o));
+
+	Dnot_token::t_vector vdecoraciones;
+	for(const auto& d : decs) vdecoraciones.push_back(serializar_decoracion(d));
 
 	Dnot_token::t_vector vinicios;
 	for(const auto& i : inicios) vinicios.push_back(serializar_punto(i));
@@ -97,6 +122,7 @@ std::string Exportador::serializar(const std::vector<Obstaculo>& obs,
 	for(const auto& g : generadores) vgeneradores.push_back(serializar_generador(g));
 
 	Dnot_token tok_obstaculos(vobstaculos);
+	Dnot_token tok_decoraciones(vdecoraciones);
 	Dnot_token tok_inicios(vinicios);
 	Dnot_token tok_bots(vbots);
 	Dnot_token tok_puntos_ruta(vpuntosruta);
@@ -104,6 +130,7 @@ std::string Exportador::serializar(const std::vector<Obstaculo>& obs,
 
 	Dnot_token::t_mapa mapa_final;
 	mapa_final["geometria"]=tok_obstaculos;
+	mapa_final["decoracion"]=tok_decoraciones;
 	mapa_final["inicios"]=tok_inicios;
 	mapa_final["bots"]=tok_bots;
 	mapa_final["puntos_ruta"]=tok_puntos_ruta;

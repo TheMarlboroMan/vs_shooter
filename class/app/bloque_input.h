@@ -6,9 +6,12 @@ namespace App
 
 struct Bloque_input
 {
-	int			giro;
-	int			aceleracion;
-	bool			disparo;
+	int			giro,
+				aceleracion;
+	bool			disparo,
+				activar_habilidad,
+				habilidad_velocidad,
+				habilidad_escudo;
 };
 
 struct Traduccion_input
@@ -17,7 +20,8 @@ struct Traduccion_input
 				abajo,
 				izquierda,
 				derecha,
-				disparo;
+				disparo,
+				habilidad;
 };
 
 }

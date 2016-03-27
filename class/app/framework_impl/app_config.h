@@ -28,12 +28,12 @@ class App_config:
 	int acc_h_fisica_pantalla() const {return token_por_ruta(CLAVE_H_FISICA_PANTALLA);}
 	int acc_zoom_mas() const 	{return token_por_ruta("config:input:general:zoom_mas");}
 	int acc_zoom_menos() const 	{return token_por_ruta("config:input:general:zoom_menos");}
-	input_jugador acc_registrar(int j) const	{return token_por_ruta_jugador("registrar", j);}
 	input_jugador acc_izquierda(int j) const	{return token_por_ruta_jugador("izquierda", j);}
 	input_jugador acc_derecha(int j) const 	{return token_por_ruta_jugador("derecha", j);}
 	input_jugador acc_arriba(int j) const 	{return token_por_ruta_jugador("arriba", j);}
 	input_jugador acc_abajo(int j) const	{return token_por_ruta_jugador("abajo", j);}
 	input_jugador acc_disparo(int j) const 	{return token_por_ruta_jugador("disparo", j);}
+	input_jugador acc_habilidad(int j) const {return token_por_ruta_jugador("habilidad", j);}
 
 	void mut_w_logica_pantalla(int p_valor) {configurar(CLAVE_W_LOGICA_PANTALLA, p_valor);}
 	void mut_h_logica_pantalla(int p_valor) {configurar(CLAVE_H_LOGICA_PANTALLA, p_valor);}
@@ -45,7 +45,7 @@ class App_config:
 	void mut_arriba(int j, input_jugador p_valor) 	 	{configurar_jugador(ruta_jugador("arriba", j), p_valor);}
 	void mut_abajo(int j, input_jugador p_valor) 		{configurar_jugador(ruta_jugador("abajo", j), p_valor);}
 	void mut_disparo(int j, input_jugador p_valor) 		{configurar_jugador(ruta_jugador("disparo", j), p_valor);}
-	void mut_registrar(int j, input_jugador p_valor) 	{configurar_jugador(ruta_jugador("registrar", j), p_valor);}
+	void mut_habilidad(int j, input_jugador p_valor)	{configurar_jugador(ruta_jugador("habilidad", j), p_valor);}
 
 	App_config();
 

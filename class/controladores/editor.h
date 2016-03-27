@@ -74,6 +74,8 @@ class Controlador_editor:
 	void					obtener_desde_mapa();
 	void					copiar_color();
 	void					pegar_color();
+	void					intercambiar_visibilidad(int, const std::string&);
+	void					intercambiar_frente_fondo();
 	void					do_crazy_pathfind();
 
 	DLibH::Log_base&			log;
@@ -84,6 +86,7 @@ class Controlador_editor:
 
 	std::unique_ptr<Widget_editor_interface>	widget;
 	std::vector<Obstaculo_editor>		obstaculos;
+	std::vector<Decoracion_editor>		decoraciones;
 	std::vector<Punto_inicio_editor>	puntos_inicio;
 	std::vector<Punto_bot_editor>		puntos_bot;
 	std::vector<Punto_ruta_editor>		puntos_ruta;
@@ -95,12 +98,14 @@ class Controlador_editor:
 	tcolor					color_relleno,
 						color_linea;
 	int					grid;
-	bool					ver_conexiones;
-	enum class tobjetocreado		{vertice, punto_ruta, inicio, bot, arma} tobjeto;
+	enum flags_ver{fvdeco_frente=1, fvdeco_fondo=2, fvobstaculos=4, fvconexiones=8};
+	int					ver_flags;
+	enum class tobjetocreado		{obstaculo, decoracion, punto_ruta, inicio, bot, arma} tobjeto;
 
 	std::vector<DLibH::Punto_2d<double>>	ruta;
 	std::vector<Objeto_editor *>		objetos_cursor;
 	std::vector<Objeto_editor *>		objetos_seleccionados;
+	bool					decoracion_frente;
 };
 
 }

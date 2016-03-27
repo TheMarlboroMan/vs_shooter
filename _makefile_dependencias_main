@@ -21,6 +21,7 @@ $(DIR_O)generador_items.o\
 $(DIR_O)fuentes.o\
 $(DIR_O)mensajes.o\
 $(DIR_O)jugador.o\
+$(DIR_O)jugador_info.o\
 $(DIR_O)jugador_arma.o\
 $(DIR_O)jugador_arma_normal.o\
 $(DIR_O)jugador_arma_triple.o\
@@ -28,6 +29,7 @@ $(DIR_O)jugador_arma_trasero.o\
 $(DIR_O)jugador_arma_explosivo.o\
 $(DIR_O)jugador_arma_divide.o\
 $(DIR_O)obstaculo.o\
+$(DIR_O)decoracion.o\
 $(DIR_O)proyectil.o\
 $(DIR_O)proyectil_normal.o\
 $(DIR_O)proyectil_divide.o\

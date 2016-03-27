@@ -107,7 +107,7 @@ class Jugador:
 
 	private:
 
-	enum class ttipo_pulsacion {arriba, abajo, izquierda, derecha};
+	enum class ttipo_pulsacion {velocidad, escudo};
 	struct Pulsacion_input
 	{
 		float			t;

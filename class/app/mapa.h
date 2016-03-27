@@ -3,6 +3,7 @@
 
 #include <vector>
 
+#include "decoracion.h"
 #include "obstaculo.h"
 #include "punto_ruta.h"
 #include "generador_items.h"
@@ -15,10 +16,14 @@ class Mapa
 	public:
 
 	std::vector<Obstaculo>			obstaculos;
+	std::vector<Decoracion>			decoraciones;
 	std::vector<Espaciable::tpunto>		puntos_inicio;
 	std::vector<Espaciable::tpunto>		puntos_bot;
 	std::vector<Punto_ruta>			puntos_ruta;
 	std::vector<Generador_items>		generadores_items;
+
+	std::vector<const Decoracion *>		decoraciones_frente;
+	std::vector<const Decoracion *>		decoraciones_fondo;
 
 	void					inicializar();
 	bool					visibilidad_entre_puntos(Espaciable::tpunto, Espaciable::tpunto) const;

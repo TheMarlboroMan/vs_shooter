@@ -9,38 +9,36 @@ Jugador::Jugador(int indice, tcolor color)
 	salud(100), divisor_salud(1), color(color)
 {
 	formar_poligono();
-	pulsaciones_input[ttipo_pulsacion::arriba]=Pulsacion_input{};
-	pulsaciones_input[ttipo_pulsacion::abajo]=Pulsacion_input{};
+	pulsaciones_input[ttipo_pulsacion::velocidad]=Pulsacion_input{};
+	pulsaciones_input[ttipo_pulsacion::escudo]=Pulsacion_input{};
 }
 
 void Jugador::recibir_input(const Bloque_input& bi)
 {
-	//Aceleración desde la nada.
-	if(!habilidad.get())
+	//Control del doble input de habilidad
+	if(!habilidad.get() && input_actual.activar_habilidad)
 	{
-		if(input_actual.aceleracion && !bi.aceleracion)
+		if(input_actual.habilidad_velocidad && !bi.habilidad_velocidad)
 		{
-			if(input_actual.aceleracion > 0)
+			if(pulsaciones_input[ttipo_pulsacion::velocidad].t)
 			{
-				if(pulsaciones_input[ttipo_pulsacion::arriba].t)
-				{
-					if(es_max_energia()) habilidad.reset(new Habilidad_velocidad());
-				}
-				else 
-				{
-					pulsaciones_input[ttipo_pulsacion::arriba].t=0.001f;
-				}
+				if(es_max_energia()) habilidad.reset(new Habilidad_velocidad());
 			}
-			else
+			else 
 			{
-				if(pulsaciones_input[ttipo_pulsacion::arriba].t)
-				{
-					if(es_max_energia()) habilidad.reset(new Habilidad_escudo());
-				}
-				else 
-				{
-					pulsaciones_input[ttipo_pulsacion::arriba].t=0.001f;
-				}
+				pulsaciones_input[ttipo_pulsacion::velocidad].t=0.001f;
+			}
+		}
+		else if(input_actual.habilidad_escudo && !bi.habilidad_escudo)
+		{
+			if(pulsaciones_input[ttipo_pulsacion::escudo].t)
+			{
+				if(es_max_energia()) habilidad.reset(new Habilidad_escudo());
+			}
+			else 
+			{
+				//TODO: Abajo NO es sinónimo de escudo.
+				pulsaciones_input[ttipo_pulsacion::escudo].t=0.001f;
 			}
 		}
 
@@ -65,7 +63,7 @@ void Jugador::turno(float delta)
 		if(v.t) 
 		{
 			v.t+=delta;
-			if(v.t > 0.15f) v.t=0.0f;
+			if(v.t > 0.2f) v.t=0.0f;
 		}
 	}
 

@@ -20,7 +20,8 @@ const tcolor Objeto_editor::color_generador_items_editor={0, 0, 255, 128};
 const tcolor Objeto_editor::color_punto_inicio_editor={255, 0, 0, 128};
 const tcolor Objeto_editor::color_punto_bot_editor={0, 0, 255, 255};
 const tcolor Objeto_editor::color_seleccion={255, 255, 255, 255};
-
+const tcolor Objeto_editor::color_obstaculo={128, 128, 128, 255};
+const tcolor Objeto_editor::color_borde_obstaculo={210, 210, 128, 255};
 
 Controlador_editor::Controlador_editor(DLibH::Log_base& l, const Fuentes& f)
 	:log(l), 
@@ -28,8 +29,9 @@ Controlador_editor::Controlador_editor(DLibH::Log_base& l, const Fuentes& f)
 	mensajes(fuente_akashi, 4, 16, 0),
 	widget(nullptr),
 	struct_camara({1.0, 0, 0}), color_relleno({64, 64, 64, 255}), 
-	color_linea({128, 128, 128, 255}), grid(20), ver_conexiones(true),
-	tobjeto(tobjetocreado::vertice)
+	color_linea({128, 128, 128, 255}), grid(20), ver_flags(fvdeco_frente | fvdeco_fondo | fvobstaculos | fvconexiones),
+	tobjeto(tobjetocreado::obstaculo),
+	decoracion_frente(false)
 {
 
 }
@@ -83,7 +85,13 @@ void Controlador_editor::loop(DFramework::Input& input, float delta)
 	if(input.es_input_down(Input::cargar_mapa)) cargar_mapa();	
 	else if(input.es_input_down(Input::grabar_mapa)) grabar_mapa();
 
-	if(input.es_input_down(Input::intercambiar_ver_conexiones)) ver_conexiones=!ver_conexiones;	
+	if(input.es_input_pulsado(Input::intercambiar_ver)) 
+	{
+		if(input.es_input_down(Input::tecla_1)) intercambiar_visibilidad(fvdeco_frente, "decoración frente");
+		else if(input.es_input_down(Input::tecla_2)) intercambiar_visibilidad(fvdeco_fondo, "decoración fondo");
+		else if(input.es_input_down(Input::tecla_3)) intercambiar_visibilidad(fvobstaculos, "obstáculos");
+		else if(input.es_input_down(Input::tecla_4)) intercambiar_visibilidad(fvconexiones, "conexiones");
+	}
 
 	if(input.es_input_down(Input::click_i)) 
 	{
@@ -93,12 +101,15 @@ void Controlador_editor::loop(DFramework::Input& input, float delta)
 	else if(input.es_input_down(Input::click_d)) 
 	{
 		//Nothing yet...
+		//TODO: Propiedades del objeto bajo el cursor!!!.
 	}
 	
 	if(input.es_input_pulsado(Input::suprimir)) eliminar();
 
 	if(input.es_input_down(Input::copiar_color)) copiar_color();
 	else if(input.es_input_down(Input::pegar_color)) pegar_color();
+	//TODO: Bullshit, mejor click derecho?.
+	if(input.es_input_down(Input::intercambiar_frente_fondo)) intercambiar_frente_fondo();
 
 	if(input.es_input_pulsado(Input::control_izquierdo))
 	{
@@ -157,7 +168,16 @@ void Controlador_editor::dibujar(DLibV::Pantalla& pantalla)
 
 	auto pt_raton=punto_desde_pos_pantalla(pos_raton.x, pos_raton.y);
 
-	for(const auto& eo : obstaculos) eo.dibujar(r, pantalla, struct_camara);
+	//TODO: Toggle...
+	if(ver_flags & fvobstaculos) 
+		for(const auto& eo : obstaculos) eo.dibujar(r, pantalla, struct_camara);
+
+	if(ver_flags & fvdeco_fondo)
+		for(const auto& ed : decoraciones) if(!ed.elemento.es_frente()) ed.dibujar(r, pantalla, struct_camara);
+
+	if(ver_flags & fvdeco_frente)
+		for(const auto& ed : decoraciones) if(ed.elemento.es_frente()) ed.dibujar(r, pantalla, struct_camara);
+
 	for(const auto& pi : puntos_inicio) pi.dibujar(r, pantalla, struct_camara);
 	for(const auto& pb : puntos_bot) pb.dibujar(r, pantalla, struct_camara);
 	for(const auto& eg : generadores_items) eg.dibujar(r, pantalla, struct_camara);
@@ -165,7 +185,7 @@ void Controlador_editor::dibujar(DLibV::Pantalla& pantalla)
 	for(const auto& oc : objetos_cursor) oc->dibujar(r, pantalla, struct_camara, true);
 	for(const auto& os : objetos_seleccionados) os->dibujar(r, pantalla, struct_camara, true);
 
-	if(ver_conexiones)
+	if(ver_flags & fvconexiones)
 	{
 		for(const auto& nr : mapa.acc_nodos_ruta())
 		{
@@ -205,7 +225,8 @@ void Controlador_editor::dibujar(DLibV::Pantalla& pantalla)
 	std::string texto="GRID: "+std::to_string((int)grid)+" POS: "+std::to_string((int)pt_raton.x)+","+std::to_string((int)pt_raton.y);
 	switch(tobjeto)
 	{
-		case tobjetocreado::vertice: texto+=" [vertex]"; break;
+		case tobjetocreado::obstaculo: texto+=" [geometry]"; break;
+		case tobjetocreado::decoracion: texto+=" [decoration]"; break;
 		case tobjetocreado::punto_ruta: texto+=" [waypoint]"; break;
 		case tobjetocreado::inicio: texto+=" [spawn]"; break;
 		case tobjetocreado::bot: texto+=" [bot]"; break;
@@ -234,7 +255,7 @@ void Controlador_editor::despertar()
 
 void Controlador_editor::dormir()
 {
-	tobjeto=tobjetocreado::vertice;
+	tobjeto=tobjetocreado::obstaculo;
 	poligono_construccion=Poligono_2d<double>{};
 }
 
@@ -251,7 +272,7 @@ void Controlador_editor::cargar_mapa()
 
 	mapa.limpiar();
 	Importador importador;
-	importador.importar(nombre_fichero.c_str(), mapa.obstaculos, mapa.puntos_inicio, mapa.puntos_bot, mapa.puntos_ruta, mapa.generadores_items);
+	importador.importar(nombre_fichero.c_str(), mapa.obstaculos, mapa.decoraciones, mapa.puntos_inicio, mapa.puntos_bot, mapa.puntos_ruta, mapa.generadores_items);
 	obtener_desde_mapa();
 	mapa.limpiar();
 
@@ -265,7 +286,7 @@ void Controlador_editor::grabar_mapa()
 	std::ofstream fichero(nombre_fichero.c_str());
 	Exportador exportador;
 	aplicar_a_mapa(mapa);
-	fichero<<exportador.serializar(mapa.obstaculos, mapa.puntos_inicio, mapa.puntos_bot, mapa.puntos_ruta, mapa.generadores_items);
+	fichero<<exportador.serializar(mapa.obstaculos, mapa.decoraciones, mapa.puntos_inicio, mapa.puntos_bot, mapa.puntos_ruta, mapa.generadores_items);
 
 	mensajes.insertar_mensaje(nombre_fichero+" guardado en disco", 2.f);
 }
@@ -274,11 +295,12 @@ void Controlador_editor::intercambiar_objeto_creado()
 {
 	switch(tobjeto)
 	{
-		case tobjetocreado::vertice: 	tobjeto=tobjetocreado::punto_ruta; break;
-		case tobjetocreado::punto_ruta: tobjeto=tobjetocreado::inicio; break;
-		case tobjetocreado::inicio: 	tobjeto=tobjetocreado::bot; break;
-		case tobjetocreado::bot: 	tobjeto=tobjetocreado::arma; break;
-		case tobjetocreado::arma: 	tobjeto=tobjetocreado::vertice; break;
+		case tobjetocreado::obstaculo: 		tobjeto=tobjetocreado::decoracion; break;
+		case tobjetocreado::decoracion: 	tobjeto=tobjetocreado::punto_ruta; break;
+		case tobjetocreado::punto_ruta: 	tobjeto=tobjetocreado::inicio; break;
+		case tobjetocreado::inicio: 		tobjeto=tobjetocreado::bot; break;
+		case tobjetocreado::bot: 		tobjeto=tobjetocreado::arma; break;
+		case tobjetocreado::arma: 		tobjeto=tobjetocreado::obstaculo; break;
 	}
 }
 
@@ -286,7 +308,8 @@ void Controlador_editor::crear()
 {
 	switch(tobjeto)
 	{
-		case tobjetocreado::vertice:
+		case tobjetocreado::obstaculo:
+		case tobjetocreado::decoracion:
 			nuevo_punto(punto_desde_pos_pantalla(pos_raton.x, pos_raton.y));
 		break;
 		case tobjetocreado::punto_ruta: 
@@ -376,14 +399,29 @@ void Controlador_editor::nuevo_punto(DLibH::Punto_2d<double> p)
 
 void Controlador_editor::cerrar_poligono()
 {
-	if(poligono_construccion.size() >= 3 && !poligono_construccion.es_concavo())
+	if(poligono_construccion.size() < 3)
 	{
-		poligono_construccion.cerrar();
-		obstaculos.push_back(Obstaculo_editor(Obstaculo(poligono_construccion, color_relleno, color_linea)));
+		mensajes.insertar_mensaje("Polígono con menos de dos vértices", 2.f);
 	}
 	else
 	{
-		mensajes.insertar_mensaje("Polígono convexo o erróneo", 2.f);
+		if(tobjeto==tobjetocreado::obstaculo)
+		{
+			if(poligono_construccion.es_concavo())
+			{
+				mensajes.insertar_mensaje("Polígono cóncavo o erróneo", 2.f);
+			}
+			else
+			{
+				poligono_construccion.cerrar();
+				obstaculos.push_back(Obstaculo_editor(Obstaculo(poligono_construccion)));
+			}
+		}
+		else if(tobjeto==tobjetocreado::decoracion)
+		{
+			poligono_construccion.cerrar();
+			decoraciones.push_back(Decoracion_editor(Decoracion(poligono_construccion, color_relleno, color_linea, decoracion_frente)));
+		}
 	}
 
 	poligono_construccion=Poligono_2d<double>{};
@@ -421,6 +459,7 @@ void Controlador_editor::localizar_elementos_bajo_cursor()
 	objetos_cursor.clear();
 
 	localizar_elementos_bajo_cursor_helper(obstaculos, objetos_cursor, pt_raton);
+	localizar_elementos_bajo_cursor_helper(decoraciones, objetos_cursor, pt_raton);
 	localizar_elementos_bajo_cursor_helper(puntos_inicio, objetos_cursor, pt_raton);
 	localizar_elementos_bajo_cursor_helper(puntos_bot, objetos_cursor, pt_raton);
 	localizar_elementos_bajo_cursor_helper(generadores_items, objetos_cursor, pt_raton);
@@ -436,6 +475,7 @@ void Controlador_editor::aplicar_a_mapa(Mapa& m)
 {
 	m.limpiar();
 	for(auto& o : obstaculos) m.obstaculos.push_back(o.elemento);
+	for(auto& o : decoraciones) m.decoraciones.push_back(o.elemento);
 	for(auto& o : puntos_ruta) m.puntos_ruta.push_back(o.elemento);
 	for(auto& o : puntos_inicio) m.puntos_inicio.push_back(o.elemento);
 	for(auto& o : puntos_bot) m.puntos_bot.push_back(o.elemento);
@@ -445,12 +485,14 @@ void Controlador_editor::aplicar_a_mapa(Mapa& m)
 void Controlador_editor::obtener_desde_mapa()
 {
 	obstaculos.clear();
+	decoraciones.clear();
 	puntos_ruta.clear();
 	puntos_inicio.clear();
 	puntos_bot.clear();
 	generadores_items.clear();
 
 	for(auto& o : mapa.obstaculos) obstaculos.push_back(Obstaculo_editor(o));
+	for(auto& o : mapa.decoraciones) decoraciones.push_back(Decoracion_editor(o));
 	for(auto& o : mapa.puntos_ruta) puntos_ruta.push_back(Punto_ruta_editor(o));
 	for(auto& o : mapa.puntos_inicio) puntos_inicio.push_back(Punto_inicio_editor(o));
 	for(auto& o : mapa.puntos_bot) puntos_bot.push_back(Punto_bot_editor(o));
@@ -468,6 +510,7 @@ void Controlador_editor::eliminar()
 
 	//Esto los borra...
 	eliminar_helper(obstaculos);
+	eliminar_helper(decoraciones);
 	eliminar_helper(puntos_ruta);
 	eliminar_helper(puntos_inicio);
 	eliminar_helper(puntos_bot);
@@ -483,6 +526,7 @@ void Controlador_editor::cambiar_grid(int dir)
 	else if(grid > 50.0) grid=50.0;
 }
 
+//Mejor "pegar propiedades"?
 void Controlador_editor::pegar_color()
 {
 	if(objetos_seleccionados.size() || objetos_cursor.size())
@@ -493,11 +537,12 @@ void Controlador_editor::pegar_color()
 	}
 }
 
+//Mejor "copiar propiedades"?
 void Controlador_editor::copiar_color()
 {
-	std::vector<Obstaculo_editor *> v;
+	std::vector<Decoracion_editor *> v;
 	auto pt=punto_desde_pos_pantalla(pos_raton.x, pos_raton.y, false);
-	for(auto& o : obstaculos) if(o.es_bajo_cursor(pt)) v.push_back(&o);
+	for(auto& o : decoraciones) if(o.es_bajo_cursor(pt)) v.push_back(&o);
 
 	if(v.size()==1)
 	{
@@ -505,4 +550,40 @@ void Controlador_editor::copiar_color()
 		color_relleno=v[0]->elemento.acc_color();
 		color_linea=v[0]->elemento.acc_color_linea();
 	}
+}
+
+void Controlador_editor::intercambiar_visibilidad(int val, const std::string& tipo)
+{
+	if(ver_flags & val) 
+	{
+		ver_flags-=val;
+		mensajes.insertar_mensaje("Ocultando "+tipo, 2.0f);
+	}
+	else 
+	{
+		ver_flags+=val;
+		mensajes.insertar_mensaje("Mostrando "+tipo, 2.0f);
+	}
+}
+
+void Controlador_editor::intercambiar_frente_fondo()
+{
+	std::vector<Decoracion_editor *> v;
+	auto pt=punto_desde_pos_pantalla(pos_raton.x, pos_raton.y, false);
+	for(auto& o : decoraciones) if(o.es_bajo_cursor(pt)) v.push_back(&o);
+
+	std::string mensaje("");
+
+	if(!v.size())
+	{
+		decoracion_frente=!decoracion_frente;
+		mensaje=decoracion_frente ? "Decoración frontal activada" : "Decoración fondo activada";
+	}
+	else
+	{
+		for(auto &d : v) d->elemento.mut_frente(decoracion_frente);
+		mensaje=decoracion_frente ? "Aplicando decoración frontal activada" : "Aplicando decoración fondo activada";
+	}
+
+	mensajes.insertar_mensaje(mensaje, 2.0f);
 }

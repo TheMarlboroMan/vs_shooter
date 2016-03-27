@@ -1,5 +1,7 @@
 Editor:
 
+	- Background and foreground decorations.
+
 Game:
 	- There should be sound.
 	- There should be music.
@@ -10,3 +12,4 @@ Game:
 
 Bots:
 
+	- Allow non aggressive pathfinding for returning to spawn point?.

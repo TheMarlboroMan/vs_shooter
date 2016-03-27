@@ -5,11 +5,14 @@ using namespace App;
 void Mapa::limpiar()
 {
 	obstaculos.clear();
+	decoraciones.clear();
 	puntos_inicio.clear();
 	puntos_bot.clear();
 	generadores_items.clear();
 	puntos_ruta.clear();
 	nodos_ruta.clear();
+	decoraciones_fondo.clear();
+	decoraciones_frente.clear();
 }
 
 bool Mapa::visibilidad_entre_puntos(Espaciable::tpunto pt1, Espaciable::tpunto pt2) const
@@ -61,6 +64,12 @@ void Mapa::inicializar()
 {
 	for(auto& g : generadores_items) g.reiniciar();
 	construir_nodos_ruta();
+
+	for(const auto& d : decoraciones)
+	{
+		if(d.es_frente()) decoraciones_frente.push_back(&d);
+		else decoraciones_fondo.push_back(&d);
+	}
 }
 
 const Nodo_ruta * Mapa::localizar_nodo_cercano(Espaciable::tpunto pt) const

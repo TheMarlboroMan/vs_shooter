@@ -3,7 +3,8 @@
 using namespace App;
 
 void Importador::importar(const std::string& fichero, 
-	std::vector<Obstaculo>& obstaculos, 
+	std::vector<Obstaculo>& obstaculos,
+	std::vector<Decoracion>& decoraciones,  
 	std::vector<DLibH::Punto_2d<double>>& inicios,
 	std::vector<DLibH::Punto_2d<double>>& bots,  
 	std::vector<Punto_ruta>& puntos_ruta, 
@@ -29,6 +30,9 @@ void Importador::importar(const std::string& fichero,
 
 		auto& array_bots=raiz["bots"].acc_lista();
 		for(const auto& i : array_bots) deserializar_punto(i, bots);
+
+		auto& array_decoraciones=raiz["decoracion"].acc_lista();
+		for(const auto& i : array_decoraciones) deserializar_decoracion(i, decoraciones);
 	}
 	catch(std::exception &e)
 	{
@@ -50,8 +54,26 @@ void Importador::deserializar_obstaculo(const Herramientas_proyecto::Dnot_token&
 	const auto& centro=tok["cen"].acc_lista();
 	poligono.mut_centro({centro[0], centro[1]});
 
+	obstaculos.push_back({poligono});
+}
+
+void Importador::deserializar_decoracion(const Herramientas_proyecto::Dnot_token& tok, std::vector<Decoracion>& decoraciones)
+{
+	Espaciable::tpoligono poligono;
+
+	const auto& lista_puntos=tok["p"].acc_lista();
+	for(const auto& vp : lista_puntos)
+	{
+		const auto& pt=vp.acc_lista();
+		poligono.insertar_vertice({pt[0], pt[1]});
+	}
+	
+	const auto& centro=tok["cen"].acc_lista();
+	poligono.mut_centro({centro[0], centro[1]});
+
 	tcolor color={128, 128, 128, 255};
 	tcolor clinea=color;
+	bool frente=false;
 
 	try
 	{
@@ -62,13 +84,15 @@ void Importador::deserializar_obstaculo(const Herramientas_proyecto::Dnot_token&
 		color={vcolor[0], vcolor[1], vcolor[2], vcolor[3]};
 		clinea={vcolorl[0], vcolorl[1], vcolorl[2], vcolorl[3]};
 
+		frente=tok["pr"]["fr"];
 	}
 	catch(std::exception& e)
 	{
-		//Do nothing... This is only for map compatibility sake.	
+		//No hacer nada... Tenemos esto aquí sólo para que no explote
+		//seǵun vamos guardando más propiedades en el objeto.
 	}
 
-	obstaculos.push_back({poligono, color, clinea});
+	decoraciones.push_back({poligono, color, clinea, frente});
 }
 
 void Importador::deserializar_punto(const Herramientas_proyecto::Dnot_token& tok, std::vector<DLibH::Punto_2d<double>>& puntos)

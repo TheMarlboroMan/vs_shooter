@@ -49,6 +49,7 @@ $(DIR_O)controlador_principal.o :\
 $(DIR_O)fuentes.o\
 $(DIR_O)mapa.o\
 $(DIR_O)jugador.o\
+$(DIR_O)jugador_info.o\
 $(DIR_O)bot.o\
 $(DIR_O)proyectil.o\
 $(DIR_O)disparador.o\

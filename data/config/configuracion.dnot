@@ -13,10 +13,10 @@ config:{
 				1, 0, 13
 			], disparo:[
 				1, 0, 2
+			], habilidad:[
+				1, 0, 3
 			], izquierda:[
 				1, 0, 15
-			], registrar:[
-				1, 0, 9
 			]
 		}, jugador_2:{
 			abajo:[
@@ -27,24 +27,24 @@ config:{
 				0, 0, 79
 			], disparo:[
 				0, 0, 44
+			], habilidad:[
+				0, 0, 26
 			], izquierda:[
 				0, 0, 80
-			], registrar:[
-				0, 0, 30
 			]
 		}, jugador_3:{
 			abajo:[
-				0, 0, 81
+				0, 0, 23
 			], arriba:[
-				0, 0, 82
+				0, 0, 28
 			], derecha:[
-				0, 0, 79
+				0, 0, 21
 			], disparo:[
+				0, 0, 20
+			], habilidad:[
 				0, 0, 44
 			], izquierda:[
-				0, 0, 80
-			], registrar:[
-				0, 0, 44
+				0, 0, 8
 			]
 		}
 	}, meta:{

@@ -38,7 +38,7 @@ class Controlador_controles:
 	void				finalizar_configuracion();
 
 	struct tinput{
-		enum tipos {registrar, disparo, arriba, abajo, izquierda, derecha};
+		enum tipos {disparo, habilidad, arriba, abajo, izquierda, derecha};
 					
 		int 				jugador, tipo, clave;
 		std::string 			nombre;

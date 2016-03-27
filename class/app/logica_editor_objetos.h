@@ -28,6 +28,8 @@ class Objeto_editor
 	static const tcolor 	color_punto_inicio_editor;
 	static const tcolor	color_punto_bot_editor;
 	static const tcolor	color_seleccion;
+	static const tcolor	color_obstaculo;
+	static const tcolor	color_borde_obstaculo;
 
 	protected:
 
@@ -72,6 +74,24 @@ class Obstaculo_editor:
 
 	Obstaculo		elemento;
 	virtual void		mover(double x, double y) {elemento.mover(x, y);}
+	virtual void		colorear(const tcolor& f, const tcolor& l) {}
+	virtual bool		es_bajo_cursor(punto pt) const {return punto_en_poligono(elemento.acc_poligono(), pt);}	
+	virtual void		dibujar(Representador& r,DLibV::Pantalla& pantalla, const Struct_camara& struct_camara, bool seleccionado=false) const
+	{
+		dibujar_poligono(r, pantalla, elemento.acc_poligono(), color_obstaculo, color_borde_obstaculo, struct_camara, seleccionado);
+	}
+	
+};
+
+class Decoracion_editor:
+	public Objeto_editor
+{
+	public:
+
+	Decoracion_editor(const Decoracion& o):elemento(o) {}
+
+	Decoracion		elemento;
+	virtual void		mover(double x, double y) {elemento.mover(x, y);}
 	virtual void		colorear(const tcolor& f, const tcolor& l)
 	{
 		elemento.mut_color(f);
@@ -81,8 +101,7 @@ class Obstaculo_editor:
 	virtual void		dibujar(Representador& r,DLibV::Pantalla& pantalla, const Struct_camara& struct_camara, bool seleccionado=false) const
 	{
 		dibujar_poligono(r, pantalla, elemento.acc_poligono(), elemento.acc_color(), elemento.acc_color_linea(), struct_camara, seleccionado);
-	}
-	
+	}	
 };
 
 class Punto_inicio_editor:

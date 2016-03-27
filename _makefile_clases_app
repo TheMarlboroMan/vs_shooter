@@ -71,6 +71,7 @@ $(DIR_CLASES_APP)logica_juego.cpp
 	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CLASES_APP)logica_juego.cpp -o $(DIR_O)logica_juego.o
 
 $(DIR_O)mapa.o:\
+$(DIR_O)decoracion.o\
 $(DIR_O)obstaculo.o\
 $(DIR_O)punto_ruta.o\
 $(DIR_O)representable.o\
@@ -115,6 +116,7 @@ $(DIR_CLASES_APP)proyectil.cpp
 
 $(DIR_O)importador.o:\
 $(DIR_O)obstaculo.o\
+$(DIR_O)decoracion.o\
 $(DIR_O)generador_items.o\
 $(DIR_CLASES_APP)importador.h \
 $(DIR_CLASES_APP)importador.cpp
@@ -122,14 +124,22 @@ $(DIR_CLASES_APP)importador.cpp
 
 $(DIR_O)exportador.o:\
 $(DIR_O)obstaculo.o\
+$(DIR_O)decoracion.o\
 $(DIR_O)generador_items.o\
 $(DIR_CLASES_APP)exportador.h \
 $(DIR_CLASES_APP)exportador.cpp
 	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CLASES_APP)exportador.cpp -o $(DIR_O)exportador.o
 
+$(DIR_O)decoracion.o:\
+$(DIR_O)obstaculo.o\
+$(DIR_O)representable.o\
+$(DIR_CLASES_APP)color.h \
+$(DIR_CLASES_APP)decoracion.h \
+$(DIR_CLASES_APP)decoracion.cpp
+	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CLASES_APP)decoracion.cpp -o $(DIR_O)decoracion.o
+
 $(DIR_O)obstaculo.o:\
 $(DIR_O)espaciable.o\
-$(DIR_CLASES_APP)color.h \
 $(DIR_CLASES_APP)obstaculo.h \
 $(DIR_CLASES_APP)obstaculo.cpp
 	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CLASES_APP)obstaculo.cpp -o $(DIR_O)obstaculo.o
@@ -217,6 +227,13 @@ $(DIR_CLASES_APP)widget_editor_interface.h \
 $(DIR_CLASES_APP)widget_editor_color.h \
 $(DIR_CLASES_APP)widget_editor_color.cpp
 	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CLASES_APP)widget_editor_color.cpp -o $(DIR_O)widget_editor_color.o
+
+$(DIR_O)jugador_info.o:\
+$(DIR_CLASES_APP)color.h \
+$(DIR_CLASES_APP)bloque_input.h \
+$(DIR_CLASES_APP)jugador_info.h \
+$(DIR_CLASES_APP)jugador_info.cpp
+	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CLASES_APP)jugador_info.cpp -o $(DIR_O)jugador_info.o
 
 $(DIR_O)mensajes.o:\
 $(DIR_CLASES_APP)mensajes.h \
