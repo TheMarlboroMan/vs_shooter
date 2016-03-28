@@ -39,7 +39,7 @@ Controlador_editor::Controlador_editor(DLibH::Log_base& l, const Fuentes& f)
 	tobjeto(tobjetocreado::obstaculo),
 	decoracion_frente(false)
 {
-	mensajes.insertar_mensaje("F1 para ayuda... pero aún no XD!.", 2.f);
+	mensajes.insertar_mensaje("F1 para ayuda.", 2.f);
 }
 
 void Controlador_editor::preloop(DFramework::Input& input, float delta)
@@ -54,6 +54,12 @@ void Controlador_editor::loop(DFramework::Input& input, float delta)
 	if(input.es_senal_salida())
 	{
 		abandonar_aplicacion();
+		return;
+	}
+
+	if(input.es_input_down(Input::ayuda))
+	{
+		solicitar_cambio_estado(ayuda_editor);
 		return;
 	}
 
@@ -415,22 +421,29 @@ void Controlador_editor::cerrar_poligono()
 	}
 	else
 	{
-		if(tobjeto==tobjetocreado::obstaculo)
+		if(!poligono_construccion.es_sentido_horario())
 		{
-			if(poligono_construccion.es_concavo())
+			mensajes.insertar_mensaje("Polígono no trazado en sentido horario", 2.f);
+		}
+		else
+		{
+			if(tobjeto==tobjetocreado::obstaculo)
 			{
-				mensajes.insertar_mensaje("Polígono cóncavo o erróneo", 2.f);
+				if(poligono_construccion.es_concavo())
+				{
+					mensajes.insertar_mensaje("Polígono cóncavo o erróneo", 2.f);
+				}
+				else
+				{
+					poligono_construccion.cerrar();
+					obstaculos.push_back(Obstaculo_editor(Obstaculo(poligono_construccion, Obstaculo::ttipos::normal)));
+				}
 			}
-			else
+			else if(tobjeto==tobjetocreado::decoracion)
 			{
 				poligono_construccion.cerrar();
-				obstaculos.push_back(Obstaculo_editor(Obstaculo(poligono_construccion, Obstaculo::ttipos::normal)));
+				decoraciones.push_back(Decoracion_editor(Decoracion(poligono_construccion, color_relleno, color_linea, decoracion_frente, 100)));
 			}
-		}
-		else if(tobjeto==tobjetocreado::decoracion)
-		{
-			poligono_construccion.cerrar();
-			decoraciones.push_back(Decoracion_editor(Decoracion(poligono_construccion, color_relleno, color_linea, decoracion_frente, 100)));
 		}
 	}
 

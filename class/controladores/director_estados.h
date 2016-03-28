@@ -13,6 +13,7 @@
 #include "principal.h"
 #include "controles.h"
 #include "editor.h"
+#include "ayuda_editor.h"
 
 
 namespace App
@@ -44,6 +45,7 @@ class Director_estados:
 	std::unique_ptr<Controlador_principal>		controlador_principal;
 	std::unique_ptr<Controlador_controles>		controlador_controles;
 	std::unique_ptr<Controlador_editor>		controlador_editor;
+	std::unique_ptr<Controlador_ayuda_editor>	controlador_ayuda_editor;
 };
 
 }

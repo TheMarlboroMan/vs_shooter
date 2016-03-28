@@ -35,10 +35,12 @@ void Director_estados::registrar_controladores()
 	controlador_principal.reset(new Controlador_principal(log, fuentes));
 	controlador_controles.reset(new Controlador_controles(log, config, fuentes));
 	controlador_editor.reset(new Controlador_editor(log, fuentes));
+	controlador_ayuda_editor.reset(new Controlador_ayuda_editor(log, fuentes));
 
 	registrar_controlador(t_estados::principal, *controlador_principal);
 	registrar_controlador(t_estados::controles, *controlador_controles);
 	registrar_controlador(t_estados::editor, *controlador_editor);
+	registrar_controlador(t_estados::ayuda_editor, *controlador_ayuda_editor);
 }
 
 void Director_estados::preparar_cambio_estado(int deseado, int actual)
@@ -50,6 +52,7 @@ void Director_estados::preparar_cambio_estado(int deseado, int actual)
 		break;
 		case t_estados::controles: break;
 		case t_estados::editor: break;
+		case t_estados::ayuda_editor: break;
 	}
 }
 

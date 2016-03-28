@@ -1,16 +1,11 @@
 Editor:
 
-	- Properties for obstacles (instant death, regular, pathfinding blocking).
-		- Should not be a flag but a type.
-		- Maybe the "pathfind blocking" should not be part of the regular geometry?.
-	- Widget for these properties.
 	- Copy and paste properties.
 	- Change the center of an obstacle (so it can be rotated in the future).
 	- Check polygon windings.
 
 Game:
 
-	- Properties for obstacles.
 	- There should be sound.
 	- There should be music.
 	- There should be a certain amount of lives.
