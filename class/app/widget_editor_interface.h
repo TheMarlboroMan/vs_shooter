@@ -13,6 +13,7 @@ class Widget_editor_interface
 
 	virtual void 	dibujar(DLibV::Pantalla&)=0;
 	virtual void	input(DFramework::Input&, float)=0;
+	virtual void	finalizar()=0;
 	virtual bool	es_cerrar() const=0;
 };
 

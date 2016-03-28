@@ -16,7 +16,6 @@
 #include "../app/logica_editor_objetos.h"
 
 #include "../app/widget_editor_interface.h"
-#include "../app/widget_editor_color.h"
 
 #include "estados_controladores.h"
 #include "../framework/controlador_interface.h"
@@ -76,10 +75,14 @@ class Controlador_editor:
 	void					pegar_color();
 	void					intercambiar_visibilidad(int, const std::string&);
 	void					intercambiar_frente_fondo();
-	void					do_crazy_pathfind();
+	void					cambiar_profundidad(int);
+	std::vector<Decoracion_editor *>	decoraciones_en_cursor();
+	void					reordenar_decoraciones();
+	void					click_derecho();
 
 	DLibH::Log_base&			log;
 	const DLibV::Fuente_TTF&		fuente_akashi;
+	const DLibV::Fuente_TTF&		fuente_akashi_mensajes;
 
 	Mapa					mapa;
 	Widget_mensajes				mensajes;
@@ -102,7 +105,6 @@ class Controlador_editor:
 	int					ver_flags;
 	enum class tobjetocreado		{obstaculo, decoracion, punto_ruta, inicio, bot, arma} tobjeto;
 
-	std::vector<DLibH::Punto_2d<double>>	ruta;
 	std::vector<Objeto_editor *>		objetos_cursor;
 	std::vector<Objeto_editor *>		objetos_seleccionados;
 	bool					decoracion_frente;

@@ -18,6 +18,7 @@ class Widget_editor_color:
 	
 	virtual void 	dibujar(DLibV::Pantalla&);
 	virtual void	input(DFramework::Input&, float);
+	virtual void	finalizar();
 	virtual bool	es_cerrar() const;
 
 	private:

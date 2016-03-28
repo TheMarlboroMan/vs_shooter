@@ -75,4 +75,5 @@ void Director_estados::virtualizar_joysticks(DFramework::Input& input)
 void Director_estados::registrar_fuentes()
 {
 	fuentes.registrar_fuente("akashi", 16);
+	fuentes.registrar_fuente("akashi", 9);
 }

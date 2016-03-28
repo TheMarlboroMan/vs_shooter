@@ -133,3 +133,8 @@ void Widget_editor_color::actualizar_colores()
 	f(*fondo, color_fondo);
 	f(*linea, color_linea);
 }
+
+void Widget_editor_color::finalizar()
+{
+	//No se hace nada.
+}

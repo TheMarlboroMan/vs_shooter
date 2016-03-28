@@ -74,6 +74,7 @@ void Importador::deserializar_decoracion(const Herramientas_proyecto::Dnot_token
 	tcolor color={128, 128, 128, 255};
 	tcolor clinea=color;
 	bool frente=false;
+	int profundidad=100;
 
 	try
 	{
@@ -83,8 +84,8 @@ void Importador::deserializar_decoracion(const Herramientas_proyecto::Dnot_token
 
 		color={vcolor[0], vcolor[1], vcolor[2], vcolor[3]};
 		clinea={vcolorl[0], vcolorl[1], vcolorl[2], vcolorl[3]};
-
 		frente=tok["pr"]["fr"];
+		profundidad=tok["pr"]["pr"];
 	}
 	catch(std::exception& e)
 	{
@@ -92,7 +93,7 @@ void Importador::deserializar_decoracion(const Herramientas_proyecto::Dnot_token
 		//seǵun vamos guardando más propiedades en el objeto.
 	}
 
-	decoraciones.push_back({poligono, color, clinea, frente});
+	decoraciones.push_back({poligono, color, clinea, frente, profundidad});
 }
 
 void Importador::deserializar_punto(const Herramientas_proyecto::Dnot_token& tok, std::vector<DLibH::Punto_2d<double>>& puntos)

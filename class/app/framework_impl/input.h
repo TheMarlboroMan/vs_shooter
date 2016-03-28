@@ -34,6 +34,8 @@ zoom_mas,
 zoom_menos,
 grid_mas,
 grid_menos,
+profundidad_mas,
+profundidad_menos,
 click_i,
 click_d,
 
@@ -60,7 +62,6 @@ j3_abajo,
 
 //Tests...
 TEST_VISIBILIDAD,
-TEST_RUTA,
 NUEVO_BOT
 };
 

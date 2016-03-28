@@ -43,6 +43,7 @@ $(DIR_O)punto_ruta.o\
 $(DIR_O)trazador_ruta.o\
 $(DIR_O)bot.o\
 $(DIR_O)representable.o\
+$(DIR_O)widget_editor_decoracion.o\
 $(DIR_O)widget_editor_color.o\
 
 DEP_CONTROLADORES=\

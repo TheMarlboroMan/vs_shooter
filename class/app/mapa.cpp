@@ -1,5 +1,7 @@
 #include "mapa.h"
 
+#include <algorithm>
+
 using namespace App;
 
 void Mapa::limpiar()
@@ -70,6 +72,9 @@ void Mapa::inicializar()
 		if(d.es_frente()) decoraciones_frente.push_back(&d);
 		else decoraciones_fondo.push_back(&d);
 	}
+
+	std::sort(std::begin(decoraciones_frente), std::end(decoraciones_frente), [](const Decoracion * a, const Decoracion * b) {return *a < *b;});
+	std::sort(std::begin(decoraciones_fondo), std::end(decoraciones_fondo), [](const Decoracion * a, const Decoracion * b) {return *a < *b;});
 }
 
 const Nodo_ruta * Mapa::localizar_nodo_cercano(Espaciable::tpunto pt) const

@@ -64,6 +64,7 @@ Herramientas_proyecto::Dnot_token Exportador::serializar_decoracion(const Decora
 
 	Dnot_token::t_mapa propiedades;
 	propiedades["fr"].asignar(o.es_frente());
+	propiedades["pr"].asignar(o.acc_profundidad());
 
 	mapa_polig["col"].asignar(arr_colores);
 	mapa_polig["pr"].asignar(propiedades);

@@ -6,20 +6,6 @@ config:{
 			zoom_mas:0, zoom_menos:0
 		}, jugador_1:{
 			abajo:[
-				1, 0, 14
-			], arriba:[
-				1, 0, 12
-			], derecha:[
-				1, 0, 13
-			], disparo:[
-				1, 0, 2
-			], habilidad:[
-				1, 0, 3
-			], izquierda:[
-				1, 0, 15
-			]
-		}, jugador_2:{
-			abajo:[
 				0, 0, 81
 			], arriba:[
 				0, 0, 82
@@ -28,19 +14,33 @@ config:{
 			], disparo:[
 				0, 0, 44
 			], habilidad:[
-				0, 0, 26
+				0, 0, 224
 			], izquierda:[
 				0, 0, 80
 			]
+		}, jugador_2:{
+			abajo:[
+				0, 0, 8
+			], arriba:[
+				0, 0, 8
+			], derecha:[
+				0, 0, 8
+			], disparo:[
+				0, 0, 8
+			], habilidad:[
+				0, 0, 8
+			], izquierda:[
+				0, 0, 8
+			]
 		}, jugador_3:{
 			abajo:[
-				0, 0, 23
+				0, 0, 8
 			], arriba:[
-				0, 0, 28
+				0, 0, 8
 			], derecha:[
-				0, 0, 21
+				0, 0, 8
 			], disparo:[
-				0, 0, 20
+				0, 0, 8
 			], habilidad:[
 				0, 0, 44
 			], izquierda:[

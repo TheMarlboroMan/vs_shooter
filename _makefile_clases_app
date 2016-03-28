@@ -228,6 +228,13 @@ $(DIR_CLASES_APP)widget_editor_color.h \
 $(DIR_CLASES_APP)widget_editor_color.cpp
 	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CLASES_APP)widget_editor_color.cpp -o $(DIR_O)widget_editor_color.o
 
+$(DIR_O)widget_editor_decoracion.o:\
+$(DIR_O)decoracion.o\
+$(DIR_CLASES_APP)widget_editor_interface.h \
+$(DIR_CLASES_APP)widget_editor_decoracion.h \
+$(DIR_CLASES_APP)widget_editor_decoracion.cpp
+	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CLASES_APP)widget_editor_decoracion.cpp -o $(DIR_O)widget_editor_decoracion.o
+
 $(DIR_O)jugador_info.o:\
 $(DIR_CLASES_APP)color.h \
 $(DIR_CLASES_APP)bloque_input.h \

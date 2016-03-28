@@ -8,6 +8,9 @@
 
 #include "../app/framework_impl/input.h"
 
+#include "../app/widget_editor_decoracion.h"
+#include "../app/widget_editor_color.h"
+
 #ifdef WINCOMPIL
 /* Localización del parche mingw32... Esto debería estar en otro lado, supongo. */
 #include <herramientas/herramientas/herramientas.h>
@@ -26,14 +29,15 @@ const tcolor Objeto_editor::color_borde_obstaculo={210, 210, 128, 255};
 Controlador_editor::Controlador_editor(DLibH::Log_base& l, const Fuentes& f)
 	:log(l), 
 	fuente_akashi(f.obtener_fuente("akashi", 16)),
-	mensajes(fuente_akashi, 4, 16, 0),
+	fuente_akashi_mensajes(f.obtener_fuente("akashi", 9)),
+	mensajes(fuente_akashi_mensajes, 4, 16, 0),
 	widget(nullptr),
 	struct_camara({1.0, 0, 0}), color_relleno({64, 64, 64, 255}), 
 	color_linea({128, 128, 128, 255}), grid(20), ver_flags(fvdeco_frente | fvdeco_fondo | fvobstaculos | fvconexiones),
 	tobjeto(tobjetocreado::obstaculo),
 	decoracion_frente(false)
 {
-
+	mensajes.insertar_mensaje("F1 para ayuda... pero aún no XD!.", 2.f);
 }
 
 void Controlador_editor::preloop(DFramework::Input& input, float delta)
@@ -61,6 +65,7 @@ void Controlador_editor::loop(DFramework::Input& input, float delta)
 	{
 		if(widget->es_cerrar())
 		{
+			widget->finalizar();
 			widget.reset(nullptr);
 		}
 		else
@@ -69,18 +74,16 @@ void Controlador_editor::loop(DFramework::Input& input, float delta)
 			return;
 		}
 	}
-	
-	if(input.es_input_down(Input::escape)) poligono_construccion=Poligono_2d<double>{};
-
-	if(input.es_input_down(Input::seleccion_color))
-	{
-		widget.reset(new Widget_editor_color(fuente_akashi, color_relleno, color_linea));
-	}
-
-	if(input.es_input_down(Input::tab)) intercambiar_objeto_creado();
 
 	pos_raton=input.acc_posicion_raton();
 	localizar_elementos_bajo_cursor();
+
+	
+	if(input.es_input_down(Input::escape)) poligono_construccion=Poligono_2d<double>{};
+
+	//TODO... Esto debe cambiar... Ahora le pasaríamos también el objeto de decoración???.
+	if(input.es_input_down(Input::seleccion_color)) widget.reset(new Widget_editor_color(fuente_akashi, color_relleno, color_linea));
+	if(input.es_input_down(Input::tab)) intercambiar_objeto_creado();
 
 	if(input.es_input_down(Input::cargar_mapa)) cargar_mapa();	
 	else if(input.es_input_down(Input::grabar_mapa)) grabar_mapa();
@@ -98,11 +101,7 @@ void Controlador_editor::loop(DFramework::Input& input, float delta)
 		if(input.es_input_pulsado(Input::control_izquierdo)) seleccionar();
 		else crear();
 	}	
-	else if(input.es_input_down(Input::click_d)) 
-	{
-		//Nothing yet...
-		//TODO: Propiedades del objeto bajo el cursor!!!.
-	}
+	else if(input.es_input_down(Input::click_d)) click_derecho();
 	
 	if(input.es_input_pulsado(Input::suprimir)) eliminar();
 
@@ -110,6 +109,9 @@ void Controlador_editor::loop(DFramework::Input& input, float delta)
 	else if(input.es_input_down(Input::pegar_color)) pegar_color();
 	//TODO: Bullshit, mejor click derecho?.
 	if(input.es_input_down(Input::intercambiar_frente_fondo)) intercambiar_frente_fondo();
+
+	if(input.es_input_down(Input::profundidad_mas)) cambiar_profundidad(1);
+	else if(input.es_input_down(Input::profundidad_menos)) cambiar_profundidad(-1);
 
 	if(input.es_input_pulsado(Input::control_izquierdo))
 	{
@@ -132,12 +134,6 @@ void Controlador_editor::loop(DFramework::Input& input, float delta)
 	{
 		aplicar_a_mapa(mapa);
 		mapa.construir_nodos_ruta();
-	}
-
-	if(input.es_input_down(Input::TEST_RUTA))
-	{
-		if(!ruta.size()) do_crazy_pathfind();
-		else ruta.clear();
 	}
 
 	if(input.es_input_pulsado(Input::zoom_mas)) 
@@ -168,15 +164,9 @@ void Controlador_editor::dibujar(DLibV::Pantalla& pantalla)
 
 	auto pt_raton=punto_desde_pos_pantalla(pos_raton.x, pos_raton.y);
 
-	//TODO: Toggle...
-	if(ver_flags & fvobstaculos) 
-		for(const auto& eo : obstaculos) eo.dibujar(r, pantalla, struct_camara);
-
-	if(ver_flags & fvdeco_fondo)
-		for(const auto& ed : decoraciones) if(!ed.elemento.es_frente()) ed.dibujar(r, pantalla, struct_camara);
-
-	if(ver_flags & fvdeco_frente)
-		for(const auto& ed : decoraciones) if(ed.elemento.es_frente()) ed.dibujar(r, pantalla, struct_camara);
+	if(ver_flags & fvobstaculos) for(const auto& eo : obstaculos) eo.dibujar(r, pantalla, struct_camara);
+	if(ver_flags & fvdeco_fondo) for(const auto& ed : decoraciones) if(!ed.elemento.es_frente()) ed.dibujar(r, pantalla, struct_camara);
+	if(ver_flags & fvdeco_frente) for(const auto& ed : decoraciones) if(ed.elemento.es_frente()) ed.dibujar(r, pantalla, struct_camara);
 
 	for(const auto& pi : puntos_inicio) pi.dibujar(r, pantalla, struct_camara);
 	for(const auto& pb : puntos_bot) pb.dibujar(r, pantalla, struct_camara);
@@ -194,20 +184,6 @@ void Controlador_editor::dibujar(DLibV::Pantalla& pantalla)
 				Segmento_2d<double> s{ {nr.origen.pt.x, nr.origen.pt.y}, {c.destino.origen.pt.x, c.destino.origen.pt.y}};
 				r.dibujar_segmento(pantalla, s, {255, 255, 25, 64}, struct_camara);
 			}		
-		}
-	}
-
-	//TODO: Temporal: mostrar ruta.
-	if(ruta.size())
-	{
-		size_t i=1, max=ruta.size();
-
-		while(i < max)
-		{
-			auto pt1=ruta[i-1], pt2=ruta[i];
-			Segmento_2d<double> s{ {pt1.x, pt1.y}, {pt2.x, pt2.y}};
-			r.dibujar_segmento(pantalla, s, {255, 25, 25, 128}, struct_camara);
-			++i;
 		}
 	}
 
@@ -327,6 +303,35 @@ void Controlador_editor::crear()
 	}
 }
 
+void Controlador_editor::click_derecho()
+{
+	switch(tobjeto)
+	{
+		case tobjetocreado::obstaculo:
+
+		break;
+		case tobjetocreado::decoracion:
+		{
+			//TODO... Cambiar parámetros...
+			auto v=decoraciones_en_cursor();
+			if(v.size()==1) widget.reset(new Widget_editor_decoracion(fuente_akashi, v[0]->elemento));
+		}
+		break;
+		case tobjetocreado::punto_ruta: 
+
+		break;
+		case tobjetocreado::inicio:
+
+		break;
+		case tobjetocreado::bot:
+
+		break;
+		case tobjetocreado::arma:
+
+		break;
+	}
+}
+
 void Controlador_editor::seleccionar()
 {	
 	if(objetos_cursor.size())
@@ -420,37 +425,11 @@ void Controlador_editor::cerrar_poligono()
 		else if(tobjeto==tobjetocreado::decoracion)
 		{
 			poligono_construccion.cerrar();
-			decoraciones.push_back(Decoracion_editor(Decoracion(poligono_construccion, color_relleno, color_linea, decoracion_frente)));
+			decoraciones.push_back(Decoracion_editor(Decoracion(poligono_construccion, color_relleno, color_linea, decoracion_frente, 100)));
 		}
 	}
 
 	poligono_construccion=Poligono_2d<double>{};
-}
-
-void Controlador_editor::do_crazy_pathfind()
-{
-	ruta.clear();
-
-	if(mapa.puntos_inicio.size() < 2) return;
-
-	const Nodo_ruta * ini=mapa.localizar_nodo_cercano(mapa.puntos_inicio.front());
-	if(!ini) return;
-
-	const Nodo_ruta * fin=mapa.localizar_nodo_cercano(mapa.puntos_inicio.back());
-	if(!fin) return;
-
-	Trazador_ruta t;
-	auto res=t.trazar_ruta(*ini, *fin);
-
-	if(res.resuelto) 
-	{
-		ruta.push_back(mapa.puntos_inicio.front());
-
-		for(const auto& pt: res.ruta)
-			ruta.push_back({pt.x, pt.y});
-
-		ruta.push_back(mapa.puntos_inicio.back());
-	}
 }
 
 void Controlador_editor::localizar_elementos_bajo_cursor()
@@ -540,10 +519,7 @@ void Controlador_editor::pegar_color()
 //Mejor "copiar propiedades"?
 void Controlador_editor::copiar_color()
 {
-	std::vector<Decoracion_editor *> v;
-	auto pt=punto_desde_pos_pantalla(pos_raton.x, pos_raton.y, false);
-	for(auto& o : decoraciones) if(o.es_bajo_cursor(pt)) v.push_back(&o);
-
+	auto v=decoraciones_en_cursor();
 	if(v.size()==1)
 	{
 		mensajes.insertar_mensaje("Color copiado", 2.0f);
@@ -566,12 +542,10 @@ void Controlador_editor::intercambiar_visibilidad(int val, const std::string& ti
 	}
 }
 
+//TODO: Esto se extinguiría e iría a widget y a copiar y pegar.
 void Controlador_editor::intercambiar_frente_fondo()
 {
-	std::vector<Decoracion_editor *> v;
-	auto pt=punto_desde_pos_pantalla(pos_raton.x, pos_raton.y, false);
-	for(auto& o : decoraciones) if(o.es_bajo_cursor(pt)) v.push_back(&o);
-
+	auto v=decoraciones_en_cursor();
 	std::string mensaje("");
 
 	if(!v.size())
@@ -586,4 +560,33 @@ void Controlador_editor::intercambiar_frente_fondo()
 	}
 
 	mensajes.insertar_mensaje(mensaje, 2.0f);
+}
+
+std::vector<Decoracion_editor *> Controlador_editor::decoraciones_en_cursor()
+{
+	std::vector<Decoracion_editor *> v;
+	auto pt=punto_desde_pos_pantalla(pos_raton.x, pos_raton.y, false);
+	for(auto& o : decoraciones) if(o.es_bajo_cursor(pt)) v.push_back(&o);
+	return v;
+}
+
+void Controlador_editor::cambiar_profundidad(int dir)
+{
+	auto v=decoraciones_en_cursor();
+	if(v.size()==1)
+	{
+		if(dir > 0) v[0]->elemento.subir_profundidad();
+		else v[0]->elemento.bajar_profundidad();
+
+		reordenar_decoraciones();
+		mensajes.insertar_mensaje("Nueva profundidad de "+std::to_string(v[0]->elemento.acc_profundidad()), 2.0f);
+	}
+}
+
+void Controlador_editor::reordenar_decoraciones()
+{
+	std::sort(
+		std::begin(decoraciones), 
+		std::end(decoraciones), 
+		[](const Decoracion_editor& a, const Decoracion_editor& b) {return a.elemento < b.elemento;});
 }
