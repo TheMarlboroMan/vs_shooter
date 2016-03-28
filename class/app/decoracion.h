@@ -2,14 +2,14 @@
 #define DECORACION_H
 
 #include "color.h"
-#include "obstaculo.h"
+#include "espaciable.h"
 #include "representable.h"
 
 namespace App
 {
 
 class Decoracion:
-	public Obstaculo,
+	public Espaciable,
 	public Representable
 {
 	public:
@@ -23,7 +23,7 @@ class Decoracion:
 	void				mut_color(tcolor c) {color=c;}
 	void				mut_color_linea(tcolor c) {color_linea=c;}
 	void				mut_frente(bool v) {frente=v;}
-	int				mut_profundidad(int v);
+	void				mut_profundidad(int v);
 	void				subir_profundidad();
 	void				bajar_profundidad();
 

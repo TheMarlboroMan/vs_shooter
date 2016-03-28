@@ -11,7 +11,16 @@ class Obstaculo:
 {
 	public:
 
-					Obstaculo(const tpoligono&);
+	enum class	ttipos{normal, letal};
+
+					Obstaculo(const tpoligono&, ttipos);
+
+	ttipos				acc_tipo() const {return tipo;}
+	void				mut_tipo(ttipos v) {tipo=v;}
+
+	private:
+
+	ttipos				tipo;
 };
 
 }

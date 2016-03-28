@@ -43,18 +43,38 @@ void Importador::importar(const std::string& fichero,
 void Importador::deserializar_obstaculo(const Herramientas_proyecto::Dnot_token& tok, std::vector<Obstaculo>& obstaculos)
 {
 	Espaciable::tpoligono poligono;
+	Obstaculo::ttipos tipo=Obstaculo::ttipos::normal;
 
-	const auto& lista_puntos=tok["p"].acc_lista();
-	for(const auto& vp : lista_puntos)
+	try
 	{
-		const auto& pt=vp.acc_lista();
-		poligono.insertar_vertice({pt[0], pt[1]});
-	}
+		const auto& lista_puntos=tok["p"].acc_lista();
+		for(const auto& vp : lista_puntos)
+		{
+			const auto& pt=vp.acc_lista();
+			poligono.insertar_vertice({pt[0], pt[1]});
+		}
 	
-	const auto& centro=tok["cen"].acc_lista();
-	poligono.mut_centro({centro[0], centro[1]});
+		const auto& centro=tok["cen"].acc_lista();
+		poligono.mut_centro({centro[0], centro[1]});
 
-	obstaculos.push_back({poligono});
+		int val_tipo=tok["pr"]["t"];
+		switch(val_tipo)
+		{
+			case 0:
+			default:
+				tipo=Obstaculo::ttipos::normal;
+			break;
+			case 1: 
+				tipo=Obstaculo::ttipos::letal;
+			break;
+		}
+	}
+	catch(std::exception& e)
+	{
+		//Simplemente por compatibilidad...
+	}
+
+	obstaculos.push_back({poligono, tipo});
 }
 
 void Importador::deserializar_decoracion(const Herramientas_proyecto::Dnot_token& tok, std::vector<Decoracion>& decoraciones)

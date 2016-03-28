@@ -32,11 +32,23 @@ Herramientas_proyecto::Dnot_token Exportador::serializar_obstaculo(const Obstacu
 
 	auto centro=o.acc_poligono().acc_centro();
 
-	Dnot_token::t_mapa mapa_polig;
-	mapa_polig["p"].asignar(puntos);
-	mapa_polig["cen"].asignar(generar_punto(centro.x, centro.y));
+	Dnot_token::t_mapa propiedades;
 
-	return Dnot_token(mapa_polig);
+	int tipo=0;
+	switch(o.acc_tipo())
+	{
+		case Obstaculo::ttipos::normal: tipo=0; break;
+		case Obstaculo::ttipos::letal: tipo=1; break;
+	}
+
+	propiedades["t"].asignar(tipo);
+	
+	Dnot_token::t_mapa mapa_objeto;
+	mapa_objeto["p"].asignar(puntos);
+	mapa_objeto["cen"].asignar(generar_punto(centro.x, centro.y));
+	mapa_objeto["pr"].asignar(propiedades);
+
+	return Dnot_token(mapa_objeto);
 }
 
 Herramientas_proyecto::Dnot_token Exportador::serializar_decoracion(const Decoracion& o)

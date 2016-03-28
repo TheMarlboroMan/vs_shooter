@@ -100,6 +100,7 @@ class Jugador:
 	void				turno(float);
 	void				confirmar_movimiento();
 	void				colisionar();
+	void				restar_toda_salud();
 	void				restar_salud(int);
 	void				establecer_arma(Jugador_arma * a);
 

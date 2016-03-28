@@ -62,21 +62,20 @@ class Controlador_editor:
 	void					crear_punto_ruta(DLibH::Punto_2d<double>);
 	void					crear_generador_items(DLibH::Punto_2d<double>);
 	void					localizar_elementos_bajo_cursor();
-	template<typename T>	
-	void 					localizar_elementos_bajo_cursor_helper(T& t, std::vector<Objeto_editor *>& v, DLibH::Punto_2d<double> pt)
+	template<typename T, typename TV>	
+	void 					localizar_elementos_bajo_cursor_helper(T& t, TV& v, DLibH::Punto_2d<double> pt)
 	{
 			for(auto& o : t) 
 				if(o.es_bajo_cursor(pt))
 					v.push_back(&o);
 	}
+
 	void					mover_seleccion(double, double);
 	void					obtener_desde_mapa();
 	void					copiar_color();
 	void					pegar_color();
 	void					intercambiar_visibilidad(int, const std::string&);
-	void					intercambiar_frente_fondo();
 	void					cambiar_profundidad(int);
-	std::vector<Decoracion_editor *>	decoraciones_en_cursor();
 	void					reordenar_decoraciones();
 	void					click_derecho();
 

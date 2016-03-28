@@ -10,6 +10,7 @@
 
 #include "../app/widget_editor_decoracion.h"
 #include "../app/widget_editor_color.h"
+#include "../app/widget_editor_obstaculo.h"
 
 #ifdef WINCOMPIL
 /* Localización del parche mingw32... Esto debería estar en otro lado, supongo. */
@@ -24,6 +25,7 @@ const tcolor Objeto_editor::color_punto_inicio_editor={255, 0, 0, 128};
 const tcolor Objeto_editor::color_punto_bot_editor={0, 0, 255, 255};
 const tcolor Objeto_editor::color_seleccion={255, 255, 255, 255};
 const tcolor Objeto_editor::color_obstaculo={128, 128, 128, 255};
+const tcolor Objeto_editor::color_obstaculo_letal={255, 32, 32, 255};
 const tcolor Objeto_editor::color_borde_obstaculo={210, 210, 128, 255};
 
 Controlador_editor::Controlador_editor(DLibH::Log_base& l, const Fuentes& f)
@@ -81,14 +83,13 @@ void Controlador_editor::loop(DFramework::Input& input, float delta)
 	
 	if(input.es_input_down(Input::escape)) poligono_construccion=Poligono_2d<double>{};
 
-	//TODO... Esto debe cambiar... Ahora le pasaríamos también el objeto de decoración???.
 	if(input.es_input_down(Input::seleccion_color)) widget.reset(new Widget_editor_color(fuente_akashi, color_relleno, color_linea));
 	if(input.es_input_down(Input::tab)) intercambiar_objeto_creado();
 
 	if(input.es_input_down(Input::cargar_mapa)) cargar_mapa();	
 	else if(input.es_input_down(Input::grabar_mapa)) grabar_mapa();
 
-	if(input.es_input_pulsado(Input::intercambiar_ver)) 
+	if(input.es_input_pulsado(Input::control_izquierdo)) 
 	{
 		if(input.es_input_down(Input::tecla_1)) intercambiar_visibilidad(fvdeco_frente, "decoración frente");
 		else if(input.es_input_down(Input::tecla_2)) intercambiar_visibilidad(fvdeco_fondo, "decoración fondo");
@@ -107,8 +108,6 @@ void Controlador_editor::loop(DFramework::Input& input, float delta)
 
 	if(input.es_input_down(Input::copiar_color)) copiar_color();
 	else if(input.es_input_down(Input::pegar_color)) pegar_color();
-	//TODO: Bullshit, mejor click derecho?.
-	if(input.es_input_down(Input::intercambiar_frente_fondo)) intercambiar_frente_fondo();
 
 	if(input.es_input_down(Input::profundidad_mas)) cambiar_profundidad(1);
 	else if(input.es_input_down(Input::profundidad_menos)) cambiar_profundidad(-1);
@@ -308,14 +307,20 @@ void Controlador_editor::click_derecho()
 	switch(tobjeto)
 	{
 		case tobjetocreado::obstaculo:
-
+			if(ver_flags & fvobstaculos)
+			{
+				std::vector<Obstaculo_editor *> v;
+				localizar_elementos_bajo_cursor_helper(obstaculos, v, punto_desde_pos_pantalla(pos_raton.x, pos_raton.y, false));
+				if(v.size()==1) widget.reset(new Widget_editor_obstaculo(fuente_akashi, v[0]->elemento));
+			}
 		break;
 		case tobjetocreado::decoracion:
-		{
-			//TODO... Cambiar parámetros...
-			auto v=decoraciones_en_cursor();
-			if(v.size()==1) widget.reset(new Widget_editor_decoracion(fuente_akashi, v[0]->elemento));
-		}
+			if(ver_flags & fvdeco_fondo || ver_flags & fvdeco_frente)
+			{
+				std::vector<Decoracion_editor *> v;
+				localizar_elementos_bajo_cursor_helper(decoraciones, v, punto_desde_pos_pantalla(pos_raton.x, pos_raton.y, false));
+				if(v.size()==1) widget.reset(new Widget_editor_decoracion(fuente_akashi, v[0]->elemento));
+			}
 		break;
 		case tobjetocreado::punto_ruta: 
 
@@ -419,7 +424,7 @@ void Controlador_editor::cerrar_poligono()
 			else
 			{
 				poligono_construccion.cerrar();
-				obstaculos.push_back(Obstaculo_editor(Obstaculo(poligono_construccion)));
+				obstaculos.push_back(Obstaculo_editor(Obstaculo(poligono_construccion, Obstaculo::ttipos::normal)));
 			}
 		}
 		else if(tobjeto==tobjetocreado::decoracion)
@@ -437,8 +442,9 @@ void Controlador_editor::localizar_elementos_bajo_cursor()
 	auto pt_raton=punto_desde_pos_pantalla(pos_raton.x, pos_raton.y, false);
 	objetos_cursor.clear();
 
-	localizar_elementos_bajo_cursor_helper(obstaculos, objetos_cursor, pt_raton);
-	localizar_elementos_bajo_cursor_helper(decoraciones, objetos_cursor, pt_raton);
+	if(ver_flags & fvobstaculos) localizar_elementos_bajo_cursor_helper(obstaculos, objetos_cursor, pt_raton);
+	if(ver_flags & fvdeco_fondo || ver_flags & fvdeco_frente) localizar_elementos_bajo_cursor_helper(decoraciones, objetos_cursor, pt_raton);
+
 	localizar_elementos_bajo_cursor_helper(puntos_inicio, objetos_cursor, pt_raton);
 	localizar_elementos_bajo_cursor_helper(puntos_bot, objetos_cursor, pt_raton);
 	localizar_elementos_bajo_cursor_helper(generadores_items, objetos_cursor, pt_raton);
@@ -519,7 +525,9 @@ void Controlador_editor::pegar_color()
 //Mejor "copiar propiedades"?
 void Controlador_editor::copiar_color()
 {
-	auto v=decoraciones_en_cursor();
+	std::vector<Decoracion_editor *> v;
+	localizar_elementos_bajo_cursor_helper(decoraciones, v, punto_desde_pos_pantalla(pos_raton.x, pos_raton.y, false));
+
 	if(v.size()==1)
 	{
 		mensajes.insertar_mensaje("Color copiado", 2.0f);
@@ -542,37 +550,11 @@ void Controlador_editor::intercambiar_visibilidad(int val, const std::string& ti
 	}
 }
 
-//TODO: Esto se extinguiría e iría a widget y a copiar y pegar.
-void Controlador_editor::intercambiar_frente_fondo()
-{
-	auto v=decoraciones_en_cursor();
-	std::string mensaje("");
-
-	if(!v.size())
-	{
-		decoracion_frente=!decoracion_frente;
-		mensaje=decoracion_frente ? "Decoración frontal activada" : "Decoración fondo activada";
-	}
-	else
-	{
-		for(auto &d : v) d->elemento.mut_frente(decoracion_frente);
-		mensaje=decoracion_frente ? "Aplicando decoración frontal activada" : "Aplicando decoración fondo activada";
-	}
-
-	mensajes.insertar_mensaje(mensaje, 2.0f);
-}
-
-std::vector<Decoracion_editor *> Controlador_editor::decoraciones_en_cursor()
-{
-	std::vector<Decoracion_editor *> v;
-	auto pt=punto_desde_pos_pantalla(pos_raton.x, pos_raton.y, false);
-	for(auto& o : decoraciones) if(o.es_bajo_cursor(pt)) v.push_back(&o);
-	return v;
-}
-
 void Controlador_editor::cambiar_profundidad(int dir)
 {
-	auto v=decoraciones_en_cursor();
+	std::vector<Decoracion_editor *> v;
+	localizar_elementos_bajo_cursor_helper(decoraciones, v, punto_desde_pos_pantalla(pos_raton.x, pos_raton.y, false));
+
 	if(v.size()==1)
 	{
 		if(dir > 0) v[0]->elemento.subir_profundidad();

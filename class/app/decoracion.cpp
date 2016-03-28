@@ -3,7 +3,7 @@
 using namespace App;
 
 Decoracion::Decoracion(const tpoligono& p, tcolor c, tcolor cl, bool fr, int prof)
-	:Obstaculo(p), color(c), color_linea(cl), frente(fr), profundidad(prof)
+	:Espaciable(p), color(c), color_linea(cl), frente(fr), profundidad(prof)
 {
 
 }
@@ -19,7 +19,7 @@ void Decoracion::dibujar(Representador& r, DLibV::Pantalla& pantalla, const Stru
 	if(color_linea!=color) r.dibujar_poligono_lineas(pantalla, poligono, color_linea, struct_camara);
 }
 
-int Decoracion::mut_profundidad(int v)
+void Decoracion::mut_profundidad(int v)
 {
 	profundidad=v;
 	comprobar_validez_profundidad();

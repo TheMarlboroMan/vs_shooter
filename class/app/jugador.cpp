@@ -123,6 +123,11 @@ void Jugador::colisionar()
 	if(velocidad < min_vel) velocidad=min_vel;
 }
 
+void Jugador::restar_toda_salud()
+{
+	salud=0;
+}
+
 void Jugador::restar_salud(int v)
 {
 	salud-=v/divisor_salud;

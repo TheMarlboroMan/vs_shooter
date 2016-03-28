@@ -372,7 +372,12 @@ void Controlador_principal::procesar_jugadores(DFramework::Input& input, float d
 		{
 			if(j.en_colision_con(o))
 			{
-				j.colisionar();
+				switch(o.acc_tipo())
+				{
+					case Obstaculo::ttipos::normal: j.colisionar(); break;
+					case Obstaculo::ttipos::letal: j.restar_toda_salud(); break;
+				}
+
 				colision=true;
 				break;
 			}

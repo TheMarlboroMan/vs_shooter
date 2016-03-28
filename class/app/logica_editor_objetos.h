@@ -29,6 +29,7 @@ class Objeto_editor
 	static const tcolor	color_punto_bot_editor;
 	static const tcolor	color_seleccion;
 	static const tcolor	color_obstaculo;
+	static const tcolor	color_obstaculo_letal;
 	static const tcolor	color_borde_obstaculo;
 
 	protected:
@@ -78,7 +79,14 @@ class Obstaculo_editor:
 	virtual bool		es_bajo_cursor(punto pt) const {return punto_en_poligono(elemento.acc_poligono(), pt);}	
 	virtual void		dibujar(Representador& r,DLibV::Pantalla& pantalla, const Struct_camara& struct_camara, bool seleccionado=false) const
 	{
-		dibujar_poligono(r, pantalla, elemento.acc_poligono(), color_obstaculo, color_borde_obstaculo, struct_camara, seleccionado);
+		tcolor color=color_obstaculo;
+		switch(elemento.acc_tipo())
+		{
+			case Obstaculo::ttipos::normal: break;
+			case Obstaculo::ttipos::letal: color=color_obstaculo_letal; break;
+		}
+
+		dibujar_poligono(r, pantalla, elemento.acc_poligono(), color, color_borde_obstaculo, struct_camara, seleccionado);
 	}
 	
 };

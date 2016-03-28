@@ -38,6 +38,7 @@ $(DIR_O)representador.o\
 $(DIR_O)fuentes.o\
 $(DIR_O)widget_editor_color.o\
 $(DIR_O)widget_editor_decoracion.o\
+$(DIR_O)widget_editor_obstaculo.o\
 $(DIR_HEADERS_APP)struct_camara.h\
 $(DIR_HEADERS_APP)logica_editor_objetos.h\
 $(DIR_HEADERS_IMPL)input.h\

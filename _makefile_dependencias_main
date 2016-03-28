@@ -45,6 +45,7 @@ $(DIR_O)bot.o\
 $(DIR_O)representable.o\
 $(DIR_O)widget_editor_decoracion.o\
 $(DIR_O)widget_editor_color.o\
+$(DIR_O)widget_editor_obstaculo.o\
 
 DEP_CONTROLADORES=\
 $(DIR_O)director_estados.o \
