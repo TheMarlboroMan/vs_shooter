@@ -42,7 +42,6 @@ $(DIR_O)importador.o\
 $(DIR_O)exportador.o\
 $(DIR_O)representador.o\
 $(DIR_CLASES_APP)logica_interface.h\
-$(DIR_CLASES_APP)struct_camara.h\
 $(DIR_CLASES_APP)representador.h\
 $(DIR_CLASES_APP)logica_editor.h \
 $(DIR_CLASES_APP)logica_editor_objetos.h \
@@ -146,7 +145,6 @@ $(DIR_CLASES_APP)obstaculo.cpp
 
 $(DIR_O)representador.o:\
 $(DIR_CLASES_APP)color.h \
-$(DIR_CLASES_APP)struct_camara.h \
 $(DIR_CLASES_APP)representador.h \
 $(DIR_CLASES_APP)representador.cpp
 	$(CC) $(CFLAGS) $(INCLUDES) $(DIR_CLASES_APP)representador.cpp -o $(DIR_O)representador.o

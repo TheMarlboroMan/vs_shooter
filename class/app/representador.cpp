@@ -2,44 +2,34 @@
 
 using namespace App;
 
-void Representador::dibujar_poligono(DLibV::Pantalla& pantalla, const DLibH::Poligono_2d<double>& poligono, tcolor color, const Struct_camara& cam)
+void Representador::dibujar_poligono(DLibV::Pantalla& pantalla, const DLibH::Poligono_2d<double>& poligono, tcolor color, const DLibV::Camara& camara)
 {
 	std::vector<DLibV::Representacion_primitiva_poligono::punto> puntos;
-
 	for(const auto& v : poligono.acc_vertices())
-	{
-		const auto pt=transformar(v, cam.xcam, cam.ycam, cam.zoom);
-		puntos.push_back({(int)pt.x, (int)pt.y});
-	}
+		puntos.push_back({(int)v.x, (int)v.y});
 
 	DLibV::Representacion_primitiva_poligono poli(puntos, color.r, color.g, color.b);
 	poli.establecer_alpha(color.a);
-	poli.volcar(pantalla);
+	poli.volcar(pantalla, camara);
 }
 
-void Representador::dibujar_poligono_lineas(DLibV::Pantalla& pantalla, const DLibH::Poligono_2d<double>& poligono, tcolor color, const Struct_camara& cam)
+void Representador::dibujar_poligono_lineas(DLibV::Pantalla& pantalla, const DLibH::Poligono_2d<double>& poligono, tcolor color, const DLibV::Camara& camara)
 {
 	std::vector<DLibV::Representacion_primitiva_poligono::punto> puntos;
 
 	for(const auto& v : poligono.acc_vertices())
-	{
-		const auto pt=transformar(v, cam.xcam, cam.ycam, cam.zoom);
-		puntos.push_back({(int)pt.x, (int)pt.y});
-	}
+		puntos.push_back({(int)v.x, (int)v.y});
 
 	DLibV::Representacion_primitiva_poligono_lineas poli(puntos, color.r, color.g, color.b);
 	poli.establecer_alpha(color.a);
-	poli.volcar(pantalla);
+	poli.volcar(pantalla, camara);
 }
 
-void Representador::dibujar_segmento(DLibV::Pantalla& pantalla, const DLibH::Segmento_2d<double>& seg, tcolor color, const Struct_camara& cam)
+void Representador::dibujar_segmento(DLibV::Pantalla& pantalla, const DLibH::Segmento_2d<double>& seg, tcolor color, const DLibV::Camara& camara)
 {
-	const auto p1=transformar(seg.v1, cam.xcam, cam.ycam, cam.zoom);
-	const auto p2=transformar(seg.v2, cam.xcam, cam.ycam, cam.zoom);
-	
-	DLibV::Representacion_primitiva_linea lin(p1.x, p1.y, p2.x, p2.y, color.r, color.g, color.b);
+	DLibV::Representacion_primitiva_linea lin(seg.v1.x, seg.v1.y, seg.v2.x, seg.v2.y, color.r, color.g, color.b);
 	lin.establecer_alpha(color.a);
-	lin.volcar(pantalla);
+	lin.volcar(pantalla, camara);
 }
 
 void Representador::dibujar_poligono(DLibV::Pantalla& pantalla, const DLibH::Poligono_2d<double>& poligono, tcolor color)

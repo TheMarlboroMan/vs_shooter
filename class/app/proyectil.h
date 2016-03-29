@@ -28,7 +28,7 @@ class Proyectil:
 	virtual void		formar_poligono()=0;
 	virtual void		preparar(double, DLibH::Punto_2d<double>)=0;
 
-	virtual void 		dibujar(Representador&, DLibV::Pantalla&, const Struct_camara&) const;
+	virtual void 		dibujar(Representador&, DLibV::Pantalla&, const DLibV::Camara&) const;
 
 	protected:
 

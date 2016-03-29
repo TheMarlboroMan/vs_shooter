@@ -30,7 +30,7 @@ class Generador_items:
 	void				turno(float);
 	void				reiniciar();
 
-	virtual void 			dibujar(Representador&, DLibV::Pantalla&, const Struct_camara&) const;
+	virtual void 			dibujar(Representador&, DLibV::Pantalla&, const DLibV::Camara&) const;
 
 	private:
 

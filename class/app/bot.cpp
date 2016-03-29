@@ -321,7 +321,7 @@ void Bot::restar_salud(int v)
 	if(salud < 0) salud=0;
 }
 
-void Bot::dibujar(Representador& r, DLibV::Pantalla& pantalla, const Struct_camara& struct_camara) const
+void Bot::dibujar(Representador& r, DLibV::Pantalla& pantalla, const DLibV::Camara& camara) const
 {
-	r.dibujar_poligono_lineas(pantalla, poligono, {255, 255, 255, 255}, struct_camara);
+	r.dibujar_poligono_lineas(pantalla, poligono, {255, 255, 255, 255}, camara);
 }

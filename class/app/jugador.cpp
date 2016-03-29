@@ -247,13 +247,13 @@ bool Jugador::es_arma_defecto() const
 	else return true;
 }
 
-void Jugador::dibujar(Representador& r, DLibV::Pantalla& pantalla, const Struct_camara& struct_camara) const
+void Jugador::dibujar(Representador& r, DLibV::Pantalla& pantalla, const DLibV::Camara& camara) const
 {
 	if(habilidad.get() && habilidad->obtener_tipo()==Habilidad_base::ttipo::escudo)
 	{
 		poligono_escudo.centrar_en(poligono.acc_centro());
-		r.dibujar_poligono(pantalla, poligono_escudo, {255, 32, 32, 32}, struct_camara);
+		r.dibujar_poligono(pantalla, poligono_escudo, {255, 32, 32, 32}, camara);
 	}
 
-	r.dibujar_poligono(pantalla, poligono, color, struct_camara);
+	r.dibujar_poligono(pantalla, poligono, color, camara);
 }

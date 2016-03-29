@@ -33,7 +33,7 @@ using namespace App;
 Controlador_principal::Controlador_principal(DLibH::Log_base& log, const Fuentes& f)
 	:log(log),
 	fuente_akashi(f.obtener_fuente("akashi", 16)),
-	struct_camara({1.0, 0, 0})
+	camara(0, 0, 640, 400)
 {
 	registrar_info_jugadores();
 }
@@ -88,27 +88,14 @@ void  Controlador_principal::dibujar(DLibV::Pantalla& pantalla)
 	Representador r;
 	ajustar_camara();
 
-	for(const auto& d : mapa.decoraciones_fondo)	d->dibujar(r, pantalla, struct_camara);
-	for(const auto& g : mapa.generadores_items) 	g.dibujar(r, pantalla, struct_camara);
-	for(const auto& j : jugadores) 			j.dibujar(r, pantalla, struct_camara);
-	for(const auto& b : bots) 			b.dibujar(r, pantalla, struct_camara);
-	for(const auto& p : proyectiles) 		p->dibujar(r, pantalla, struct_camara);
-	for(const auto& d : mapa.decoraciones_frente)	d->dibujar(r, pantalla, struct_camara);
+	for(const auto& d : mapa.decoraciones_fondo)	d->dibujar(r, pantalla, camara);
+	for(const auto& g : mapa.generadores_items) 	g.dibujar(r, pantalla, camara);
+	for(const auto& j : jugadores) 			j.dibujar(r, pantalla, camara);
+	for(const auto& b : bots) 			b.dibujar(r, pantalla, camara);
+	for(const auto& p : proyectiles) 		p->dibujar(r, pantalla, camara);
+	for(const auto& d : mapa.decoraciones_frente)	d->dibujar(r, pantalla, camara);
 
 	for(const auto& j : jugadores) 			dibujar_info_jugador(pantalla, j);
-	
-/*
-auto cuadrado=[](double x, double y, int rad)
-{
-	return Espaciable::tpoligono { {{x-rad, y-rad}, {x-rad, y+rad}, {x+rad, y+rad}, {x+rad, y-rad}}, {x, y}};
-};
-
-		auto& pts=bot.acc_ruta();
-		for(const auto& pt : pts)
-		{
-			r.dibujar_poligono(pantalla, cuadrado(pt.x, pt.y, 10), {255, 0, 0,255}, struct_camara);
-		}
-*/
 }
 
 void  Controlador_principal::despertar()
@@ -212,7 +199,6 @@ void Controlador_principal::ajustar_camara()
 			else if(c.y > ymax) ymax=c.y;
 		}
 
-		//TODO: Experimental: centrando con bot.		
 		for(const auto& bot : bots)
 		{
 			const auto& c=bot.acc_poligono().acc_centro();
@@ -223,9 +209,10 @@ void Controlador_principal::ajustar_camara()
 			else if(c.y > ymax) ymax=c.y;
 		}		
 
-		struct_camara.xcam=( xmin + ( (xmax-xmin) / 2) ) - (mitad_w_pantalla / struct_camara.zoom), 
-		struct_camara.ycam=( ymin + ( (ymax-ymin) / 2) ) + (mitad_h_pantalla / struct_camara.zoom);
+		double zoom=camara.acc_zoom();
 
+		int xcam=( xmin + ( (xmax-xmin) / 2) ) - (mitad_w_pantalla / zoom);
+		int ycam=( ymin + ( (ymax-ymin) / 2) ) + (mitad_h_pantalla / zoom);
 		
 		//Establecer zoom...
 		double 	distx=xmax-xmin,
@@ -234,8 +221,14 @@ void Controlador_principal::ajustar_camara()
 		double zoomx=distx < mitad_w_pantalla ? 1.0 : (double)mitad_w_pantalla / distx;
 		double zoomy=disty < mitad_h_pantalla ? 1.0 : (double)mitad_h_pantalla / disty;
 
-		struct_camara.zoom=zoomx < zoomy ? zoomx : zoomy;
-		if(struct_camara.zoom > 1.0) struct_camara.zoom=1.0;
+		zoom=zoomx < zoomy ? zoomx : zoomy;
+		if(zoom > 1.0) zoom=1.0;
+		camara.mut_zoom(2.0);
+		camara.enfocar_a(-120, -600);
+	}
+	else
+	{
+		//TODO: Enfocar todo el nivel.
 	}
 }
 

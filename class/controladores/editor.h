@@ -7,7 +7,6 @@
 
 #include <def_video.h>
 
-#include "../app/struct_camara.h"
 #include "../app/mapa.h"
 #include "../app/mensajes.h"
 #include "../app/trazador_ruta.h"
@@ -83,6 +82,7 @@ class Controlador_editor:
 	const DLibV::Fuente_TTF&		fuente_akashi;
 	const DLibV::Fuente_TTF&		fuente_akashi_mensajes;
 
+	DLibV::Camara				camara;
 	Mapa					mapa;
 	Widget_mensajes				mensajes;
 
@@ -95,7 +95,6 @@ class Controlador_editor:
 	std::vector<Generador_items_editor>	generadores_items;
 
 	DFramework::Input::Posicion_raton	pos_raton;
-	Struct_camara				struct_camara;
 	Espaciable::tpoligono			poligono_construccion;
 	tcolor					color_relleno,
 						color_linea;

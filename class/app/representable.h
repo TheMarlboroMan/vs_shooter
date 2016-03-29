@@ -2,9 +2,9 @@
 #define REPRESENTABLE_H
 
 #include <video/pantalla/pantalla.h>
+#include <video/camara/camara.h>
 
 #include "representador.h"
-#include "struct_camara.h"
 #include "color.h"
 
 namespace App
@@ -14,7 +14,7 @@ class Representable
 {
 	public:
 
-	virtual void dibujar(Representador&, DLibV::Pantalla&, const Struct_camara&) const=0;
+	virtual void dibujar(Representador&, DLibV::Pantalla&, const DLibV::Camara&) const=0;
 };
 
 }

@@ -28,7 +28,7 @@ class Bot:
 	int				acc_salud() const {return salud;}
 	const std::vector<Espaciable::tpunto>&	acc_ruta() const {return ruta;}
 
-	virtual void 			dibujar(Representador&, DLibV::Pantalla&, const Struct_camara&) const;
+	virtual void 			dibujar(Representador&, DLibV::Pantalla&, const DLibV::Camara&) const;
 
 	private:
 

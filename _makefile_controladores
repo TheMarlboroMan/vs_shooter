@@ -47,7 +47,6 @@ $(DIR_O)fuentes.o\
 $(DIR_O)widget_editor_color.o\
 $(DIR_O)widget_editor_decoracion.o\
 $(DIR_O)widget_editor_obstaculo.o\
-$(DIR_HEADERS_APP)struct_camara.h\
 $(DIR_HEADERS_APP)logica_editor_objetos.h\
 $(DIR_HEADERS_IMPL)input.h\
 $(DIR_CONTROLADORES)estados_controladores.h \
@@ -74,7 +73,6 @@ $(DIR_O)proyectil_normal.o\
 $(DIR_O)proyectil_peq.o\
 $(DIR_O)proyectil_divide.o\
 $(DIR_O)proyectil_explosivo.o\
-$(DIR_HEADERS_APP)struct_camara.h\
 $(DIR_HEADERS_APP)bloque_input.h\
 $(DIR_HEADERS_IMPL)input.h\
 $(DIR_CONTROLADORES)principal.h \

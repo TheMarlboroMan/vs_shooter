@@ -32,9 +32,10 @@ Controlador_editor::Controlador_editor(DLibH::Log_base& l, const Fuentes& f)
 	:log(l), 
 	fuente_akashi(f.obtener_fuente("akashi", 16)),
 	fuente_akashi_mensajes(f.obtener_fuente("akashi", 9)),
+	camara(0, 0, 640, 400),
 	mensajes(fuente_akashi_mensajes, 4, 16, 0),
 	widget(nullptr),
-	struct_camara({1.0, 0, 0}), color_relleno({64, 64, 64, 255}), 
+	color_relleno({128, 128, 128, 255}),
 	color_linea({128, 128, 128, 255}), grid(20), ver_flags(fvdeco_frente | fvdeco_fondo | fvobstaculos | fvconexiones),
 	tobjeto(tobjetocreado::obstaculo),
 	decoracion_frente(false)
@@ -128,11 +129,11 @@ void Controlador_editor::loop(DFramework::Input& input, float delta)
 	else
 	{
 	//TODO: Constantes...
-		if(input.es_input_pulsado(Input::cursor_arriba)) struct_camara.ycam+=200.0 * (double) delta;
-		else if(input.es_input_pulsado(Input::cursor_abajo)) struct_camara.ycam-=200.0 * (double) delta;
+		if(input.es_input_pulsado(Input::cursor_arriba)) camara.movimiento_relativo(0, -200.0 * (double) delta);
+		else if(input.es_input_pulsado(Input::cursor_abajo)) camara.movimiento_relativo(0, 200.0 * (double) delta);
 
-		if(input.es_input_pulsado(Input::cursor_derecha)) struct_camara.xcam+=200.0 * (double) delta;
-		else if(input.es_input_pulsado(Input::cursor_izquierda)) struct_camara.xcam-=200.0 * (double) delta;
+		if(input.es_input_pulsado(Input::cursor_derecha)) camara.movimiento_relativo(200.0 * (double) delta, 0);
+		else if(input.es_input_pulsado(Input::cursor_izquierda)) camara.movimiento_relativo(-200.0 * (double) delta, 0);
 	}
 
 	if(input.es_input_down(Input::TEST_VISIBILIDAD))
@@ -143,12 +144,13 @@ void Controlador_editor::loop(DFramework::Input& input, float delta)
 
 	if(input.es_input_pulsado(Input::zoom_mas)) 
 	{
-		struct_camara.zoom+=(double)delta;
+		camara.mut_zoom(camara.acc_zoom()-(double)delta);
 	}
 	else if(input.es_input_pulsado(Input::zoom_menos)) 
 	{
-		struct_camara.zoom-=(double)delta;
-		if(struct_camara.zoom < 0.10) struct_camara.zoom=0.10;
+		double zoom=camara.acc_zoom()+(double)delta;
+		if(zoom < 0.10) zoom=0.01;
+		camara.mut_zoom(zoom);
 	}
 
 	if(input.es_input_down(Input::grid_menos)) cambiar_grid(-1);
@@ -165,20 +167,20 @@ void Controlador_editor::dibujar(DLibV::Pantalla& pantalla)
 	pantalla.limpiar(0, 0, 0, 255);
 
 	Representador r;
-	r.dibujar_rejilla(pantalla, grid, {255, 255, 255, 64}, struct_camara.xcam, struct_camara.ycam, struct_camara.zoom);
+//	r.dibujar_rejilla(pantalla, grid, {255, 255, 255, 64}, camara.acc_x(), camara.acc_y(), camara.acc_zoom());
 
 	auto pt_raton=punto_desde_pos_pantalla(pos_raton.x, pos_raton.y);
 
-	if(ver_flags & fvobstaculos) for(const auto& eo : obstaculos) eo.dibujar(r, pantalla, struct_camara);
-	if(ver_flags & fvdeco_fondo) for(const auto& ed : decoraciones) if(!ed.elemento.es_frente()) ed.dibujar(r, pantalla, struct_camara);
-	if(ver_flags & fvdeco_frente) for(const auto& ed : decoraciones) if(ed.elemento.es_frente()) ed.dibujar(r, pantalla, struct_camara);
+	if(ver_flags & fvobstaculos) for(const auto& eo : obstaculos) eo.dibujar(r, pantalla, camara);
+	if(ver_flags & fvdeco_fondo) for(const auto& ed : decoraciones) if(!ed.elemento.es_frente()) ed.dibujar(r, pantalla, camara);
+	if(ver_flags & fvdeco_frente) for(const auto& ed : decoraciones) if(ed.elemento.es_frente()) ed.dibujar(r, pantalla, camara);
 
-	for(const auto& pi : puntos_inicio) pi.dibujar(r, pantalla, struct_camara);
-	for(const auto& pb : puntos_bot) pb.dibujar(r, pantalla, struct_camara);
-	for(const auto& eg : generadores_items) eg.dibujar(r, pantalla, struct_camara);
-	for(const auto& op : puntos_ruta) op.dibujar(r, pantalla, struct_camara);
-	for(const auto& oc : objetos_cursor) oc->dibujar(r, pantalla, struct_camara, true);
-	for(const auto& os : objetos_seleccionados) os->dibujar(r, pantalla, struct_camara, true);
+	for(const auto& pi : puntos_inicio) pi.dibujar(r, pantalla, camara);
+	for(const auto& pb : puntos_bot) pb.dibujar(r, pantalla, camara);
+	for(const auto& eg : generadores_items) eg.dibujar(r, pantalla, camara);
+	for(const auto& op : puntos_ruta) op.dibujar(r, pantalla, camara);
+	for(const auto& oc : objetos_cursor) oc->dibujar(r, pantalla, camara, true);
+	for(const auto& os : objetos_seleccionados) os->dibujar(r, pantalla, camara, true);
 
 	if(ver_flags & fvconexiones)
 	{
@@ -187,20 +189,20 @@ void Controlador_editor::dibujar(DLibV::Pantalla& pantalla)
 			for(const auto& c : nr.conexiones)
 			{
 				Segmento_2d<double> s{ {nr.origen.pt.x, nr.origen.pt.y}, {c.destino.origen.pt.x, c.destino.origen.pt.y}};
-				r.dibujar_segmento(pantalla, s, {255, 255, 25, 64}, struct_camara);
+				r.dibujar_segmento(pantalla, s, {255, 255, 25, 64}, camara);
 			}		
 		}
 	}
 
 	for(const auto& s : poligono_construccion.acc_segmentos())
-		r.dibujar_segmento(pantalla, s, {0, 255, 0, 128}, struct_camara);
+		r.dibujar_segmento(pantalla, s, {0, 255, 0, 128}, camara);
 	
 	//Segmento en construcción...	
 	if(poligono_construccion.acc_vertices().size())
 	{
 		const auto& v=poligono_construccion.acc_vertices().back();
 		Segmento_2d<double> s{ {v.x, v.y}, {pt_raton.x, pt_raton.y}};
-		r.dibujar_segmento(pantalla, s, {0, 255, 0, 128}, struct_camara);
+		r.dibujar_segmento(pantalla, s, {0, 255, 0, 128}, camara);
 	}
 
 	std::string texto="GRID: "+std::to_string((int)grid)+" POS: "+std::to_string((int)pt_raton.x)+","+std::to_string((int)pt_raton.y);
@@ -219,7 +221,7 @@ void Controlador_editor::dibujar(DLibV::Pantalla& pantalla)
 	txt.volcar(pantalla);
 
 	//Punto actual...
-	r.dibujar_poligono(pantalla, Objeto_editor::cuadrado(pt_raton.x, pt_raton.y, 3), {255, 255, 255, 128}, struct_camara);
+	r.dibujar_poligono(pantalla, Objeto_editor::cuadrado(pt_raton.x, pt_raton.y, 3), {255, 255, 255, 128}, camara);
 
 	//Color fondo y de línea...
 	r.dibujar_poligono(pantalla, Objeto_editor::cuadrado(570, 30, 10), color_relleno);
@@ -389,8 +391,8 @@ void Controlador_editor::crear_generador_items(DLibH::Punto_2d<double> pt)
 
 DLibH::Punto_2d<double>	Controlador_editor::punto_desde_pos_pantalla(int x, int y, bool a_rejilla)
 {
-	int px=struct_camara.xcam+(x/struct_camara.zoom);
-	int py=struct_camara.ycam-(y/struct_camara.zoom);
+	int px=camara.acc_x()+(x/camara.acc_zoom());
+	int py=-(camara.acc_y()-(y/camara.acc_zoom()));
 
 	if(a_rejilla)
 	{

@@ -10,8 +10,6 @@
 
 #include "../app/fuentes.h"
 #include "../app/mapa.h"
-#include "../app/struct_camara.h"
-#include "../app/mapa.h"
 #include "../app/jugador.h"
 #include "../app/jugador_info.h"
 
@@ -65,12 +63,12 @@ class Controlador_principal:
 	DLibH::Log_base&			log;
 	const DLibV::Fuente_TTF&		fuente_akashi;
 
+	DLibV::Camara				camara;
 	Mapa					mapa;
 
 	std::vector<Jugador_info>		info_jugadores;
 	std::vector<Jugador>			jugadores;
 	std::vector<Bot>			bots;
-	Struct_camara				struct_camara;
 	std::vector<std::unique_ptr<Proyectil>>	proyectiles;
 	std::vector<Disparador>			disparadores;
 };

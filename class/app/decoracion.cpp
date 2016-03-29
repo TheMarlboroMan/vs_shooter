@@ -13,10 +13,10 @@ bool Decoracion::operator<(const Decoracion& o) const
 	return profundidad < o.profundidad;
 }
 
-void Decoracion::dibujar(Representador& r, DLibV::Pantalla& pantalla, const Struct_camara& struct_camara) const
+void Decoracion::dibujar(Representador& r, DLibV::Pantalla& pantalla, const DLibV::Camara& camara) const
 {
-	r.dibujar_poligono(pantalla, poligono, color, struct_camara);
-	if(color_linea!=color) r.dibujar_poligono_lineas(pantalla, poligono, color_linea, struct_camara);
+	r.dibujar_poligono(pantalla, poligono, color, camara);
+	if(color_linea!=color) r.dibujar_poligono_lineas(pantalla, poligono, color_linea, camara);
 }
 
 void Decoracion::mut_profundidad(int v)
