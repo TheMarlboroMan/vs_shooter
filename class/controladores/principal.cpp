@@ -222,9 +222,12 @@ void Controlador_principal::ajustar_camara()
 		double zoomy=disty < mitad_h_pantalla ? 1.0 : (double)mitad_h_pantalla / disty;
 
 		zoom=zoomx < zoomy ? zoomx : zoomy;
+
+std::cout<<"ZOOM"<<zoom<<std::endl;
+
 		if(zoom > 1.0) zoom=1.0;
-		camara.mut_zoom(2.0);
-		camara.enfocar_a(-120, -600);
+		camara.mut_zoom(zoom);
+		camara.enfocar_a(xcam, -ycam);
 	}
 	else
 	{

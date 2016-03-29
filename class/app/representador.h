@@ -27,13 +27,13 @@ class Representador
 	void 			dibujar_poligono_lineas(DLibV::Pantalla&, const DLibH::Poligono_2d<double>&, tcolor);
 	void 			dibujar_segmento(DLibV::Pantalla&, const DLibH::Segmento_2d<double>&, tcolor);
 
+	void 			dibujar_poligono_sin_transformar(DLibV::Pantalla&, const DLibH::Poligono_2d<double>&, tcolor);
+
 	void 			dibujar_rejilla(DLibV::Pantalla&, int grid, tcolor, double nx, double ny, double zoom);
-
-
 
 	private:
 
-	DLibH::Punto_2d<double> transformar(const DLibH::Punto_2d<double>& pt, double nx, double ny, double zoom);
+	DLibV::Representacion_primitiva_poligono_base::punto	cartesiano_a_sdl(const DLibH::Punto_2d<double>& pt);
 };
 
 }

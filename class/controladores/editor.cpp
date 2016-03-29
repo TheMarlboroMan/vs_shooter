@@ -144,12 +144,14 @@ void Controlador_editor::loop(DFramework::Input& input, float delta)
 
 	if(input.es_input_pulsado(Input::zoom_mas)) 
 	{
-		camara.mut_zoom(camara.acc_zoom()-(double)delta);
+		double zoom=camara.acc_zoom()-(double)delta;
+		if(zoom > 10.0) zoom=10.0;
+		camara.mut_zoom(zoom);
 	}
 	else if(input.es_input_pulsado(Input::zoom_menos)) 
 	{
 		double zoom=camara.acc_zoom()+(double)delta;
-		if(zoom < 0.10) zoom=0.01;
+		if(zoom < 0.10) zoom=0.10;
 		camara.mut_zoom(zoom);
 	}
 
@@ -167,7 +169,7 @@ void Controlador_editor::dibujar(DLibV::Pantalla& pantalla)
 	pantalla.limpiar(0, 0, 0, 255);
 
 	Representador r;
-//	r.dibujar_rejilla(pantalla, grid, {255, 255, 255, 64}, camara.acc_x(), camara.acc_y(), camara.acc_zoom());
+	r.dibujar_rejilla(pantalla, grid, {255, 255, 255, 64}, camara.acc_x(), -camara.acc_y(), camara.acc_zoom());
 
 	auto pt_raton=punto_desde_pos_pantalla(pos_raton.x, pos_raton.y);
 
@@ -190,14 +192,14 @@ void Controlador_editor::dibujar(DLibV::Pantalla& pantalla)
 			{
 				Segmento_2d<double> s{ {nr.origen.pt.x, nr.origen.pt.y}, {c.destino.origen.pt.x, c.destino.origen.pt.y}};
 				r.dibujar_segmento(pantalla, s, {255, 255, 25, 64}, camara);
-			}		
+			}
 		}
 	}
 
 	for(const auto& s : poligono_construccion.acc_segmentos())
 		r.dibujar_segmento(pantalla, s, {0, 255, 0, 128}, camara);
 	
-	//Segmento en construcción...	
+	//Segmento en construcción...
 	if(poligono_construccion.acc_vertices().size())
 	{
 		const auto& v=poligono_construccion.acc_vertices().back();
@@ -205,7 +207,9 @@ void Controlador_editor::dibujar(DLibV::Pantalla& pantalla)
 		r.dibujar_segmento(pantalla, s, {0, 255, 0, 128}, camara);
 	}
 
-	std::string texto="GRID: "+std::to_string((int)grid)+" POS: "+std::to_string((int)pt_raton.x)+","+std::to_string((int)pt_raton.y);
+	std::string texto="GRID: "+std::to_string((int)grid)
+		+" CAM: "+std::to_string((int)camara.acc_x())+","+std::to_string((int)camara.acc_y())
+		+" POS: "+std::to_string((int)pt_raton.x)+","+std::to_string((int)pt_raton.y);
 	switch(tobjeto)
 	{
 		case tobjetocreado::obstaculo: texto+=" [geometry]"; break;
@@ -220,12 +224,11 @@ void Controlador_editor::dibujar(DLibV::Pantalla& pantalla)
 	txt.ir_a(16, 380);
 	txt.volcar(pantalla);
 
-	//Punto actual...
 	r.dibujar_poligono(pantalla, Objeto_editor::cuadrado(pt_raton.x, pt_raton.y, 3), {255, 255, 255, 128}, camara);
 
 	//Color fondo y de línea...
-	r.dibujar_poligono(pantalla, Objeto_editor::cuadrado(570, 30, 10), color_relleno);
-	r.dibujar_poligono(pantalla, Objeto_editor::cuadrado(580, 40, 10), color_linea);
+	r.dibujar_poligono_sin_transformar(pantalla, Objeto_editor::cuadrado(570, 30, 10), color_relleno);
+	r.dibujar_poligono_sin_transformar(pantalla, Objeto_editor::cuadrado(580, 40, 10), color_linea);
 
 	mensajes.dibujar(pantalla);
 	if(widget.get()) widget->dibujar(pantalla);
@@ -391,8 +394,9 @@ void Controlador_editor::crear_generador_items(DLibH::Punto_2d<double> pt)
 
 DLibH::Punto_2d<double>	Controlador_editor::punto_desde_pos_pantalla(int x, int y, bool a_rejilla)
 {
-	int px=camara.acc_x()+(x/camara.acc_zoom());
-	int py=-(camara.acc_y()-(y/camara.acc_zoom()));
+
+	int px=camara.acc_x() + (x * camara.acc_zoom());
+	int py=-camara.acc_y() - (y * camara.acc_zoom());
 
 	if(a_rejilla)
 	{
