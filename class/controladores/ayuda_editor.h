@@ -30,6 +30,8 @@ class Controlador_ayuda_editor:
 
 	DLibH::Log_base&			log;
 
+	double					y, max_y;
+
 	Herramientas_proyecto::Compositor_vista		layout;
 };
 

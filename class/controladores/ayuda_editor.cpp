@@ -7,7 +7,7 @@
 using namespace App;
 
 Controlador_ayuda_editor::Controlador_ayuda_editor(DLibH::Log_base& log, const Fuentes& fuentes)
-	:log(log)
+	:log(log), y(0.0), max_y(0.0)
 {
 	layout.mapear_fuente("fuente", fuentes.obtener_fuente("akashi", 16));
 }
@@ -34,34 +34,37 @@ void Controlador_ayuda_editor::loop(DFramework::Input& input, float delta)
 		{
 			solicitar_cambio_estado(editor);
 		}
-/*
-		else if(input.es_input_pulsado(Input::cursor_abajo))
+
+		double ny=y;
+
+//TODO: Fix this.
+		if(input.es_input_pulsado(Input::cursor_abajo))
 		{
-			--y;
-			if(y < max_y) y=max_y;
+			ny-=delta * 500.0;
+			if(ny < 0) ny=0;
 		}
 		else if(input.es_input_pulsado(Input::cursor_arriba))
 		{
-			++y;
-			if(y > 0) y=0;
+			ny+=delta * 500.0;
+			if(ny > max_y) ny=max_y;
 		}
-		else if(input.es_input_pulsado(Input::cursor_derecha))
+
+		if(ny!=y)
 		{
-			--x;
-			if(x < max_x) x=max_x;
+			y=ny;
+			layout.obtener_por_id("txt_ayuda")->ir_a(0, y);
 		}
-		else if(input.es_input_pulsado(Input::cursor_izquierda))
-		{
-			++x;
-			if(x > 0) x=0;
-		}
-*/
 	}
 }
 
 void Controlador_ayuda_editor::dibujar(DLibV::Pantalla& pantalla)
 {
 	layout.volcar(pantalla);
+
+	if(!y)
+	{
+		max_y=layout.obtener_por_id("txt_ayuda")->acc_posicion().h;
+	}
 }
 
 void Controlador_ayuda_editor::despertar()
