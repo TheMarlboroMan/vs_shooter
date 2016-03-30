@@ -50,7 +50,7 @@ struct Habilidad_velocidad:
 	virtual void		activar(bloque_efecto& bl)
 	{
 		tiempo_restante=1.0f;
-		bl.velocidad=500.0f;
+		bl.velocidad=700.0f;
 	}
 
 	virtual void		desactivar(bloque_efecto& bl)

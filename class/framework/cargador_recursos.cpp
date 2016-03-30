@@ -90,7 +90,6 @@ void Cargador_recursos::procesar_entrada_textura(const std::vector<std::string>&
 				unsigned int r=std::atoi(valores[3].c_str());
 				unsigned int g=std::atoi(valores[4].c_str());
 				unsigned int b=std::atoi(valores[5].c_str());
-
 				SDL_SetColorKey(superficie, SDL_TRUE, SDL_MapRGB(superficie->format, r, g, b));
 			}
 			

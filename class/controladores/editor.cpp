@@ -75,6 +75,8 @@ void Controlador_editor::loop(DFramework::Input& input, float delta)
 		if(widget->es_cerrar())
 		{
 			widget->finalizar();
+			//TODO: alguna forma de controlar esto???.
+			reordenar_decoraciones();
 			widget.reset(nullptr);
 		}
 		else
@@ -265,6 +267,7 @@ void Controlador_editor::cargar_mapa()
 	importador.importar(nombre_fichero.c_str(), mapa.obstaculos, mapa.decoraciones, mapa.puntos_inicio, mapa.puntos_bot, mapa.puntos_ruta, mapa.generadores_items);
 	obtener_desde_mapa();
 	mapa.limpiar();
+	reordenar_decoraciones();
 
 	mensajes.insertar_mensaje(nombre_fichero+" cargado de disco", 2.f);
 }
