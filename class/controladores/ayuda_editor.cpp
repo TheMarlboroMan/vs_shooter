@@ -7,7 +7,7 @@
 using namespace App;
 
 Controlador_ayuda_editor::Controlador_ayuda_editor(DLibH::Log_base& log, const Fuentes& fuentes)
-	:log(log), y(0.0), max_y(0.0)
+	:log(log), y(0.0), min_y(0.0)
 {
 	layout.mapear_fuente("fuente", fuentes.obtener_fuente("akashi", 16));
 }
@@ -37,22 +37,21 @@ void Controlador_ayuda_editor::loop(DFramework::Input& input, float delta)
 
 		double ny=y;
 
-//TODO: Fix this.
 		if(input.es_input_pulsado(Input::cursor_abajo))
 		{
 			ny-=delta * 500.0;
-			if(ny < 0) ny=0;
+			if(ny < min_y) ny=min_y;
 		}
 		else if(input.es_input_pulsado(Input::cursor_arriba))
 		{
 			ny+=delta * 500.0;
-			if(ny > max_y) ny=max_y;
+			if(ny > 0.0) ny=0.0;
 		}
 
 		if(ny!=y)
 		{
 			y=ny;
-			layout.obtener_por_id("txt_ayuda")->ir_a(0, y);
+			layout.obtener_por_id("txt_ayuda")->ir_a(16, y+16);
 		}
 	}
 }
@@ -63,7 +62,7 @@ void Controlador_ayuda_editor::dibujar(DLibV::Pantalla& pantalla)
 
 	if(!y)
 	{
-		max_y=layout.obtener_por_id("txt_ayuda")->acc_posicion().h;
+		min_y=-layout.obtener_por_id("txt_ayuda")->acc_posicion().h;
 	}
 }
 

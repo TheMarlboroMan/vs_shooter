@@ -41,6 +41,17 @@ class Controlador_editor:
 
 	private:
 
+	struct {
+		Obstaculo::ttipos	tipo;
+	}info_obstaculo;
+
+	struct{
+		tcolor			relleno,
+					linea;
+		int			orden;
+		bool			frente;
+	}info_decoracion;
+
 	void					cargar_mapa();
 	void					grabar_mapa();
 	void					crear();
@@ -71,8 +82,8 @@ class Controlador_editor:
 
 	void					mover_seleccion(double, double);
 	void					obtener_desde_mapa();
-	void					copiar_color();
-	void					pegar_color();
+	void					copiar();
+	void					pegar();
 	void					intercambiar_visibilidad(int, const std::string&);
 	void					cambiar_profundidad(int);
 	void					reordenar_decoraciones();

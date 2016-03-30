@@ -58,5 +58,14 @@ layout:
 	{tipo:"ttf", pos:[140,260], fuente:"akashi", rgba:[0, 0, 0, 255],texto:"Posicion:", orden: 50},
 	{tipo:"ttf", pos:[240,260], fuente:"akashi", rgba:[0, 0, 0, 255],texto:"-", id:"txt_frente_fondo", orden: 50},
 
-	{tipo:"caja",pos:[130, 78, 100, 16], rgb:[255,255,255,128], id:"selector", alpha:128	, orden: 60}
+	{tipo:"caja",pos:[130, 78, 100, 16], rgb:[255,255,255,128], id:"selector", alpha:128	, orden: 60},
+
+	{
+		tipo:"ttf", pos:[140,300], fuente:"akashi", rgba:[0, 0, 0, 255],
+		texto:">>>", orden: 50
+	},
+	{
+		tipo:"ttf", pos:[180,300], fuente:"akashi", rgba:[0, 0, 0, 255],
+		texto:"", id:"txt_input", orden: 50
+	}
 ]

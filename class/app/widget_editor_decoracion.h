@@ -17,16 +17,24 @@ class Widget_editor_decoracion:
 	Widget_editor_decoracion(const DLibV::Fuente_TTF&, Decoracion&);
 	
 	virtual void 	dibujar(DLibV::Pantalla&);
+	virtual void	inicializar(DFramework::Input&);
 	virtual void	input(DFramework::Input&, float);
 	virtual bool	es_cerrar() const;
-	virtual void	finalizar();
+	virtual void	finalizar(DFramework::Input&);
 
 	private:
 
+	struct min_max{
+		int vmin, vmax;
+	};
+
+	bool		es_indice_texto(int) const;
 	void		actualizar_layout();
 	void		cambiar_seleccion(int);
 	void		cambiar_valor(int, float);
-	void		cambiar_numero(int, int, int, int&);
+	void		cambiar_numero(int, min_max, int&);
+	int&		referencia_por_indice(int);
+	min_max		min_max_por_indice(int) const;
 
 	Herramientas_proyecto::Compositor_vista		layout;
 	Decoracion&	elemento;

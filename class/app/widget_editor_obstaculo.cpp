@@ -110,7 +110,14 @@ void Widget_editor_obstaculo::actualizar_layout()
 	actualizar_tipo("txt_tipo", tipo);
 }
 
-void Widget_editor_obstaculo::finalizar()
+void Widget_editor_obstaculo::finalizar(DFramework::Input&)
 {
 	elemento.mut_tipo(tipo);
 }
+
+void Widget_editor_obstaculo::inicializar(DFramework::Input&)
+{
+
+}
+
+

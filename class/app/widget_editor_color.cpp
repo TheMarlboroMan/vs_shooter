@@ -35,6 +35,58 @@ void Widget_editor_color::input(DFramework::Input& input, float delta)
 	else if(input.es_input_pulsado(Input::cursor_izquierda)) cambiar_color(-1, delta);
 	else if(input.es_input_pulsado(Input::cursor_derecha)) cambiar_color(1, delta);
 	else t_pulsado=0.0f;
+
+	if(input.es_eventos_input_texto ())
+	{
+		static_cast<DLibV::Representacion_TTF *>(layout.obtener_por_id("txt_input"))->asignar(input.acc_input_texto());
+	}
+
+	if(input.es_input_down(Input::enter) && input.acc_input_texto().size())
+	{
+		int val=0;
+
+		try
+		{
+			val=std::stoi(input.acc_input_texto());
+		}
+		catch(std::exception& e){}
+
+		cambiar_por_indice(indice_actual, val);
+		input.vaciar_input_texto();
+		static_cast<DLibV::Representacion_TTF *>(layout.obtener_por_id("txt_input"))->asignar("");
+	}
+}
+
+void Widget_editor_color::cambiar_por_indice(int indice, int val)
+{
+	switch(indice)
+	{
+		case 0: cambiar(val, color_fondo.r, "txt_r_frente"); break;
+		case 1: cambiar(val, color_fondo.g, "txt_g_frente"); break;
+		case 2: cambiar(val, color_fondo.b, "txt_b_frente"); break;
+		case 3: cambiar(val, color_fondo.a, "txt_a_frente"); break;
+		case 4: cambiar(val, color_linea.r, "txt_r_linea"); break;
+		case 5: cambiar(val, color_linea.g, "txt_g_linea"); break;
+		case 6: cambiar(val, color_linea.b, "txt_b_linea"); break;
+		case 7: cambiar(val, color_linea.a, "txt_a_linea"); break;
+	}
+}
+
+int Widget_editor_color::valor_por_indice(int indice) const
+{
+	switch(indice)
+	{
+		case 0: return color_fondo.r; break;
+		case 1: return color_fondo.g; break;
+		case 2: return color_fondo.b; break;
+		case 3: return color_fondo.a; break;
+		case 4: return color_linea.r; break;
+		case 5: return color_linea.g; break;
+		case 6: return color_linea.b; break;
+		case 7: return color_linea.a; break;
+	}
+
+	return 0;
 }
 
 bool Widget_editor_color::es_cerrar() const
@@ -54,31 +106,16 @@ void Widget_editor_color::cambiar_seleccion(int dir)
 
 void Widget_editor_color::cambiar_color(int dir, float delta)
 {
-	auto f=[this](int dir, int indice)
-	{
-		switch(indice)
-		{
-			case 0: cambiar(dir, color_fondo.r, "txt_r_frente", "R"); break;
-			case 1: cambiar(dir, color_fondo.g, "txt_g_frente", "G"); break;
-			case 2: cambiar(dir, color_fondo.b, "txt_b_frente", "B"); break;
-			case 3: cambiar(dir, color_fondo.a, "txt_a_frente", "A"); break;
-			case 4: cambiar(dir, color_linea.r, "txt_r_linea", "R"); break;
-			case 5: cambiar(dir, color_linea.g, "txt_g_linea", "G"); break;
-			case 6: cambiar(dir, color_linea.b, "txt_b_linea", "B"); break;
-			case 7: cambiar(dir, color_linea.a, "txt_a_linea", "A"); break;
-		}
-	};
-
 	if(t_pulsado==0.0f)
 	{
-		f(dir, indice_actual);
+		cambiar_por_indice(indice_actual, valor_por_indice(indice_actual)+dir);
 		t_pulsado+=delta;
 	}
 	else
 	{
 		if(t_pulsado > 0.6f)
 		{
-			f(dir, indice_actual);
+			cambiar_por_indice(indice_actual, valor_por_indice(indice_actual)+dir);
 		}
 		else
 		{
@@ -87,34 +124,29 @@ void Widget_editor_color::cambiar_color(int dir, float delta)
 	}
 }
 
-void Widget_editor_color::cambiar(int dir, int& ref, const std::string& id, const std::string& cad)
+void Widget_editor_color::cambiar(int val, int& ref, const std::string& id)
 {
-	if(dir)
-	{
-		ref+=dir;
-		if(ref < 0) ref=0;
-		else if(ref > 255) ref=255;
-	}
+	if(val < 0) val=0;
+	else if(val > 255) val=255;
 
-	std::string cad_final=cad+" : "+std::to_string(ref);
+	ref=val;
+
+	std::string cad_final=std::to_string(val);
 	static_cast<DLibV::Representacion_TTF *>(layout.obtener_por_id(id))->asignar(cad_final);
 
-	if(dir)
-	{
-		actualizar_colores();
-	}
+	actualizar_colores();
 }
 
 void Widget_editor_color::actualizar_layout()
 {
-	cambiar(0, color_fondo.r, "txt_r_frente", "R");
-	cambiar(0, color_fondo.g, "txt_g_frente", "G");
-	cambiar(0, color_fondo.b, "txt_b_frente", "B");
-	cambiar(0, color_fondo.a, "txt_a_frente", "A");
-	cambiar(0, color_linea.r, "txt_r_linea", "R");
-	cambiar(0, color_linea.g, "txt_g_linea", "G");
-	cambiar(0, color_linea.b, "txt_b_linea", "B");
-	cambiar(0, color_linea.a, "txt_a_linea", "A");
+	cambiar(color_fondo.r, color_fondo.r, "txt_r_frente");
+	cambiar(color_fondo.g, color_fondo.g, "txt_g_frente");
+	cambiar(color_fondo.b, color_fondo.b, "txt_b_frente");
+	cambiar(color_fondo.a, color_fondo.a, "txt_a_frente");
+	cambiar(color_linea.r, color_linea.r, "txt_r_linea");
+	cambiar(color_linea.g, color_linea.g, "txt_g_linea");
+	cambiar(color_linea.b, color_linea.b, "txt_b_linea");
+	cambiar(color_linea.a, color_linea.a, "txt_a_linea");
 
 	actualizar_colores();
 }
@@ -134,7 +166,13 @@ void Widget_editor_color::actualizar_colores()
 	f(*linea, color_linea);
 }
 
-void Widget_editor_color::finalizar()
+void Widget_editor_color::finalizar(DFramework::Input& input)
 {
-	//No se hace nada.
+	input.vaciar_input_texto();
+	input.finalizar_input_texto();
+}
+
+void Widget_editor_color::inicializar(DFramework::Input& input)
+{
+	input.iniciar_input_texto();
 }

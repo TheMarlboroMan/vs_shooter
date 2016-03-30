@@ -76,6 +76,14 @@ class Input
 	Entrada			localizar_entrada(int) const;
 	Par_input		desde_entrada(const Entrada&, int);
 
+
+	void 			iniciar_input_texto() {controles_sdl.iniciar_input_texto();}
+	void 			finalizar_input_texto() {controles_sdl.finalizar_input_texto();}
+	void 			vaciar_input_texto() {controles_sdl.vaciar_input_texto();}
+	const std::string 	acc_input_texto() const {return controles_sdl.acc_input_texto();}
+	bool 			es_input_texto_activo() const {return controles_sdl.es_input_texto_activo();}
+	bool			es_eventos_input_texto() const {return controles_sdl.recibe_eventos_texto();}
+
 	protected:
 
 	typedef std::multimap<int, tinput> tipo_mapa;	

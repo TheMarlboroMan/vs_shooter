@@ -17,8 +17,9 @@ class Widget_editor_color:
 	Widget_editor_color(const DLibV::Fuente_TTF&, tcolor&, tcolor&);
 	
 	virtual void 	dibujar(DLibV::Pantalla&);
+	virtual void	inicializar(DFramework::Input&);
 	virtual void	input(DFramework::Input&, float);
-	virtual void	finalizar();
+	virtual void	finalizar(DFramework::Input&);
 	virtual bool	es_cerrar() const;
 
 	private:
@@ -27,7 +28,9 @@ class Widget_editor_color:
 	void		actualizar_colores();
 	void		cambiar_seleccion(int);
 	void		cambiar_color(int, float);
-	void		cambiar(int dir, int& ref, const std::string&, const std::string&);
+	void		cambiar(int dir, int& ref, const std::string&);
+	void		cambiar_por_indice(int indice, int val);
+	int		valor_por_indice(int indice) const;
 
 	Herramientas_proyecto::Compositor_vista		layout;
 	tcolor&		color_fondo;

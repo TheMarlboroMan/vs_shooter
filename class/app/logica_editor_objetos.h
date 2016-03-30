@@ -11,7 +11,6 @@ class Objeto_editor
 	typedef DLibH::Punto_2d<double> punto;
 
 	virtual void		mover(double, double)=0;
-	virtual void		colorear(const tcolor&, const tcolor&)=0;
 	virtual void		dibujar(Representador&, DLibV::Pantalla&, const DLibV::Camara&, bool=false) const=0;
 	virtual bool		es_bajo_cursor(punto) const=0;
 
@@ -75,7 +74,6 @@ class Obstaculo_editor:
 
 	Obstaculo		elemento;
 	virtual void		mover(double x, double y) {elemento.mover(x, y);}
-	virtual void		colorear(const tcolor& f, const tcolor& l) {}
 	virtual bool		es_bajo_cursor(punto pt) const {return punto_en_poligono(elemento.acc_poligono(), pt);}	
 	virtual void		dibujar(Representador& r,DLibV::Pantalla& pantalla, const DLibV::Camara& camara, bool seleccionado=false) const
 	{
@@ -100,11 +98,6 @@ class Decoracion_editor:
 
 	Decoracion		elemento;
 	virtual void		mover(double x, double y) {elemento.mover(x, y);}
-	virtual void		colorear(const tcolor& f, const tcolor& l)
-	{
-		elemento.mut_color(f);
-		elemento.mut_color_linea(l);
-	}
 	virtual bool		es_bajo_cursor(punto pt) const {return punto_en_poligono(elemento.acc_poligono(), pt);}	
 	virtual void		dibujar(Representador& r,DLibV::Pantalla& pantalla, const DLibV::Camara& camara, bool seleccionado=false) const
 	{
@@ -123,7 +116,6 @@ class Punto_inicio_editor:
 	}
 
 	Espaciable::tpunto	elemento;
-	virtual void		colorear(const tcolor&, const tcolor&) {}
 	virtual void		mover(double x, double y) 
 	{
 		elemento.x+=x; elemento.y+=y;
@@ -148,7 +140,6 @@ class Generador_items_editor:
 	Generador_items_editor(const Generador_items& gi):elemento(gi) {}
 
 	Generador_items		elemento;
-	virtual void		colorear(const tcolor&, const tcolor&) {}
 	virtual void		mover(double x, double y) {elemento.mover(x, y);}
 	virtual bool		es_bajo_cursor(punto pt) const {return punto_en_poligono(elemento.acc_poligono(), pt);}
 	virtual void		dibujar(Representador& r,DLibV::Pantalla& pantalla, const DLibV::Camara& camara, bool seleccionado=false) const
@@ -167,7 +158,6 @@ class Punto_ruta_editor:
 	{}
 
 	Punto_ruta		elemento;
-	virtual void		colorear(const tcolor&, const tcolor&) {}
 	virtual void		mover(double x, double y) 
 	{
 		elemento.pt.x+=x; elemento.pt.y+=y;
@@ -195,7 +185,6 @@ class Punto_bot_editor:
 	}
 
 	Espaciable::tpunto	elemento;
-	virtual void		colorear(const tcolor&, const tcolor&) {}
 	virtual void		mover(double x, double y) 
 	{
 		elemento.x+=x; elemento.y+=y;

@@ -70,11 +70,15 @@ void Controlador_editor::loop(DFramework::Input& input, float delta)
 		return;
 	}
 
+	//Una flag para saber si tenemos que llamar a inicializar. Cutre, pero nos vale.
+	bool inicializar_widget=true;
+
 	if(widget.get())
 	{
+		inicializar_widget=false;
 		if(widget->es_cerrar())
 		{
-			widget->finalizar();
+			widget->finalizar(input);
 			//TODO: alguna forma de controlar esto???.
 			reordenar_decoraciones();
 			widget.reset(nullptr);
@@ -92,7 +96,6 @@ void Controlador_editor::loop(DFramework::Input& input, float delta)
 	
 	if(input.es_input_down(Input::escape)) poligono_construccion=Poligono_2d<double>{};
 
-	if(input.es_input_down(Input::seleccion_color)) widget.reset(new Widget_editor_color(fuente_akashi, color_relleno, color_linea));
 	if(input.es_input_down(Input::tab)) intercambiar_objeto_creado();
 
 	if(input.es_input_down(Input::cargar_mapa)) cargar_mapa();	
@@ -115,8 +118,9 @@ void Controlador_editor::loop(DFramework::Input& input, float delta)
 	
 	if(input.es_input_pulsado(Input::suprimir)) eliminar();
 
-	if(input.es_input_down(Input::copiar_color)) copiar_color();
-	else if(input.es_input_down(Input::pegar_color)) pegar_color();
+	if(input.es_input_pulsado(Input::control_izquierdo) && input.es_input_down(Input::copiar)) copiar();
+	else if(input.es_input_pulsado(Input::control_izquierdo) && input.es_input_down(Input::pegar)) pegar();
+	else if(input.es_input_down(Input::seleccion_color)) widget.reset(new Widget_editor_color(fuente_akashi, color_relleno, color_linea));
 
 	if(input.es_input_down(Input::profundidad_mas)) cambiar_profundidad(1);
 	else if(input.es_input_down(Input::profundidad_menos)) cambiar_profundidad(-1);
@@ -163,6 +167,8 @@ void Controlador_editor::loop(DFramework::Input& input, float delta)
 
 	if(input.es_input_down(Input::grid_menos)) cambiar_grid(-1);
 	else if(input.es_input_down(Input::grid_mas)) cambiar_grid(1);
+
+	if(inicializar_widget && widget.get()) widget->inicializar(input);
 }
 
 void Controlador_editor::postloop(DFramework::Input& input, float delta)
@@ -216,6 +222,7 @@ void Controlador_editor::dibujar(DLibV::Pantalla& pantalla)
 	std::string texto="GRID: "+std::to_string((int)grid)
 		+" CAM: "+std::to_string((int)camara.acc_x())+","+std::to_string((int)camara.acc_y())
 		+" POS: "+std::to_string((int)pt_raton.x)+","+std::to_string((int)pt_raton.y);
+
 	switch(tobjeto)
 	{
 		case tobjetocreado::obstaculo: texto+=" [geometry]"; break;
@@ -546,27 +553,82 @@ void Controlador_editor::cambiar_grid(int dir)
 }
 
 //Mejor "pegar propiedades"?
-void Controlador_editor::pegar_color()
+void Controlador_editor::pegar()
 {
-	if(objetos_seleccionados.size() || objetos_cursor.size())
+	switch(tobjeto)
 	{
-		mensajes.insertar_mensaje("Color pegado", 2.0f);
-		for(auto& o : objetos_seleccionados) o->colorear(color_relleno, color_linea);
-		for(auto& o : objetos_cursor) o->colorear(color_relleno, color_linea);		
+		case tobjetocreado::obstaculo: 
+		{
+			std::vector<Obstaculo_editor *> v;
+			localizar_elementos_bajo_cursor_helper(obstaculos, v, punto_desde_pos_pantalla(pos_raton.x, pos_raton.y, false));
+			if(v.size())
+			{
+				mensajes.insertar_mensaje("Propiedades pegadas", 2.0f);
+				for(auto& e : v)
+				{
+					auto& item=e->elemento;
+					item.mut_tipo(info_obstaculo.tipo);
+				}
+			}
+		}
+		break;
+		case tobjetocreado::decoracion:
+		{
+			std::vector<Decoracion_editor *> v;
+			localizar_elementos_bajo_cursor_helper(decoraciones, v, punto_desde_pos_pantalla(pos_raton.x, pos_raton.y, false));
+			if(v.size())
+			{
+				mensajes.insertar_mensaje("Propiedades copiadas", 2.0f);
+				for(auto &e : v)
+				{
+					auto& item=e->elemento;
+					item.mut_color(info_decoracion.relleno);
+					item.mut_color_linea(info_decoracion.linea);
+					item.mut_profundidad(info_decoracion.orden);
+					item.mut_frente(info_decoracion.frente);
+				}
+			}
+		}
+		break;
+		case tobjetocreado::punto_ruta:
+		case tobjetocreado::inicio:
+		case tobjetocreado::bot:
+		case tobjetocreado::arma: break;
 	}
 }
 
-//Mejor "copiar propiedades"?
-void Controlador_editor::copiar_color()
+void Controlador_editor::copiar()
 {
-	std::vector<Decoracion_editor *> v;
-	localizar_elementos_bajo_cursor_helper(decoraciones, v, punto_desde_pos_pantalla(pos_raton.x, pos_raton.y, false));
-
-	if(v.size()==1)
+	switch(tobjeto)
 	{
-		mensajes.insertar_mensaje("Color copiado", 2.0f);
-		color_relleno=v[0]->elemento.acc_color();
-		color_linea=v[0]->elemento.acc_color_linea();
+		case tobjetocreado::obstaculo: 
+		{
+			std::vector<Obstaculo_editor *> v;
+			localizar_elementos_bajo_cursor_helper(obstaculos, v, punto_desde_pos_pantalla(pos_raton.x, pos_raton.y, false));
+			if(v.size()==1)
+			{
+				mensajes.insertar_mensaje("Propiedades copiadas", 2.0f);
+				const auto& item=v[0]->elemento;
+				info_obstaculo={item.acc_tipo()};
+			}
+		}
+		break;
+		case tobjetocreado::decoracion:
+		{
+			std::vector<Decoracion_editor *> v;
+			localizar_elementos_bajo_cursor_helper(decoraciones, v, punto_desde_pos_pantalla(pos_raton.x, pos_raton.y, false));
+			if(v.size()==1)
+			{
+				mensajes.insertar_mensaje("Propiedades copiadas", 2.0f);
+				const auto& item=v[0]->elemento;
+				info_decoracion={item.acc_color(), item.acc_color_linea(), item.acc_profundidad(), item.es_frente()};
+			}
+		}
+		break;
+		case tobjetocreado::punto_ruta:
+		case tobjetocreado::inicio:
+		case tobjetocreado::bot:
+		case tobjetocreado::arma: break;
 	}
 }
 

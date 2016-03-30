@@ -37,6 +37,25 @@ void Widget_editor_decoracion::input(DFramework::Input& input, float delta)
 	else if(input.es_input_pulsado(Input::cursor_izquierda)) cambiar_valor(-1, delta);
 	else if(input.es_input_pulsado(Input::cursor_derecha)) cambiar_valor(1, delta);
 	else t_pulsado=0.0f;
+
+	if(input.es_eventos_input_texto ())
+	{
+		static_cast<DLibV::Representacion_TTF *>(layout.obtener_por_id("txt_input"))->asignar(input.acc_input_texto());
+	}
+
+	if(input.es_input_down(Input::enter) && input.acc_input_texto().size() && es_indice_texto(indice_actual))
+	{
+
+
+		int val=0;
+
+		try{val=std::stoi(input.acc_input_texto());}catch(std::exception& e){}
+
+		cambiar_numero(val, min_max_por_indice(indice_actual), referencia_por_indice(indice_actual));
+		actualizar_layout();
+		input.vaciar_input_texto();
+		static_cast<DLibV::Representacion_TTF *>(layout.obtener_por_id("txt_input"))->asignar("");
+	}
 }
 
 bool Widget_editor_decoracion::es_cerrar() const
@@ -46,7 +65,6 @@ bool Widget_editor_decoracion::es_cerrar() const
 
 void Widget_editor_decoracion::cambiar_seleccion(int dir)
 {
-
 	indice_actual+=dir;
 	if(indice_actual < min_indice) indice_actual=min_indice;
 	else if(indice_actual > max_indice) indice_actual=max_indice;
@@ -55,22 +73,25 @@ void Widget_editor_decoracion::cambiar_seleccion(int dir)
 	layout.obtener_por_id("selector")->ir_a(layout.const_int("x_selector"), y);
 }
 
+Widget_editor_decoracion::min_max Widget_editor_decoracion::min_max_por_indice(int indice) const
+{
+	switch(indice)
+	{
+		case 8: return {min_profundidad, max_profundidad}; break;
+		default: return {min_color, max_color}; break;
+	}
+	
+	return {0,0};
+}
+
 void Widget_editor_decoracion::cambiar_valor(int dir, float delta)
 {
 	auto f=[this](int dir, int indice)
-	{
+	{		
 		switch(indice)
 		{
-			case 0: cambiar_numero(dir, min_color, max_color, color_frente.r); break;
-			case 1: cambiar_numero(dir, min_color, max_color, color_frente.g); break;
-			case 2: cambiar_numero(dir, min_color, max_color, color_frente.b); break;
-			case 3: cambiar_numero(dir, min_color, max_color, color_frente.a); break;
-			case 4: cambiar_numero(dir, min_color, max_color, color_linea.r); break;
-			case 5: cambiar_numero(dir, min_color, max_color, color_linea.g); break;
-			case 6: cambiar_numero(dir, min_color, max_color, color_linea.b); break;
-			case 7: cambiar_numero(dir, min_color, max_color, color_linea.a); break;
-			case 8: cambiar_numero(dir, min_profundidad, max_profundidad, profundidad); break;
 			case 9: frente=!frente; break;
+			default: cambiar_numero(referencia_por_indice(indice)+dir, min_max_por_indice(indice), referencia_por_indice(indice)); break;
 		}
 	};
 
@@ -94,14 +115,29 @@ void Widget_editor_decoracion::cambiar_valor(int dir, float delta)
 	actualizar_layout();
 }
 
-void Widget_editor_decoracion::cambiar_numero(int dir, int vmin, int vmax, int& ref)
+int& Widget_editor_decoracion::referencia_por_indice(int indice)
 {
-	if(dir)
+	switch(indice)
 	{
-		ref+=dir;
-		if(ref < vmin) ref=vmin;
-		else if(ref > vmax) ref=vmax;
+		case 0: return color_frente.r; break;
+		case 1: return color_frente.g; break;
+		case 2: return color_frente.b; break;
+		case 3: return color_frente.a; break;
+		case 4: return color_linea.r; break;
+		case 5: return color_linea.g; break;
+		case 6: return color_linea.b; break;
+		case 7: return color_linea.a; break;
+		case 8: return profundidad; break;
 	}
+
+	return color_frente.r;
+}
+
+void Widget_editor_decoracion::cambiar_numero(int val, min_max mm, int& ref)
+{
+	if(val < mm.vmin) val=mm.vmin;
+	else if(val > mm.vmax) val=mm.vmax;
+	ref=val;
 }
 
 void Widget_editor_decoracion::actualizar_layout()
@@ -140,10 +176,23 @@ void Widget_editor_decoracion::actualizar_layout()
 	f_color(*linea, color_linea);
 }
 
-void Widget_editor_decoracion::finalizar()
+void Widget_editor_decoracion::finalizar(DFramework::Input& input)
 {
 	elemento.mut_profundidad(profundidad);
 	elemento.mut_color_linea(color_linea);
 	elemento.mut_color(color_frente);
 	elemento.mut_frente(frente);
+
+	input.vaciar_input_texto();
+	input.finalizar_input_texto();
+}
+
+void Widget_editor_decoracion::inicializar(DFramework::Input& input)
+{
+	input.iniciar_input_texto();
+}
+
+bool Widget_editor_decoracion::es_indice_texto(int indice) const
+{
+	return indice!=9;
 }
