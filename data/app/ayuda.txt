@@ -20,6 +20,7 @@ Del: Eliminar elementos seleccionados.
 Escape: Anular polígono en construcción.
 +: Incrementar zoom.
 -: Decrementar zoom.
+0: Reiniciar zoom.
 [: Decrementar rejilla.
 ]: Incrementar rejilla.
 c: Seleccionar nuevo color.

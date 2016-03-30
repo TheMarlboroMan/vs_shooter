@@ -66,6 +66,7 @@ std::vector<DFramework::Par_input> Kernel_config::obtener_pares_input() const
 		Par_input{Par_input::tipos::teclado, Input::cambio_logica, SDL_SCANCODE_F2, 0},
 		Par_input{Par_input::tipos::teclado, Input::zoom_mas, SDL_SCANCODE_KP_PLUS, 0},
 		Par_input{Par_input::tipos::teclado, Input::zoom_menos, SDL_SCANCODE_KP_MINUS, 0},
+		Par_input{Par_input::tipos::teclado, Input::reset_zoom, SDL_SCANCODE_0, 0},
 		Par_input{Par_input::tipos::teclado, Input::grid_mas, SDL_SCANCODE_RIGHTBRACKET, 0},
 		Par_input{Par_input::tipos::teclado, Input::grid_menos, SDL_SCANCODE_LEFTBRACKET, 0},
 		Par_input{Par_input::tipos::teclado, Input::profundidad_mas, SDL_SCANCODE_M, 0},

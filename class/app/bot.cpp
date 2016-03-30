@@ -112,7 +112,7 @@ void Bot::intento_disparo(const Mapa& mapa, std::vector<Disparador>& vd)
 		pt.x+=vect.x * 25.0f;
 		pt.y+=vect.y * 25.0f;
 
-		Herramientas_proyecto::Generador_int gen(-10, 10);
+		Herramientas_proyecto::Generador_int gen(-20, 20);
 		//TODO: -1 como const.
 		res.disparos.push_back({Disparador::tproyectiles::normal, -1, pt, ang+gen()});
 

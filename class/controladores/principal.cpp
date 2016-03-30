@@ -100,6 +100,7 @@ void  Controlador_principal::dibujar(DLibV::Pantalla& pantalla)
 
 void  Controlador_principal::despertar()
 {
+	log<<"Inicializando mapa..."<<std::endl;
 	mapa.inicializar();
 }
 
@@ -109,6 +110,7 @@ void  Controlador_principal::dormir()
 	jugadores.clear();
 	proyectiles.clear();
 	disparadores.clear();
+	for(auto& i : info_jugadores) i.retirar();	
 }
 
 bool Controlador_principal::es_posible_abandonar_estado() const
@@ -139,18 +141,21 @@ Bloque_input Controlador_principal::obtener_bloque_input(DFramework::Input& inpu
 
 void Controlador_principal::registrar_jugador(int indice)
 {
+	log<<"Inicio de registro de jugador"<<std::endl;
+
 	if(!mapa.puntos_inicio.size())
 	{
+		log<<"Imposible registrar jugador: no hay puntos de inicio"<<std::endl;
 		return;
 	}
 
 	auto& ij=info_jugadores[indice];
 	Jugador j={indice, ij.acc_color()};
 
-	size_t capacidad=mapa.puntos_inicio.size()-1;
-	std::vector<size_t> indices(capacidad);
+	std::vector<size_t> indices(mapa.puntos_inicio.size());
 	std::iota(std::begin(indices), std::end(indices), 0);
 	std::random_shuffle(std::begin(indices), std::end(indices));
+
 
 	for(size_t indice : indices)
 	{
@@ -165,8 +170,13 @@ void Controlador_principal::registrar_jugador(int indice)
 			if(colision) break;
 		}
 			
-		if(!colision) 
+		if(colision) 
+		{
+			log<<"Imposible registrar a jugador: colisión detectada en todos los puntos de inicio"<<std::endl;
+		}
+		else
 		{		
+			log<<"Registrando jugador en "<<pt.x<<","<<pt.y<<std::endl;
 			j.establecer_arma(new Jugador_arma_normal());
 			jugadores.push_back(std::move(j));
 			ij.registrar();
@@ -188,7 +198,8 @@ void Controlador_principal::ajustar_camara()
 		int xmin=jugadores[0].acc_poligono().acc_centro().x, xmax=xmin,
 			ymin=jugadores[0].acc_poligono().acc_centro().y, ymax=ymin;
 
-		//Localizar punto central.
+		//Vamos a determinar cuál es el punto central de todos los actores
+		//de juego...
 		for(const auto&j : jugadores)
 		{
 			const auto& c=j.acc_poligono().acc_centro();
@@ -209,25 +220,34 @@ void Controlador_principal::ajustar_camara()
 			else if(c.y > ymax) ymax=c.y;
 		}		
 
-		double zoom=camara.acc_zoom();
+		//Trataremos ahora el zoom. Vamos a medir la distancia máxima en 
+		//x e y que hay entre actores.
+	
+		const double distx=xmax-xmin, disty=ymax-ymin;
 
-		int xcam=( xmin + ( (xmax-xmin) / 2) ) - (mitad_w_pantalla / zoom);
-		int ycam=( ymin + ( (ymax-ymin) / 2) ) + (mitad_h_pantalla / zoom);
-		
-		//Establecer zoom...
-		double 	distx=xmax-xmin,
-			disty=ymax-ymin;
+		//Calcular el zoom. Realmente no tengo ni idea, he ido probando
+		//hasta que ha funcionado :P.
+		const double 	zoomx=distx < mitad_w_pantalla ? 1.0 : (double)mitad_w_pantalla / distx,
+				zoomy=disty < mitad_h_pantalla ? 1.0 : (double)mitad_h_pantalla / disty;
 
-		double zoomx=distx < mitad_w_pantalla ? 1.0 : (double)mitad_w_pantalla / distx;
-		double zoomy=disty < mitad_h_pantalla ? 1.0 : (double)mitad_h_pantalla / disty;
+		//Nos quedaremos con el menor de los dos factores
+		//y nos aseguramos de no acercarnos más del zoom por defecto.
+		double fin_zoom=zoomx < zoomy ? 1.0 / zoomx : 1.0 / zoomy;
 
-		zoom=zoomx < zoomy ? zoomx : zoomy;
+		if(fin_zoom < 1.0) fin_zoom=1.0;
+		camara.mut_zoom(fin_zoom);
 
-std::cout<<"ZOOM"<<zoom<<std::endl;
+		//Este es el punto central...
+		int 	centro_x=( xmin + ( (xmax-xmin) / 2) ),
+			centro_y=( ymin + ( (ymax-ymin) / 2) );
 
-		if(zoom > 1.0) zoom=1.0;
-		camara.mut_zoom(zoom);
-		camara.enfocar_a(xcam, -ycam);
+		//Y a partir del mismo podemos calcular el offset de la cámara, 
+		//al que aplicamos el zoom.
+		int 	cam_x=centro_x - (mitad_w_pantalla * fin_zoom) ,
+			cam_y=-(centro_y + (mitad_h_pantalla * fin_zoom));
+
+		//Y finalmente podemos enfocar.
+		camara.enfocar_a(cam_x, cam_y);
 	}
 	else
 	{
@@ -297,7 +317,7 @@ void Controlador_principal::registrar_bot()
 	}
 
 	//Comprobar que no hay jugadores ni bots.
-	size_t capacidad=mapa.puntos_bot.size()-1;
+	size_t capacidad=mapa.puntos_bot.size();
 	std::vector<size_t> indices(capacidad);
 	std::iota(std::begin(indices), std::end(indices), 0);
 	std::random_shuffle(std::begin(indices), std::end(indices));

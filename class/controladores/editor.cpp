@@ -129,11 +129,11 @@ void Controlador_editor::loop(DFramework::Input& input, float delta)
 	else
 	{
 	//TODO: Constantes...
-		if(input.es_input_pulsado(Input::cursor_arriba)) camara.movimiento_relativo(0, -200.0 * (double) delta);
-		else if(input.es_input_pulsado(Input::cursor_abajo)) camara.movimiento_relativo(0, 200.0 * (double) delta);
+		if(input.es_input_pulsado(Input::cursor_arriba)) camara.movimiento_relativo(0, -500.0 * (double) delta);
+		else if(input.es_input_pulsado(Input::cursor_abajo)) camara.movimiento_relativo(0, 500.0 * (double) delta);
 
-		if(input.es_input_pulsado(Input::cursor_derecha)) camara.movimiento_relativo(200.0 * (double) delta, 0);
-		else if(input.es_input_pulsado(Input::cursor_izquierda)) camara.movimiento_relativo(-200.0 * (double) delta, 0);
+		if(input.es_input_pulsado(Input::cursor_derecha)) camara.movimiento_relativo(500.0 * (double) delta, 0);
+		else if(input.es_input_pulsado(Input::cursor_izquierda)) camara.movimiento_relativo(-500.0 * (double) delta, 0);
 	}
 
 	if(input.es_input_down(Input::TEST_VISIBILIDAD))
@@ -153,6 +153,10 @@ void Controlador_editor::loop(DFramework::Input& input, float delta)
 		double zoom=camara.acc_zoom()+(double)delta;
 		if(zoom < 0.10) zoom=0.10;
 		camara.mut_zoom(zoom);
+	}
+	else if(input.es_input_down(Input::reset_zoom))
+	{
+		camara.mut_zoom(1.0);
 	}
 
 	if(input.es_input_down(Input::grid_menos)) cambiar_grid(-1);
@@ -400,8 +404,8 @@ DLibH::Punto_2d<double>	Controlador_editor::punto_desde_pos_pantalla(int x, int 
 
 	if(a_rejilla)
 	{
-		px=round(px / grid) * grid;
-		py=round(py / grid) * grid;
+		px=round((double)px / (double)grid) * grid;
+		py=round((double)py / (double)grid) * grid;
 	}
 
 	return DLibH::Punto_2d<double>{(double)px, (double)py};
@@ -415,7 +419,15 @@ void Controlador_editor::nuevo_punto(DLibH::Punto_2d<double> p)
 	}
 	else
 	{
-		poligono_construccion.insertar_vertice(p);
+		const auto& v=poligono_construccion.acc_vertices();
+		if(std::any_of(std::begin(v), std::end(v), [p](const DLibH::Punto_2d<double>& b) {return p==b;}))
+		{
+			mensajes.insertar_mensaje("Vértice repetido, no se crea.", 2.f);
+		}
+		else
+		{
+			poligono_construccion.insertar_vertice(p);
+		}
 	}
 }
 
