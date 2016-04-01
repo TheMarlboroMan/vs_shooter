@@ -1,5 +1,8 @@
 #include "generador_items.h"
 
+#include <video/representacion/representacion_grafica/representacion_bitmap/representacion_bitmap.h>
+#include <video/gestores/gestor_texturas.h>
+
 #include <class/generador_numeros.h>
 
 using namespace App;
@@ -9,33 +12,6 @@ Generador_items::Generador_items(Espaciable::tpunto pt)
 {
 	formar_poligono();
 	establecer_posicion(pt.x, pt.y);
-}
-
-tcolor Generador_items::acc_color() const
-{
-	switch(tipo)
-	{
-		case titems::triple:
-			return {32, 255, 32, 128};
-		break;
-	
-		case titems::explosivo:
-			return {255, 32, 32, 128};
-		break;
-
-		case titems::trasero:
-			return {32, 32, 255, 128};
-		break;
-
-		case titems::divide:
-			return {128, 128, 128, 128};
-		break;
-
-
-		default:
-			return {255, 255, 255, 128};
-		break;
-	}
 }
 
 void Generador_items::turno(float delta)
@@ -73,14 +49,30 @@ void Generador_items::formar_poligono()
 	poligono.insertar_vertice({-10.0, -5.0});
 	poligono.insertar_vertice({-10.0, 5.0});
 	poligono.cerrar();
-	poligono.mut_centro({-10.0, -10.0});
+	poligono.mut_centro({0.0, 0.0});
 }
 
 void Generador_items::dibujar(Representador& r, DLibV::Pantalla& pantalla, const DLibV::Camara& camara) const
 {
 	if(!tiempo_restante) 
 	{
-		r.dibujar_poligono(pantalla, poligono, acc_color(), camara);
+		int indice=0;
+
+		switch(tipo)
+		{
+			case titems::triple: 	indice=2; break;
+			case titems::explosivo: indice=3; break;
+			case titems::trasero:	indice=4; break;
+			case titems::divide:	indice=5; break;
+		}
+
+		DLibV::Representacion_bitmap bmp(DLibV::Gestor_texturas::obtener(indice));
+
+		auto c=poligono.acc_centro();
+		bmp.establecer_modo_blend(DLibV::Representacion::BLEND_ALPHA);
+		bmp.ir_a(c.x - 25, -c.y - 25);
+		bmp.volcar(pantalla, camara);
+
 	}
 
 }

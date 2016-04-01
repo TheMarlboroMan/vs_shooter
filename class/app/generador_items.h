@@ -2,7 +2,6 @@
 #define GENERADOR_ITEMS_H
 
 #include "espaciable.h"
-#include "color.h"
 #include "representable.h"
 
 namespace App
@@ -25,7 +24,6 @@ class Generador_items:
 
 	titems				acc_tipo() const {return tipo;}
 	bool				es_activo() const {return !tiempo_restante;}
-	tcolor				acc_color() const;
 
 	void				turno(float);
 	void				reiniciar();
