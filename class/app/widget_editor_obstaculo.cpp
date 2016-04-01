@@ -88,7 +88,8 @@ void Widget_editor_obstaculo::cambiar_tipo()
 	switch(tipo)
 	{
 		case Obstaculo::ttipos::normal:	tipo=Obstaculo::ttipos::letal; break;
-		case Obstaculo::ttipos::letal:	tipo=Obstaculo::ttipos::normal; break;
+		case Obstaculo::ttipos::letal:	tipo=Obstaculo::ttipos::inocuo; break;
+		case Obstaculo::ttipos::inocuo:	tipo=Obstaculo::ttipos::normal; break;
 	}
 }
 
@@ -102,6 +103,7 @@ void Widget_editor_obstaculo::actualizar_layout()
 		{
 			case Obstaculo::ttipos::normal:	cad_final="Normal"; break;
 			case Obstaculo::ttipos::letal:	cad_final="Letal"; break;
+			case Obstaculo::ttipos::inocuo:	cad_final="Inocuo"; break;
 		}
 
 		static_cast<DLibV::Representacion_TTF *>(layout.obtener_por_id(id))->asignar(cad_final);

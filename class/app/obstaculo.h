@@ -11,7 +11,7 @@ class Obstaculo:
 {
 	public:
 
-	enum class	ttipos{normal, letal};
+	enum class	ttipos{normal, letal, inocuo};
 
 					Obstaculo(const tpoligono&, ttipos);
 

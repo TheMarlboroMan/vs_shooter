@@ -29,6 +29,7 @@ class Objeto_editor
 	static const tcolor	color_seleccion;
 	static const tcolor	color_obstaculo;
 	static const tcolor	color_obstaculo_letal;
+	static const tcolor	color_obstaculo_inocuo;
 	static const tcolor	color_borde_obstaculo;
 
 	protected:
@@ -82,6 +83,7 @@ class Obstaculo_editor:
 		{
 			case Obstaculo::ttipos::normal: break;
 			case Obstaculo::ttipos::letal: color=color_obstaculo_letal; break;
+			case Obstaculo::ttipos::inocuo: color=color_obstaculo_inocuo; break;
 		}
 
 		dibujar_poligono(r, pantalla, elemento.acc_poligono(), color, color_borde_obstaculo, camara, seleccionado);

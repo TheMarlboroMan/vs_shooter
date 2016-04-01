@@ -26,6 +26,7 @@ const tcolor Objeto_editor::color_punto_bot_editor={0, 0, 255, 255};
 const tcolor Objeto_editor::color_seleccion={255, 255, 255, 255};
 const tcolor Objeto_editor::color_obstaculo={128, 128, 128, 255};
 const tcolor Objeto_editor::color_obstaculo_letal={255, 32, 32, 255};
+const tcolor Objeto_editor::color_obstaculo_inocuo={32, 255, 32, 255};
 const tcolor Objeto_editor::color_borde_obstaculo={210, 210, 128, 255};
 
 Controlador_editor::Controlador_editor(DLibH::Log_base& l, const Fuentes& f)
@@ -529,12 +530,25 @@ void Controlador_editor::eliminar()
 {
 	//Esto los marca para borrar...
 	for(auto& o : objetos_seleccionados) o->borrar();
-	for(auto& o : objetos_cursor) o->borrar();
-
 	objetos_seleccionados.clear();
-	objetos_cursor.clear();
 
-	//Esto los borra...
+	//Sólo borramos bajo el cursor los del tipo activo.
+	auto pt_raton=punto_desde_pos_pantalla(pos_raton.x, pos_raton.y, false);	
+	std::vector<Objeto_editor *> cursor;
+
+	switch(tobjeto)
+	{
+		case tobjetocreado::obstaculo: localizar_elementos_bajo_cursor_helper(obstaculos, cursor, pt_raton); break;
+		case tobjetocreado::decoracion: localizar_elementos_bajo_cursor_helper(decoraciones, cursor, pt_raton); break;
+		case tobjetocreado::punto_ruta: localizar_elementos_bajo_cursor_helper(puntos_ruta, cursor, pt_raton); break;
+		case tobjetocreado::inicio: localizar_elementos_bajo_cursor_helper(puntos_inicio, cursor, pt_raton); break;
+		case tobjetocreado::bot: localizar_elementos_bajo_cursor_helper(puntos_bot, cursor, pt_raton); break;
+		case tobjetocreado::arma: localizar_elementos_bajo_cursor_helper(generadores_items, cursor, pt_raton); break;
+	}
+	
+	for(auto& o : cursor) o->borrar();
+
+	//Esto los borra... Pasamos por todos los tipos ya que podríamos tener más cosas seleccionadas.
 	eliminar_helper(obstaculos);
 	eliminar_helper(decoraciones);
 	eliminar_helper(puntos_ruta);

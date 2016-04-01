@@ -99,7 +99,7 @@ class Jugador:
 	void				recibir_input(const Bloque_input&);
 	void				turno(float);
 	void				confirmar_movimiento();
-	void				colisionar();
+	void				colisionar(bool);
 	void				restar_toda_salud();
 	void				restar_salud(int);
 	void				establecer_arma(Jugador_arma * a);

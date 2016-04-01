@@ -39,6 +39,7 @@ Herramientas_proyecto::Dnot_token Exportador::serializar_obstaculo(const Obstacu
 	{
 		case Obstaculo::ttipos::normal: tipo=0; break;
 		case Obstaculo::ttipos::letal: tipo=1; break;
+		case Obstaculo::ttipos::inocuo: tipo=2; break;
 	}
 
 	propiedades["t"].asignar(tipo);

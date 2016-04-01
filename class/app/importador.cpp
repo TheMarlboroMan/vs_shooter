@@ -67,6 +67,9 @@ void Importador::deserializar_obstaculo(const Herramientas_proyecto::Dnot_token&
 			case 1: 
 				tipo=Obstaculo::ttipos::letal;
 			break;
+			case 2: 
+				tipo=Obstaculo::ttipos::inocuo;
+			break;
 		}
 	}
 	catch(std::exception& e)
