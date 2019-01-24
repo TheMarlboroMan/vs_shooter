@@ -18,7 +18,7 @@ class Proyectil_explosivo:
 	virtual tcolor		acc_color() const {return color;}
 	virtual void		turno(float);
 	virtual void		formar_poligono();
-	virtual void		preparar(double, DLibH::Punto_2d<double>);
+	virtual void		preparar(double, ldt::point_2d<double>);
 
 	private:
 

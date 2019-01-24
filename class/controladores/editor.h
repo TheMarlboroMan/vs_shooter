@@ -32,7 +32,7 @@ class Controlador_editor:
 	virtual void 			preloop(DFramework::Input& input, float delta);
 	virtual void 			loop(DFramework::Input& input, float delta);
 	virtual void 			postloop(DFramework::Input& input, float delta);
-	virtual void 			dibujar(DLibV::Pantalla& pantalla);
+	virtual void 			dibujar(ldv::screen& pantalla);
 	virtual void 			despertar();
 	virtual void 			dormir();
 	virtual bool			es_posible_abandonar_estado() const;
@@ -64,16 +64,16 @@ class Controlador_editor:
 	}
 	void					intercambiar_objeto_creado();
 	void					cambiar_grid(int);
-	DLibH::Punto_2d<double>			punto_desde_pos_pantalla(int x, int y, bool=true);
-	void					nuevo_punto(DLibH::Punto_2d<double>);
+	ldt::point_2d<double>			punto_desde_pos_pantalla(int x, int y, bool=true);
+	void					nuevo_punto(ldt::point_2d<double>);
 	void					cerrar_poligono();
-	void					crear_punto_inicio(DLibH::Punto_2d<double>);
-	void 					crear_punto_bot(DLibH::Punto_2d<double>);
-	void					crear_punto_ruta(DLibH::Punto_2d<double>);
-	void					crear_generador_items(DLibH::Punto_2d<double>);
+	void					crear_punto_inicio(ldt::point_2d<double>);
+	void 					crear_punto_bot(ldt::point_2d<double>);
+	void					crear_punto_ruta(ldt::point_2d<double>);
+	void					crear_generador_items(ldt::point_2d<double>);
 	void					localizar_elementos_bajo_cursor();
 	template<typename T, typename TV>	
-	void 					localizar_elementos_bajo_cursor_helper(T& t, TV& v, DLibH::Punto_2d<double> pt)
+	void 					localizar_elementos_bajo_cursor_helper(T& t, TV& v, ldt::point_2d<double> pt)
 	{
 			for(auto& o : t) 
 				if(o.es_bajo_cursor(pt))
@@ -93,7 +93,7 @@ class Controlador_editor:
 	const DLibV::Fuente_TTF&		fuente_akashi;
 	const DLibV::Fuente_TTF&		fuente_akashi_mensajes;
 
-	DLibV::Camara				camara;
+	ldv::camera				camara;
 	Mapa					mapa;
 	Widget_mensajes				mensajes;
 

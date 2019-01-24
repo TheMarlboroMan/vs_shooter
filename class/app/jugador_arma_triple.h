@@ -12,7 +12,7 @@ class Jugador_arma_triple:
 
 						Jugador_arma_triple();
 	virtual bool				es_arma_defecto() const {return false;}
-	virtual void				generar_proyectiles(Disparador::v_info&, int, DLibH::Punto_2d<double>, double, double);
+	virtual void				generar_proyectiles(Disparador::v_info&, int, ldt::point_2d<double>, double, double);
 	virtual void				disparar();
 };
 }

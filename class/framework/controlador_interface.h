@@ -46,7 +46,7 @@ class Controlador_interface
 	virtual void 			preloop(Input& input, float delta)=0;
 	virtual void 			loop(Input& input, float delta)=0;
 	virtual void 			postloop(Input& input, float delta)=0;
-	virtual void 			dibujar(DLibV::Pantalla& pantalla)=0;
+	virtual void 			dibujar(ldv::screen& pantalla)=0;
 	virtual void 			despertar()=0;
 	virtual void 			dormir()=0;
 	virtual bool			es_posible_abandonar_estado() const=0;

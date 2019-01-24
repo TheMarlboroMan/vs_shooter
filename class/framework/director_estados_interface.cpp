@@ -108,7 +108,7 @@ bool Director_estados_interface::loop(DFramework::Kernel& kernel)
 		DLibV::Representacion_texto_auto txt(DLibV::Gestor_superficies::obtener(acc_recurso_fps()), fps);
 		txt.hacer_estatica();
 		txt.establecer_posicion(pantalla.acc_w()-128, 6);
-		txt.volcar(pantalla);
+		txt.draw(pantalla);
 */
 		pantalla.actualizar();
 	}

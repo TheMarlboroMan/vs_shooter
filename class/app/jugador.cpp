@@ -3,9 +3,9 @@
 using namespace App;
 
 Jugador::Jugador(int indice, tcolor color)
-	:arma(nullptr), habilidad(nullptr), indice(indice), angulo(0.0), 
-	angulo_anterior(angulo), velocidad(3.0f), 
-	energia(100.f), cooloff_energia(0.0f), 
+	:arma(nullptr), habilidad(nullptr), indice(indice), angulo(0.0),
+	angulo_anterior(angulo), velocidad(3.0f),
+	energia(100.f), cooloff_energia(0.0f),
 	salud(100), divisor_salud(1), color(color)
 {
 	formar_poligono();
@@ -24,7 +24,7 @@ void Jugador::recibir_input(const Bloque_input& bi)
 			{
 				if(es_max_energia()) habilidad.reset(new Habilidad_velocidad());
 			}
-			else 
+			else
 			{
 				pulsaciones_input[ttipo_pulsacion::velocidad].t=0.001f;
 			}
@@ -35,7 +35,7 @@ void Jugador::recibir_input(const Bloque_input& bi)
 			{
 				if(es_max_energia()) habilidad.reset(new Habilidad_escudo());
 			}
-			else 
+			else
 			{
 				//TODO: Abajo NO es sinónimo de escudo.
 				pulsaciones_input[ttipo_pulsacion::escudo].t=0.001f;
@@ -57,10 +57,10 @@ void Jugador::recibir_input(const Bloque_input& bi)
 
 void Jugador::turno(float delta)
 {
-	for(auto &par : pulsaciones_input) 
+	for(auto &par : pulsaciones_input)
 	{
 		auto& v=par.second;
-		if(v.t) 
+		if(v.t)
 		{
 			v.t+=delta;
 			if(v.t > 0.2f) v.t=0.0f;
@@ -70,7 +70,7 @@ void Jugador::turno(float delta)
 	if(habilidad.get())
 	{
 		habilidad->turno(delta);
-		if(!habilidad->es_activa()) 
+		if(!habilidad->es_activa())
 		{
 			Habilidad_base::bloque_efecto beh(velocidad, divisor_salud);
 			habilidad->desactivar(beh);
@@ -90,9 +90,9 @@ void Jugador::turno(float delta)
 	}
 
 	if(input_actual.giro) girar(input_actual.giro, delta);
-	
+
 	//Tenemos activada la velocidad... No podemos hacer nada mientras dure...
-	if(habilidad.get() && habilidad->obtener_tipo()==Habilidad_base::ttipo::velocidad) 
+	if(habilidad.get() && habilidad->obtener_tipo()==Habilidad_base::ttipo::velocidad)
 	{
 		//Do nothing :D!.
 	}
@@ -139,16 +139,16 @@ void Jugador::restar_salud(int v)
 
 void Jugador::girar(int dir, float delta)
 {
-	//TODO. A otro lado???	
+	//TODO. A otro lado???
 	const double factor_rotacion=220.0;
 
-	//La velocidad afecta a la capacidad de giro. No afecta parado o marcha atrás.	
+	//La velocidad afecta a la capacidad de giro. No afecta parado o marcha atrás.
 	double factor=velocidad <= 0.0 ? factor_rotacion : factor_rotacion - (velocidad / 3.0);
 	if(factor < 60.0) factor=60.0;
 
 	double giro=((double)delta * factor) * (double)dir;
 	angulo+=giro;
-	poligono.rotar(giro);
+	poligono.rotate(giro);
 }
 
 void Jugador::cambiar_velocidad(int dir, float delta)
@@ -159,8 +159,8 @@ void Jugador::cambiar_velocidad(int dir, float delta)
 	const float factor_aceleracion=180.0f;
 	const float factor_freno=-500.0;
 
-		
-	
+
+
 	velocidad+=dir > 0 ? delta * factor_aceleracion : delta * factor_freno;
 
 	if(velocidad > max_vel) velocidad=max_vel;
@@ -180,28 +180,26 @@ void Jugador::movimiento_tentativo(float delta)
 {
 	desplazar_angulo_velocidad(angulo, velocidad*delta);
 
-	DLibH::Vector_2d<double> v=vector_unidad_para_angulo_cartesiano(angulo);
-	DLibH::Punto_2d<double> pd{v.x * velocidad, v.y * velocidad};
+	ldt::vector_2d<double> v=vector_from_angle(angulo);
+	ldt::point_2d<double> pd{v.x * velocidad, v.y * velocidad};
 }
 
 void Jugador::formar_poligono()
 {
-	poligono.insertar_vertice({15.0, 0.0});
-	poligono.insertar_vertice({-5.0, -7.0});
-	poligono.insertar_vertice({-5.0, 7.0});
-	poligono.cerrar();
-	poligono.mut_centro({0.0, 0.0});
+	poligono.add_vertex({15.0, 0.0});
+	poligono.add_vertex({-5.0, -7.0});
+	poligono.add_vertex({-5.0, 7.0});
+	poligono.set_rotation_center({0.0, 0.0});
 
-	poligono_escudo.insertar_vertice({0.0, 30.0});
-	poligono_escudo.insertar_vertice({20.0, 20.0});
-	poligono_escudo.insertar_vertice({30.0, 0.0});
-	poligono_escudo.insertar_vertice({20.0, -20.0});
-	poligono_escudo.insertar_vertice({0.0, -30.0});
-	poligono_escudo.insertar_vertice({-20.0, -20.0});
-	poligono_escudo.insertar_vertice({-30.0, 0.0});
-	poligono_escudo.insertar_vertice({-20.0, 20.0});
-	poligono_escudo.cerrar();
-	poligono_escudo.mut_centro({0.0, 0.0});
+	poligono_escudo.add_vertex({0.0, 30.0});
+	poligono_escudo.add_vertex({20.0, 20.0});
+	poligono_escudo.add_vertex({30.0, 0.0});
+	poligono_escudo.add_vertex({20.0, -20.0});
+	poligono_escudo.add_vertex({0.0, -30.0});
+	poligono_escudo.add_vertex({-20.0, -20.0});
+	poligono_escudo.add_vertex({-30.0, 0.0});
+	poligono_escudo.add_vertex({-20.0, 20.0});
+	poligono_escudo.set_rotation_center({0.0, 0.0});
 }
 
 Disparador Jugador::disparar()
@@ -210,7 +208,7 @@ Disparador Jugador::disparar()
 	double distancia=30.0;
 
 	//Obtener spawn point de disparo...
-	auto pt=poligono.acc_centro();
+	auto pt=poligono.get_rotation_center();
 
 	//TODO: Mejorar: quizás el jugador puede computar los puntos posibles para
 	//iniciar un disparo en este punto y enviarlos todos. El arma podría saber
@@ -250,11 +248,11 @@ bool Jugador::es_arma_defecto() const
 	else return true;
 }
 
-void Jugador::dibujar(Representador& r, DLibV::Pantalla& pantalla, const DLibV::Camara& camara) const
+void Jugador::dibujar(Representador& r, ldv::screen& pantalla, const ldv::camera& camara) const
 {
 	if(habilidad.get() && habilidad->obtener_tipo()==Habilidad_base::ttipo::escudo)
 	{
-		poligono_escudo.centrar_en(poligono.acc_centro());
+		poligono_escudo.center_in(poligono.get_rotation_center());
 		r.dibujar_poligono(pantalla, poligono_escudo, {255, 32, 32, 32}, camara);
 	}
 

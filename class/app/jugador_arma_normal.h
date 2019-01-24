@@ -11,7 +11,7 @@ class Jugador_arma_normal:
 	public:
 
 						Jugador_arma_normal();
-	virtual void				generar_proyectiles(Disparador::v_info&, int, DLibH::Punto_2d<double>, double, double);
+	virtual void				generar_proyectiles(Disparador::v_info&, int, ldt::point_2d<double>, double, double);
 	virtual bool				es_arma_defecto() const {return true;}
 	virtual void				disparar();
 	virtual void				turno(float delta);

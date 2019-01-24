@@ -16,7 +16,7 @@ class Widget_editor_color:
 
 	Widget_editor_color(const DLibV::Fuente_TTF&, tcolor&, tcolor&);
 	
-	virtual void 	dibujar(DLibV::Pantalla&);
+	virtual void 	dibujar(ldv::screen&);
 	virtual void	inicializar(DFramework::Input&);
 	virtual void	input(DFramework::Input&, float);
 	virtual void	finalizar(DFramework::Input&);

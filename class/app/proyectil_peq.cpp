@@ -17,14 +17,14 @@ void Proyectil_peq::colisionar(std::vector<Disparador>&)
 
 void Proyectil_peq::extinguir(std::vector<Disparador>&)
 {
-	
+
 }
 
-void Proyectil_peq::preparar(double ang, DLibH::Punto_2d<double> pt)
+void Proyectil_peq::preparar(double ang, ldt::point_2d<double> pt)
 {
 	angulo=ang;
 	formar_poligono();
-	poligono.rotar(angulo);
+	poligono.rotate(angulo);
 	establecer_posicion(pt.x, pt.y);
 }
 
@@ -39,10 +39,9 @@ void Proyectil_peq::turno(float delta)
 
 void Proyectil_peq::formar_poligono()
 {
-	poligono.insertar_vertice({2.0, 0.0});
-	poligono.insertar_vertice({0.0, -2.0});
-	poligono.insertar_vertice({-8.0, 0.0});
-	poligono.insertar_vertice({0.0, 2.0});
-	poligono.cerrar();
-	poligono.mut_centro({0.0, 0.0});
+	poligono.add_vertex({2.0, 0.0});
+	poligono.add_vertex({0.0, -2.0});
+	poligono.add_vertex({-8.0, 0.0});
+	poligono.add_vertex({0.0, 2.0});
+	poligono.set_rotation_center({0.0, 0.0});
 }

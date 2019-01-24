@@ -26,9 +26,9 @@ class Proyectil:
 	virtual tcolor		acc_color() const=0;
 	virtual void		turno(float)=0;
 	virtual void		formar_poligono()=0;
-	virtual void		preparar(double, DLibH::Punto_2d<double>)=0;
+	virtual void		preparar(double, ldt::point_2d<double>)=0;
 
-	virtual void 		dibujar(Representador&, DLibV::Pantalla&, const DLibV::Camara&) const;
+	virtual void 		dibujar(Representador&, ldv::screen&, const ldv::camera&, const ldv::resource_manager&) const;
 
 	protected:
 

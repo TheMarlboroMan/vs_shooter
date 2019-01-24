@@ -26,7 +26,7 @@ class Controlador_controles:
 	virtual void 			preloop(DFramework::Input& input, float delta);
 	virtual void 			loop(DFramework::Input& input, float delta);
 	virtual void 			postloop(DFramework::Input& input, float delta);
-	virtual void 			dibujar(DLibV::Pantalla& pantalla);
+	virtual void 			dibujar(ldv::screen& pantalla);
 	virtual void 			despertar();
 	virtual void 			dormir();
 	virtual bool			es_posible_abandonar_estado() const;

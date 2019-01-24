@@ -34,7 +34,7 @@ class Kernel
 	int			acc_fps() const {return controlador_fps.acc_frames_contados();}
 
 	Input&			acc_input() {return input;}
-	DLibV::Pantalla& 	acc_pantalla() {return pantalla;}
+	ldv::screen& 	acc_pantalla() {return pantalla;}
 	Herramientas_proyecto::Controlador_argumentos& acc_controlador_argumentos() {return controlador_argumentos;}
 
 	float 			acc_paso_delta() const {return paso_delta;}
@@ -54,7 +54,7 @@ class Kernel
 
 	Herramientas_proyecto::Controlador_argumentos& 	controlador_argumentos;
 	DLibH::Controlador_fps_SDL 			controlador_fps;
-	DLibV::Pantalla 				pantalla;
+	ldv::screen 				pantalla;
 	Input						input;
 
 	///////////////////////////

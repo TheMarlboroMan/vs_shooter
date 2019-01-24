@@ -33,7 +33,7 @@ void Kernel::inicializar_entorno_grafico(const Info_ventana& iv)
 {
 	pantalla.inicializar(iv.w_fisica, iv.h_fisica);
 	pantalla.establecer_medidas_logicas(iv.w_logica, iv.h_logica);
-	pantalla.establecer_modo_ventana(DLibV::Pantalla::M_VENTANA);
+	pantalla.establecer_modo_ventana(ldv::screen::M_VENTANA);
 	pantalla.establecer_titulo(iv.nombre.c_str());
 	DLibV::Utilidades_graficas_SDL::mostrar_ocultar_cursor(iv.mostrar_cursor);
 }
@@ -43,9 +43,9 @@ void Kernel::ciclar_modo_pantalla()
 	unsigned int modo=pantalla.acc_modo_ventana();
 	++modo;
 
-	if(modo == DLibV::Pantalla::M_MAX_MODO)
+	if(modo == ldv::screen::M_MAX_MODO)
 	{
-		modo=DLibV::Pantalla::M_VENTANA;
+		modo=ldv::screen::M_VENTANA;
 	}
 
 	pantalla.establecer_modo_ventana(modo);

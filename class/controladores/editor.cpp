@@ -177,7 +177,7 @@ void Controlador_editor::postloop(DFramework::Input& input, float delta)
 
 }
 
-void Controlador_editor::dibujar(DLibV::Pantalla& pantalla)
+void Controlador_editor::dibujar(ldv::screen& pantalla)
 {
 	pantalla.limpiar(0, 0, 0, 255);
 
@@ -235,8 +235,8 @@ void Controlador_editor::dibujar(DLibV::Pantalla& pantalla)
 	}
 
 	DLibV::Representacion_TTF txt(fuente_akashi, {255, 255, 255, 255}, texto);
-	txt.ir_a(16, 380);
-	txt.volcar(pantalla);
+	txt.go_to(16, 380);
+	txt.draw(pantalla);
 
 	r.dibujar_poligono(pantalla, Objeto_editor::cuadrado(pt_raton.x, pt_raton.y, 3), {255, 255, 255, 128}, camara);
 
@@ -387,27 +387,27 @@ void Controlador_editor::seleccionar()
 	}
 }
 
-void Controlador_editor::crear_punto_inicio(DLibH::Punto_2d<double> pt)
+void Controlador_editor::crear_punto_inicio(ldt::point_2d<double> pt)
 {
 	puntos_inicio.push_back(Punto_inicio_editor{pt});
 }
 
-void Controlador_editor::crear_punto_bot(DLibH::Punto_2d<double> pt)
+void Controlador_editor::crear_punto_bot(ldt::point_2d<double> pt)
 {
 	puntos_bot.push_back(Punto_bot_editor{pt});
 }
 
-void Controlador_editor::crear_punto_ruta(DLibH::Punto_2d<double> pt)
+void Controlador_editor::crear_punto_ruta(ldt::point_2d<double> pt)
 {
 	puntos_ruta.push_back(Punto_ruta_editor{pt});
 }
 
-void Controlador_editor::crear_generador_items(DLibH::Punto_2d<double> pt)
+void Controlador_editor::crear_generador_items(ldt::point_2d<double> pt)
 {
 	generadores_items.push_back(Generador_items_editor{pt});
 }
 
-DLibH::Punto_2d<double>	Controlador_editor::punto_desde_pos_pantalla(int x, int y, bool a_rejilla)
+ldt::point_2d<double>	Controlador_editor::punto_desde_pos_pantalla(int x, int y, bool a_rejilla)
 {
 
 	int px=camara.acc_x() + (x * camara.acc_zoom());
@@ -419,10 +419,10 @@ DLibH::Punto_2d<double>	Controlador_editor::punto_desde_pos_pantalla(int x, int 
 		py=round((double)py / (double)grid) * grid;
 	}
 
-	return DLibH::Punto_2d<double>{(double)px, (double)py};
+	return ldt::point_2d<double>{(double)px, (double)py};
 }
 
-void Controlador_editor::nuevo_punto(DLibH::Punto_2d<double> p)
+void Controlador_editor::nuevo_punto(ldt::point_2d<double> p)
 {
 	if(poligono_construccion.acc_vertices().size() > 2 && p==poligono_construccion.acc_vertices()[0])
 	{
@@ -431,13 +431,13 @@ void Controlador_editor::nuevo_punto(DLibH::Punto_2d<double> p)
 	else
 	{
 		const auto& v=poligono_construccion.acc_vertices();
-		if(std::any_of(std::begin(v), std::end(v), [p](const DLibH::Punto_2d<double>& b) {return p==b;}))
+		if(std::any_of(std::begin(v), std::end(v), [p](const ldt::point_2d<double>& b) {return p==b;}))
 		{
 			mensajes.insertar_mensaje("Vértice repetido, no se crea.", 2.f);
 		}
 		else
 		{
-			poligono_construccion.insertar_vertice(p);
+			poligono_construccion.add_vertex(p);
 		}
 	}
 }

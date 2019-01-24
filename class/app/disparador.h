@@ -5,7 +5,7 @@
 #include <vector>
 #include <functional>
 
-#include <herramientas/punto_2d/punto_2d.h>
+#include <tools/point_2d/point_2d.h>
 
 namespace App
 {
@@ -20,10 +20,10 @@ struct Disparador
 	{
 		tproyectiles				tipo;
 		int					indice;
-		Punto_2d<double>			pt;
+		ldt::point_2d<double>			pt;
 		double					angulo;
 	};
-	
+
 	typedef std::vector<info>			v_info;
 	v_info						disparos;
 };

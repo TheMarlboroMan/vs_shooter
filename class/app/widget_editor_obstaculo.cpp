@@ -16,11 +16,11 @@ Widget_editor_obstaculo::Widget_editor_obstaculo(const DLibV::Fuente_TTF& fuente
 	actualizar_layout();
 }
 	
-void Widget_editor_obstaculo::dibujar(DLibV::Pantalla& pantalla)
+void Widget_editor_obstaculo::dibujar(ldv::screen& pantalla)
 {
 	using namespace DLibH;
 
-	layout.volcar(pantalla);	
+	layout.draw(pantalla);	
 }
 
 void Widget_editor_obstaculo::input(DFramework::Input& input, float delta)
@@ -50,7 +50,7 @@ void Widget_editor_obstaculo::cambiar_seleccion(int dir)
 	else if(indice_actual > max_indice) indice_actual=max_indice;
 
 	int y=layout.const_int("y_selector")+(indice_actual * layout.const_int("salto_selector"));
-	layout.obtener_por_id("selector")->ir_a(layout.const_int("x_selector"), y);
+	layout.obtener_por_id("selector")->go_to(layout.const_int("x_selector"), y);
 }
 
 void Widget_editor_obstaculo::cambiar_valor(int dir, float delta)

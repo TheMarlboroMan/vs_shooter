@@ -2,7 +2,7 @@
 
 using namespace App;
 
-Widget_mensajes::Widget_mensajes(const DLibV::Fuente_TTF& f, size_t maxm, int x, int y)
+Widget_mensajes::Widget_mensajes(const ldv::ttf_font& f, size_t maxm, int x, int y)
 	:fuente(f), max_mensajes(maxm), x(x), y(x)
 {
 
@@ -18,15 +18,15 @@ void Widget_mensajes::insertar_mensaje(const std::string& c, float t)
 	mensajes.push_back(Mensaje{fuente, c, t});
 }
 
-void Widget_mensajes::dibujar(DLibV::Pantalla& pantalla)
+void Widget_mensajes::dibujar(ldv::screen& pantalla)
 {
 	int py=y;
-	int margen=fuente.acc_tamano_fuente()+2;
+	int margen=fuente.get_size()+2;
 
 	for(auto& m : mensajes)
 	{
-		m.txt.ir_a(x, py);
-		m.txt.volcar(pantalla);
+		m.txt.go_to({x, py});
+		m.txt.draw(pantalla);
 		py+=margen;
 	}
 }
@@ -34,7 +34,7 @@ void Widget_mensajes::dibujar(DLibV::Pantalla& pantalla)
 void Widget_mensajes::turno(float delta)
 {
 	auto it=std::begin(mensajes);
-	
+
 	while(it < std::end(mensajes))
 	{
 		it->tiempo-=delta;

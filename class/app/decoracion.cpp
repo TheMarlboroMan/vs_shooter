@@ -13,7 +13,7 @@ bool Decoracion::operator<(const Decoracion& o) const
 	return profundidad < o.profundidad;
 }
 
-void Decoracion::dibujar(Representador& r, DLibV::Pantalla& pantalla, const DLibV::Camara& camara) const
+void Decoracion::dibujar(Representador& r, ldv::screen& pantalla, const ldv::camera& camara) const
 {
 	r.dibujar_poligono(pantalla, poligono, color, camara);
 	if(color_linea!=color) r.dibujar_poligono_lineas(pantalla, poligono, color_linea, camara);

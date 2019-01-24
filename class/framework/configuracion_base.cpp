@@ -26,7 +26,7 @@ catch(std::runtime_error& e)
 void Configuracion_base::grabar()
 {
 	using namespace Herramientas_proyecto;
-	Dnot_token_opciones_serializador os;
+	dnot_token_opciones_serializador os;
 	os.tabular_profundidad=true;
 	std::ofstream f(ruta_fichero);
 	f<<token.serializar(os);
@@ -38,10 +38,10 @@ void Configuracion_base::grabar()
 * "video" contenido en "config" y "tam_pantalla" contenido en "video".
 */
 
-const Herramientas_proyecto::Dnot_token& Configuracion_base::token_por_ruta(const std::string& c) const
+const tools::dnot_token& Configuracion_base::token_por_ruta(const std::string& c) const
 {
 	using namespace Herramientas_proyecto;
-	const Dnot_token * p=&token;
+	const dnot_token * p=&token;
 	auto v=explotar(c, ':');
 	for(const auto& clave : v) 
 	{
@@ -57,10 +57,10 @@ const Herramientas_proyecto::Dnot_token& Configuracion_base::token_por_ruta(cons
 	return *p;
 }
 
-Herramientas_proyecto::Dnot_token& Configuracion_base::token_por_ruta(const std::string& c)
+tools::dnot_token& Configuracion_base::token_por_ruta(const std::string& c)
 {
 	using namespace Herramientas_proyecto;
-	Dnot_token * p=&token;
+	dnot_token * p=&token;
 	auto v=explotar(c, ':');
 	for(const auto& clave : v) p=&p->acc_tokens()[clave];
 	return *p;

@@ -13,7 +13,7 @@ class Jugador_arma
 	public:
 
 						Jugador_arma(int m);
-	virtual void				generar_proyectiles(Disparador::v_info&, int, DLibH::Punto_2d<double>, double, double)=0;
+	virtual void				generar_proyectiles(Disparador::v_info&, int, ldt::point_2d<double>, double, double)=0;
 	virtual void				disparar()=0;
 	virtual bool				es_arma_defecto() const=0;
 	virtual void				turno(float delta);

@@ -29,7 +29,7 @@ class Decoracion:
 
 	bool				operator<(const Decoracion&) const;
 
-	virtual void 			dibujar(Representador&, DLibV::Pantalla&, const DLibV::Camara&) const;
+	virtual void 			dibujar(Representador&, ldv::screen&, const ldv::camera&) const;
 
 	private:
 

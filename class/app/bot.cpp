@@ -20,11 +20,11 @@ Bot::Bot()
 
 void Bot::formar_poligono()
 {
-	poligono.insertar_vertice({20.0, 0.0});
-	poligono.insertar_vertice({0.0, -7.0});
-	poligono.insertar_vertice({0.0, 7.0});
+	poligono.add_vertex({20.0, 0.0});
+	poligono.add_vertex({0.0, -7.0});
+	poligono.add_vertex({0.0, 7.0});
 	poligono.cerrar();
-	poligono.mut_centro({0.0, 0.0});
+	poligono.set_rotation_center({0.0, 0.0});
 }
 
 void Bot::turno(const Mapa& mapa, std::vector<Disparador>& vd, float delta)
@@ -230,7 +230,7 @@ void Bot::establecer_destino(const Espaciable& e)
 	estado=testados::buscando;
 }
 
-void Bot::calcular_angulo_destino(DLibH::Punto_2d<double> dest)
+void Bot::calcular_angulo_destino(ldt::point_2d<double> dest)
 {
 	if(angulo > 360.0) angulo-=360.0;
 	else if(angulo < 0.0) angulo+=360.0;
@@ -321,7 +321,7 @@ void Bot::restar_salud(int v)
 	if(salud < 0) salud=0;
 }
 
-void Bot::dibujar(Representador& r, DLibV::Pantalla& pantalla, const DLibV::Camara& camara) const
+void Bot::dibujar(Representador& r, ldv::screen& pantalla, const ldv::camera& camara) const
 {
 	r.dibujar_poligono_lineas(pantalla, poligono, {255, 255, 255, 255}, camara);
 }

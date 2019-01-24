@@ -19,14 +19,14 @@ void Jugador_arma_normal::turno(float delta)
 		if(recarga >= 0.8f)
 		{
 			recarga=0.0f;
-			municion++;			
+			municion++;
 		}
 	}
 }
 
-void Jugador_arma_normal::generar_proyectiles(Disparador::v_info& info, int indice, DLibH::Punto_2d<double> pt, double distancia, double angulo)
+void Jugador_arma_normal::generar_proyectiles(Disparador::v_info& info, int indice, ldt::point_2d<double> pt, double distancia, double angulo)
 {
-	DLibH::Vector_2d<double> v=vector_unidad_para_angulo_cartesiano(angulo);
+	ldt::vector_2d<double> v=vector_from_angle(angulo);
 	pt.x+=v.x * distancia;
 	pt.y+=v.y * distancia;
 

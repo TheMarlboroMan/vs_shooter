@@ -16,7 +16,7 @@ class Widget_editor_obstaculo:
 
 				Widget_editor_obstaculo(const DLibV::Fuente_TTF&, Obstaculo&);
 	
-	virtual void 		dibujar(DLibV::Pantalla&);
+	virtual void 		dibujar(ldv::screen&);
 	virtual void		inicializar(DFramework::Input&);
 	virtual void		input(DFramework::Input&, float);
 	virtual bool		es_cerrar() const;

@@ -47,8 +47,8 @@ class Cargador_recursos
 {
 	public:
 	
-	void generar_recursos_texturas(const std::vector<std::string>&, DLibV::Pantalla &pantalla);
-	void generar_recursos_superficies(const std::vector<std::string>&, DLibV::Pantalla &pantalla);
+	void generar_recursos_texturas(const std::vector<std::string>&, ldv::screen &pantalla);
+	void generar_recursos_superficies(const std::vector<std::string>&, ldv::screen &pantalla);
 	void generar_recursos_audio(const std::vector<std::string>&);
 	void generar_recursos_musica(const std::vector<std::string>&);
 
@@ -60,7 +60,7 @@ class Cargador_recursos
 	void procesar_entrada_superficie(const std::vector<std::string>&);
 	void procesar(const std::vector<std::string>& entradas, void (Cargador_recursos::*)(const std::vector<std::string>&));
 
-	DLibV::Pantalla * pantalla;	//Un hack para poder usar métodos más genéricos en "procesar".
+	ldv::screen * pantalla;	//Un hack para poder usar métodos más genéricos en "procesar".
 };
 
 }

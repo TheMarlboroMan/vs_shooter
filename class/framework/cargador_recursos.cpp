@@ -12,7 +12,7 @@ void Cargador_recursos::procesar(const std::vector<std::string>& entradas, void 
 	}
 }
 
-void Cargador_recursos::generar_recursos_texturas(const std::vector<std::string>& recursos, DLibV::Pantalla &p)
+void Cargador_recursos::generar_recursos_texturas(const std::vector<std::string>& recursos, ldv::screen &p)
 {
 	DLibV::Gestor_texturas::vaciar();
 	pantalla=&p;
@@ -27,7 +27,7 @@ void Cargador_recursos::generar_recursos_texturas(const std::vector<std::string>
 	pantalla=nullptr;
 }
 
-void Cargador_recursos::generar_recursos_superficies(const std::vector<std::string>& recursos, DLibV::Pantalla &p)
+void Cargador_recursos::generar_recursos_superficies(const std::vector<std::string>& recursos, ldv::screen &p)
 {
 	pantalla=&p;
 	DLibV::Gestor_superficies::vaciar();

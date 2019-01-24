@@ -5,8 +5,8 @@ using namespace App;
 void Importador::importar(const std::string& fichero, 
 	std::vector<Obstaculo>& obstaculos,
 	std::vector<Decoracion>& decoraciones,  
-	std::vector<DLibH::Punto_2d<double>>& inicios,
-	std::vector<DLibH::Punto_2d<double>>& bots,  
+	std::vector<ldt::point_2d<double>>& inicios,
+	std::vector<ldt::point_2d<double>>& bots,  
 	std::vector<Punto_ruta>& puntos_ruta, 
 	std::vector<Generador_items>& generadores)
 {
@@ -40,7 +40,7 @@ void Importador::importar(const std::string& fichero,
 	}
 }
 
-void Importador::deserializar_obstaculo(const Herramientas_proyecto::Dnot_token& tok, std::vector<Obstaculo>& obstaculos)
+void Importador::deserializar_obstaculo(const tools::dnot_token& tok, std::vector<Obstaculo>& obstaculos)
 {
 	Espaciable::tpoligono poligono;
 	Obstaculo::ttipos tipo=Obstaculo::ttipos::normal;
@@ -51,11 +51,11 @@ void Importador::deserializar_obstaculo(const Herramientas_proyecto::Dnot_token&
 		for(const auto& vp : lista_puntos)
 		{
 			const auto& pt=vp.acc_lista();
-			poligono.insertar_vertice({pt[0], pt[1]});
+			poligono.add_vertex({pt[0], pt[1]});
 		}
 	
 		const auto& centro=tok["cen"].acc_lista();
-		poligono.mut_centro({centro[0], centro[1]});
+		poligono.set_rotation_center({centro[0], centro[1]});
 
 		int val_tipo=tok["pr"]["t"];
 		switch(val_tipo)
@@ -80,7 +80,7 @@ void Importador::deserializar_obstaculo(const Herramientas_proyecto::Dnot_token&
 	obstaculos.push_back({poligono, tipo});
 }
 
-void Importador::deserializar_decoracion(const Herramientas_proyecto::Dnot_token& tok, std::vector<Decoracion>& decoraciones)
+void Importador::deserializar_decoracion(const tools::dnot_token& tok, std::vector<Decoracion>& decoraciones)
 {
 	Espaciable::tpoligono poligono;
 
@@ -88,11 +88,11 @@ void Importador::deserializar_decoracion(const Herramientas_proyecto::Dnot_token
 	for(const auto& vp : lista_puntos)
 	{
 		const auto& pt=vp.acc_lista();
-		poligono.insertar_vertice({pt[0], pt[1]});
+		poligono.add_vertex({pt[0], pt[1]});
 	}
 	
 	const auto& centro=tok["cen"].acc_lista();
-	poligono.mut_centro({centro[0], centro[1]});
+	poligono.set_rotation_center({centro[0], centro[1]});
 
 	tcolor color={128, 128, 128, 255};
 	tcolor clinea=color;
@@ -119,19 +119,19 @@ void Importador::deserializar_decoracion(const Herramientas_proyecto::Dnot_token
 	decoraciones.push_back({poligono, color, clinea, frente, profundidad});
 }
 
-void Importador::deserializar_punto(const Herramientas_proyecto::Dnot_token& tok, std::vector<DLibH::Punto_2d<double>>& puntos)
+void Importador::deserializar_punto(const tools::dnot_token& tok, std::vector<ldt::point_2d<double>>& puntos)
 {
 	const auto& pt=tok.acc_lista();
 	puntos.push_back({pt[0], pt[1]});
 }
 
-void Importador::deserializar_punto_ruta(const Herramientas_proyecto::Dnot_token& tok, std::vector<Punto_ruta>& puntos)
+void Importador::deserializar_punto_ruta(const tools::dnot_token& tok, std::vector<Punto_ruta>& puntos)
 {
 	const auto& pt=tok.acc_lista();
 	puntos.push_back(Punto_ruta({pt[0], pt[1]}));
 }
 
-void Importador::deserializar_generador(const Herramientas_proyecto::Dnot_token& tok, std::vector<Generador_items>& generadores)
+void Importador::deserializar_generador(const tools::dnot_token& tok, std::vector<Generador_items>& generadores)
 {
 	const auto& pt=tok.acc_lista();
 	generadores.push_back(Generador_items({pt[0], pt[1]}) );

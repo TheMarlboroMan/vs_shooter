@@ -16,7 +16,7 @@ class Widget_editor_decoracion:
 
 	Widget_editor_decoracion(const DLibV::Fuente_TTF&, Decoracion&);
 	
-	virtual void 	dibujar(DLibV::Pantalla&);
+	virtual void 	dibujar(ldv::screen&);
 	virtual void	inicializar(DFramework::Input&);
 	virtual void	input(DFramework::Input&, float);
 	virtual bool	es_cerrar() const;

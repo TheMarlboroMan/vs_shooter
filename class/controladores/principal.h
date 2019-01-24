@@ -39,7 +39,7 @@ class Controlador_principal:
 	virtual void 			preloop(DFramework::Input& input, float delta);
 	virtual void 			loop(DFramework::Input& input, float delta);
 	virtual void 			postloop(DFramework::Input& input, float delta);
-	virtual void 			dibujar(DLibV::Pantalla& pantalla);
+	virtual void 			dibujar(ldv::screen& pantalla);
 	virtual void 			despertar();
 	virtual void 			dormir();
 	virtual bool			es_posible_abandonar_estado() const;
@@ -51,7 +51,7 @@ class Controlador_principal:
 	void					registrar_info_jugadores();
 	void					registrar_jugador(int);
 	void					ajustar_camara();
-	void					dibujar_info_jugador(DLibV::Pantalla&, const Jugador&);
+	void					dibujar_info_jugador(ldv::screen&, const Jugador&);
 	void					procesar_proyectiles(float);
 	void					procesar_bots(float);
 	void					procesar_jugadores(DFramework::Input&, float);
@@ -63,7 +63,7 @@ class Controlador_principal:
 	DLibH::Log_base&			log;
 	const DLibV::Fuente_TTF&		fuente_akashi;
 
-	DLibV::Camara				camara;
+	ldv::camera				camara;
 	Mapa					mapa;
 
 	std::vector<Jugador_info>		info_jugadores;

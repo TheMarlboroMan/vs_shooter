@@ -21,23 +21,23 @@ void Proyectil_explosivo::extinguir(std::vector<Disparador>& d)
 	Disparador res;
 
 	double i=0;
-	auto ptc=poligono.acc_centro();
+	auto ptc=poligono.get_rotation_center();
 	while(i < 360.0)
 	{
-		auto vect=vector_unidad_para_angulo_cartesiano(i);
-		res.disparos.push_back({Disparador::tproyectiles::peq, indice_jugador, ptc+Punto_2d<double>{20.0 * vect.x, 20.0 * vect.y}, i});
+		auto vect=vector_from_angle(i);
+		res.disparos.push_back({Disparador::tproyectiles::peq, indice_jugador, ptc+ldt::point_2d<double>{20.0 * vect.x, 20.0 * vect.y}, i});
 		i+=10.0;
 	}
 
 	d.push_back(res);
 }
 
-void Proyectil_explosivo::preparar(double ang, DLibH::Punto_2d<double> pt)
+void Proyectil_explosivo::preparar(double ang, ldt::point_2d<double> pt)
 {
 	angulo=ang;
 	rot=angulo;
 	formar_poligono();
-	poligono.rotar(angulo);
+	poligono.rotate(angulo);
 	establecer_posicion(pt.x, pt.y);
 }
 
@@ -46,19 +46,18 @@ void Proyectil_explosivo::turno(float delta)
 	velocidad-=delta * 1000.0;
 	if(velocidad <= 100.0) velocidad=100.0;
 	rot+=delta * 100.0;
-	poligono.rotar(angulo);
+	poligono.rotate(angulo);
 	tiempo-=delta;
 	desplazar_angulo_velocidad(angulo, velocidad*delta);
 }
 
 void Proyectil_explosivo::formar_poligono()
 {
-	poligono.insertar_vertice({-8.0, 0.0});
-	poligono.insertar_vertice({-4.0, 4.0});
-	poligono.insertar_vertice({4.0, 4.0});
-	poligono.insertar_vertice({8.0, 0.0});
-	poligono.insertar_vertice({4.0, -4.0});
-	poligono.insertar_vertice({-4.0, -4.0});
-	poligono.cerrar();
-	poligono.mut_centro({0.0, 0.0});
+	poligono.add_vertex({-8.0, 0.0});
+	poligono.add_vertex({-4.0, 4.0});
+	poligono.add_vertex({4.0, 4.0});
+	poligono.add_vertex({8.0, 0.0});
+	poligono.add_vertex({4.0, -4.0});
+	poligono.add_vertex({-4.0, -4.0});
+	poligono.set_rotation_center({0.0, 0.0});
 }

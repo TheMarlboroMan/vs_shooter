@@ -8,10 +8,10 @@ class Objeto_editor
 {
 	public:
 
-	typedef DLibH::Punto_2d<double> punto;
+	typedef ldt::point_2d<double> punto;
 
 	virtual void		mover(double, double)=0;
-	virtual void		dibujar(Representador&, DLibV::Pantalla&, const DLibV::Camara&, bool=false) const=0;
+	virtual void		dibujar(Representador&, ldv::screen&, const ldv::camera&, bool=false) const=0;
 	virtual bool		es_bajo_cursor(punto) const=0;
 
 	void			borrar() {para_borrar=true;}
@@ -35,11 +35,11 @@ class Objeto_editor
 	protected:
 
 	static void 		dibujar_poligono(
-			Representador& r,DLibV::Pantalla& pantalla, 
+			Representador& r,ldv::screen& pantalla, 
 			const DLibH::Poligono_2d<double> poligono, 
 			const tcolor& color_fondo,
 			const tcolor& color_linea,
-			const DLibV::Camara& camara, 
+			const ldv::camera& camara, 
 			bool seleccionado)
 	{
 		if(seleccionado)
@@ -76,7 +76,7 @@ class Obstaculo_editor:
 	Obstaculo		elemento;
 	virtual void		mover(double x, double y) {elemento.mover(x, y);}
 	virtual bool		es_bajo_cursor(punto pt) const {return punto_en_poligono(elemento.acc_poligono(), pt);}	
-	virtual void		dibujar(Representador& r,DLibV::Pantalla& pantalla, const DLibV::Camara& camara, bool seleccionado=false) const
+	virtual void		dibujar(Representador& r,ldv::screen& pantalla, const ldv::camera& camara, bool seleccionado=false) const
 	{
 		tcolor color=color_obstaculo;
 		switch(elemento.acc_tipo())
@@ -101,7 +101,7 @@ class Decoracion_editor:
 	Decoracion		elemento;
 	virtual void		mover(double x, double y) {elemento.mover(x, y);}
 	virtual bool		es_bajo_cursor(punto pt) const {return punto_en_poligono(elemento.acc_poligono(), pt);}	
-	virtual void		dibujar(Representador& r,DLibV::Pantalla& pantalla, const DLibV::Camara& camara, bool seleccionado=false) const
+	virtual void		dibujar(Representador& r,ldv::screen& pantalla, const ldv::camera& camara, bool seleccionado=false) const
 	{
 		dibujar_poligono(r, pantalla, elemento.acc_poligono(), elemento.acc_color(), elemento.acc_color_linea(), camara, seleccionado);
 	}	
@@ -124,7 +124,7 @@ class Punto_inicio_editor:
 		poligono=cuadrado(elemento.x, elemento.y, 6);
 	}
 	virtual bool		es_bajo_cursor(punto pt) const {return punto_en_poligono(poligono, pt);}
-	virtual void		dibujar(Representador& r,DLibV::Pantalla& pantalla, const DLibV::Camara& camara, bool seleccionado=false) const
+	virtual void		dibujar(Representador& r,ldv::screen& pantalla, const ldv::camera& camara, bool seleccionado=false) const
 	{
 		dibujar_poligono(r, pantalla, poligono, color_punto_inicio_editor, color_punto_inicio_editor, camara, seleccionado);
 	}
@@ -144,7 +144,7 @@ class Generador_items_editor:
 	Generador_items		elemento;
 	virtual void		mover(double x, double y) {elemento.mover(x, y);}
 	virtual bool		es_bajo_cursor(punto pt) const {return punto_en_poligono(elemento.acc_poligono(), pt);}
-	virtual void		dibujar(Representador& r,DLibV::Pantalla& pantalla, const DLibV::Camara& camara, bool seleccionado=false) const
+	virtual void		dibujar(Representador& r,ldv::screen& pantalla, const ldv::camera& camara, bool seleccionado=false) const
 	{
 		dibujar_poligono(r, pantalla, elemento.acc_poligono(), color_generador_items_editor, color_generador_items_editor, camara, seleccionado);
 	}
@@ -166,7 +166,7 @@ class Punto_ruta_editor:
 		poligono=cuadrado(elemento.pt.x, elemento.pt.y, 6);
 	}
 	virtual bool		es_bajo_cursor(punto pt) const {return punto_en_poligono(poligono, pt);}
-	virtual void		dibujar(Representador& r,DLibV::Pantalla& pantalla, const DLibV::Camara& camara, bool seleccionado=false) const
+	virtual void		dibujar(Representador& r,ldv::screen& pantalla, const ldv::camera& camara, bool seleccionado=false) const
 	{
 		dibujar_poligono(r, pantalla, poligono, color_punto_ruta_editor, color_punto_ruta_editor, camara, seleccionado);
 	}
@@ -193,7 +193,7 @@ class Punto_bot_editor:
 		poligono=cuadrado(elemento.x, elemento.y, 6);
 	}
 	virtual bool		es_bajo_cursor(punto pt) const {return punto_en_poligono(poligono, pt);}
-	virtual void		dibujar(Representador& r,DLibV::Pantalla& pantalla, const DLibV::Camara& camara, bool seleccionado=false) const
+	virtual void		dibujar(Representador& r,ldv::screen& pantalla, const ldv::camera& camara, bool seleccionado=false) const
 	{
 		dibujar_poligono(r, pantalla, poligono, color_punto_bot_editor, color_punto_bot_editor, camara, seleccionado);
 	}

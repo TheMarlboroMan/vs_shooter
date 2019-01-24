@@ -81,7 +81,7 @@ void  Controlador_principal::postloop(DFramework::Input& input, float delta)
 
 }
 
-void  Controlador_principal::dibujar(DLibV::Pantalla& pantalla)
+void  Controlador_principal::dibujar(ldv::screen& pantalla)
 {
 	pantalla.limpiar(0, 0, 0, 255);
 
@@ -301,7 +301,7 @@ void Controlador_principal::procesar_disparadores()
 	disparadores.clear();
 }
 
-void Controlador_principal::dibujar_info_jugador(DLibV::Pantalla& pantalla, const Jugador& j)
+void Controlador_principal::dibujar_info_jugador(ldv::screen& pantalla, const Jugador& j)
 {
 	const auto& ij=info_jugadores[j.acc_indice()];
 
@@ -312,8 +312,8 @@ void Controlador_principal::dibujar_info_jugador(DLibV::Pantalla& pantalla, cons
 	std::string municion=std::to_string(m);
 	std::string texto=std::to_string(j.acc_salud())+" | "+std::to_string(j.acc_energia())+" - "+municion;
 	DLibV::Representacion_TTF txt(fuente_akashi, {(Uint8)jc.r, (Uint8)jc.g, (Uint8)jc.b, 192}, texto);
-	txt.ir_a(x, y);
-	txt.volcar(pantalla);
+	txt.go_to(x, y);
+	txt.draw(pantalla);
 }
 
 void Controlador_principal::registrar_bot()

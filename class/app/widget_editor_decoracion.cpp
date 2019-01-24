@@ -17,11 +17,11 @@ Widget_editor_decoracion::Widget_editor_decoracion(const DLibV::Fuente_TTF& fuen
 	actualizar_layout();
 }
 	
-void Widget_editor_decoracion::dibujar(DLibV::Pantalla& pantalla)
+void Widget_editor_decoracion::dibujar(ldv::screen& pantalla)
 {
 	using namespace DLibH;
 
-	layout.volcar(pantalla);	
+	layout.draw(pantalla);	
 }
 
 void Widget_editor_decoracion::input(DFramework::Input& input, float delta)
@@ -70,7 +70,7 @@ void Widget_editor_decoracion::cambiar_seleccion(int dir)
 	else if(indice_actual > max_indice) indice_actual=max_indice;
 
 	int y=layout.const_int("y_selector")+(indice_actual * layout.const_int("salto_selector"));
-	layout.obtener_por_id("selector")->ir_a(layout.const_int("x_selector"), y);
+	layout.obtener_por_id("selector")->go_to(layout.const_int("x_selector"), y);
 }
 
 Widget_editor_decoracion::min_max Widget_editor_decoracion::min_max_por_indice(int indice) const
@@ -156,7 +156,7 @@ void Widget_editor_decoracion::actualizar_layout()
 	auto f_color=[](DLibV::Representacion_primitiva_caja& rep, tcolor col)
 	{
 		rep.mut_rgb(col.r, col.g, col.b);
-		rep.establecer_alpha(col.a);
+		rep.set_alpha(col.a);
 	};
 
 	actualizar_numero("txt_r_frente", color_frente.r);

@@ -51,14 +51,14 @@ void Controlador_ayuda_editor::loop(DFramework::Input& input, float delta)
 		if(ny!=y)
 		{
 			y=ny;
-			layout.obtener_por_id("txt_ayuda")->ir_a(16, y+16);
+			layout.obtener_por_id("txt_ayuda")->go_to(16, y+16);
 		}
 	}
 }
 
-void Controlador_ayuda_editor::dibujar(DLibV::Pantalla& pantalla)
+void Controlador_ayuda_editor::dibujar(ldv::screen& pantalla)
 {
-	layout.volcar(pantalla);
+	layout.draw(pantalla);
 
 	if(!y)
 	{

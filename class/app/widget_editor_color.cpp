@@ -15,11 +15,11 @@ Widget_editor_color::Widget_editor_color(const DLibV::Fuente_TTF& fuente, tcolor
 	actualizar_layout();
 }
 	
-void Widget_editor_color::dibujar(DLibV::Pantalla& pantalla)
+void Widget_editor_color::dibujar(ldv::screen& pantalla)
 {
 	using namespace DLibH;
 
-	layout.volcar(pantalla);	
+	layout.draw(pantalla);	
 }
 
 void Widget_editor_color::input(DFramework::Input& input, float delta)
@@ -101,7 +101,7 @@ void Widget_editor_color::cambiar_seleccion(int dir)
 	else if(indice_actual > max_indice) indice_actual=max_indice;
 
 	int y=layout.const_int("y_selector")+(indice_actual * layout.const_int("salto_selector"));
-	layout.obtener_por_id("selector")->ir_a(layout.const_int("x_selector"), y);
+	layout.obtener_por_id("selector")->go_to(layout.const_int("x_selector"), y);
 }
 
 void Widget_editor_color::cambiar_color(int dir, float delta)
@@ -159,7 +159,7 @@ void Widget_editor_color::actualizar_colores()
 	auto f=[](DLibV::Representacion_primitiva_caja& rep, tcolor col)
 	{
 		rep.mut_rgb(col.r, col.g, col.b);
-		rep.establecer_alpha(col.a);
+		rep.set_alpha(col.a);
 	};
 
 	f(*fondo, color_fondo);

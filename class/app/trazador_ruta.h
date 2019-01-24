@@ -9,8 +9,8 @@ class Trazador_ruta
 {
 	public:
 
-	typedef DLibH::Punto_2d<double> 		tpunto_ruta;
-	typedef std::vector<DLibH::Punto_2d<double>>	tvpunto_ruta;
+	typedef ldt::point_2d<double> 		tpunto_ruta;
+	typedef std::vector<ldt::point_2d<double>>	tvpunto_ruta;
 
 	typedef Nodo_ruta				tnodo;
 	typedef std::vector<Nodo_ruta>			tvnodo;
