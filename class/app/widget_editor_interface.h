@@ -1,7 +1,7 @@
 #ifndef WIDGET_EDITOR_INTERFACE_H
 #define WIDGET_EDITOR_INTERFACE_H
 
-#include <video/pantalla/pantalla.h>
+#include <video/screen/screen.h>
 #include "../framework/input.h"
 
 namespace App

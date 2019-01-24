@@ -1,7 +1,7 @@
 #ifndef BOT_H
 #define BOT_H
 
-#include <class/generador_numeros.h>
+#include <class/number_generator.h>
 #include "espaciable.h"
 #include "representable.h"
 #include "trazador_ruta.h"
@@ -28,7 +28,7 @@ class Bot:
 	int				acc_salud() const {return salud;}
 	const std::vector<Espaciable::tpunto>&	acc_ruta() const {return ruta;}
 
-	virtual void 			dibujar(Representador&, ldv::screen&, const ldv::camera&) const;
+	virtual void 			dibujar(Representador&, ldv::screen&, const ldv::camera&, const ldv::resource_manager&) const;
 
 	private:
 
@@ -39,7 +39,7 @@ class Bot:
 	void				trazar_hasta_posicion_ataque();
 	void				orientar_giro(float);
 	void				mover(float);
-	void				calcular_angulo_destino(Punto_2d<double>);
+	void				calcular_angulo_destino(ldt::point_2d<double>);
 	void				intento_disparo(const Mapa&, std::vector<Disparador>&);
 
 	std::vector<Espaciable::tpunto>	ruta;

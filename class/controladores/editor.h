@@ -90,8 +90,8 @@ class Controlador_editor:
 	void					click_derecho();
 
 	DLibH::Log_base&			log;
-	const DLibV::Fuente_TTF&		fuente_akashi;
-	const DLibV::Fuente_TTF&		fuente_akashi_mensajes;
+	const ldv::ttf_font&		fuente_akashi;
+	const ldv::ttf_font&		fuente_akashi_mensajes;
 
 	ldv::camera				camara;
 	Mapa					mapa;

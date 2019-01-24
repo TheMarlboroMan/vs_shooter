@@ -1,7 +1,7 @@
 #ifndef WIDGET_EDITOR_DECORACION_H
 #define WIDGET_EDITOR_DECORACION_H
 
-#include <class/compositor_vista.h>
+#include <class/view_composer.h>
 
 #include "widget_editor_interface.h"
 #include "decoracion.h"
@@ -9,13 +9,13 @@
 namespace App
 {
 
-class Widget_editor_decoracion: 
+class Widget_editor_decoracion:
 	public Widget_editor_interface
 {
 	public:
 
-	Widget_editor_decoracion(const DLibV::Fuente_TTF&, Decoracion&);
-	
+	Widget_editor_decoracion(const ldv::ttf_font&, Decoracion&);
+
 	virtual void 	dibujar(ldv::screen&);
 	virtual void	inicializar(DFramework::Input&);
 	virtual void	input(DFramework::Input&, float);
@@ -36,9 +36,9 @@ class Widget_editor_decoracion:
 	int&		referencia_por_indice(int);
 	min_max		min_max_por_indice(int) const;
 
-	Herramientas_proyecto::Compositor_vista		layout;
+	tools::view_composer		layout;
 	Decoracion&	elemento;
-	tcolor		color_frente, 
+	tcolor		color_frente,
 			color_linea;
 	int		profundidad;
 	bool		frente;

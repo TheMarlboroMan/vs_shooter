@@ -6,7 +6,7 @@
 
 using namespace App;
 
-Widget_editor_decoracion::Widget_editor_decoracion(const DLibV::Fuente_TTF& fuente, Decoracion& d)
+Widget_editor_decoracion::Widget_editor_decoracion(const ldv::ttf_font& fuente, Decoracion& d)
 	:elemento(d), color_frente(d.acc_color()), color_linea(d.acc_color_linea()),
 	profundidad(d.acc_profundidad()), frente(d.es_frente()),
 	cerrar{false}, indice_actual{min_indice}, t_pulsado{0.0f}

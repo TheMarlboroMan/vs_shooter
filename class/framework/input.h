@@ -3,7 +3,7 @@
 
 #include <map>
 #include <vector>
-#include <input/controles_sdl/controles_sdl.h>
+#include <input/sdl_input/sdl_input.h>
 #include "kernel_driver_interface.h"
 
 /*Abstrae los sistemas de input usando la clase Controles_SDL. Cada input del
@@ -31,7 +31,7 @@ class Input
 				dispositivo;
 	};
 
-	typedef DLibI::Controles_SDL::Posicion_raton Posicion_raton;
+	typedef ldi::sdl_input::mouse_position Posicion_raton;
 
 	public:
 
@@ -41,7 +41,7 @@ class Input
 
 	/* Todas estas vamos a imaginar que son finales, ok?... */
 
-	void 			turno(); 
+	void 			turno();
 
 	bool 			es_senal_salida() const;
 
@@ -50,43 +50,43 @@ class Input
 	bool 			es_input_up(int) const;
 	bool 			es_input_pulsado(int) const;
 
-	bool 			es_tecla_down(int i) const {return controles_sdl.es_tecla_down(i);}
-	bool 			es_tecla_up(int i) const {return controles_sdl.es_tecla_up(i);}	
-	bool 			es_tecla_pulsada(int i) const {return controles_sdl.es_tecla_pulsada(i);}
-	bool 			hay_eventos_teclado_down() const {return controles_sdl.recibe_eventos_teclado_down();}
+	bool 			es_tecla_down(int i) const {return controles_sdl.is_key_down(i);}
+	bool 			es_tecla_up(int i) const {return controles_sdl.is_key_up(i);}
+	bool 			es_tecla_pulsada(int i) const {return controles_sdl.is_key_pressed(i);}
+	bool 			hay_eventos_teclado_down() const {return controles_sdl.is_event_keyboard_down();}
 
-	bool 			es_boton_up(int p_boton) const {return controles_sdl.es_boton_up(p_boton);}
-	bool 			es_boton_down(int p_boton) const {return controles_sdl.es_boton_down(p_boton);}
-	bool 			es_boton_pulsado(int p_boton) const {return controles_sdl.es_boton_pulsado(p_boton);}
+	bool 			es_boton_up(int p_boton) const {return controles_sdl.is_mouse_button_up(p_boton);}
+	bool 			es_boton_down(int p_boton) const {return controles_sdl.is_mouse_button_down(p_boton);}
+	bool 			es_boton_pulsado(int p_boton) const {return controles_sdl.is_mouse_button_pressed(p_boton);}
 
-	bool 			es_joystick_boton_up(int indice, int p_boton) const {return controles_sdl.es_joystick_boton_up(indice, p_boton);}
-	bool 			es_joystick_boton_down(int indice, int p_boton) const {return controles_sdl.es_joystick_boton_down(indice, p_boton);}
-	bool 			es_joystick_boton_pulsado(int indice, int p_boton) const {return controles_sdl.es_joystick_boton_pulsado(indice, p_boton);}
+	bool 			es_joystick_boton_up(int indice, int p_boton) const {return controles_sdl.is_joystick_button_up(indice, p_boton);}
+	bool 			es_joystick_boton_down(int indice, int p_boton) const {return controles_sdl.is_joystick_button_down(indice, p_boton);}
+	bool 			es_joystick_boton_pulsado(int indice, int p_boton) const {return controles_sdl.is_joystick_button_pressed(indice, p_boton);}
 
-	int 			obtener_cantidad_joysticks() const {return controles_sdl.acc_cantidad_joysticks();}
-	bool			es_nuevo_joystick_conectado() const {return controles_sdl.es_nuevo_joystick_conectado();}
+	int 			obtener_cantidad_joysticks() const {return controles_sdl.get_joysticks_size();}
+	bool			es_nuevo_joystick_conectado() const {return controles_sdl.is_event_joystick_connected();}
 
-	void			virtualizar_hats_joystick(int indice) {controles_sdl.virtualizar_hats_joystick(indice);}
-	void			virtualizar_ejes_joystick(int indice, int threshold) {controles_sdl.virtualizar_ejes_joystick(indice, threshold);}
+	void			virtualizar_hats_joystick(int indice) {controles_sdl.virtualize_joystick_hats(indice);}
+	void			virtualizar_ejes_joystick(int indice, int threshold) {controles_sdl.virtualize_joystick_axis(indice, threshold);}
 
 //	const DLibI::Controles_SDL::Posicion_raton& acc_posicion_raton() const {return controles_sdl.acc_raton().posicion;}
-	Posicion_raton 		acc_posicion_raton() const {return controles_sdl.obtener_posicion_raton();}
-	DLibI::Controles_SDL& 	acc_controles_sdl() {return controles_sdl;}
+	Posicion_raton 		acc_posicion_raton() const {return controles_sdl.get_mouse_position();}
+	ldi::sdl_input& 	acc_controles_sdl() {return controles_sdl;}
 	Entrada			obtener_entrada() const;
 	Entrada			localizar_entrada(int) const;
 	Par_input		desde_entrada(const Entrada&, int);
 
 
-	void 			iniciar_input_texto() {controles_sdl.iniciar_input_texto();}
-	void 			finalizar_input_texto() {controles_sdl.finalizar_input_texto();}
-	void 			vaciar_input_texto() {controles_sdl.vaciar_input_texto();}
-	const std::string 	acc_input_texto() const {return controles_sdl.acc_input_texto();}
-	bool 			es_input_texto_activo() const {return controles_sdl.es_input_texto_activo();}
-	bool			es_eventos_input_texto() const {return controles_sdl.recibe_eventos_texto();}
+	void 			iniciar_input_texto() {controles_sdl.start_text_input();}
+	void 			finalizar_input_texto() {controles_sdl.stop_text_input();}
+	void 			vaciar_input_texto() {controles_sdl.clear_text_input();}
+	const std::string 	acc_input_texto() const {return controles_sdl.get_text_input();}
+	bool 			es_input_texto_activo() const {return controles_sdl.is_text_input();}
+	bool			es_eventos_input_texto() const {return controles_sdl.is_event_text();}
 
 	protected:
 
-	typedef std::multimap<int, tinput> tipo_mapa;	
+	typedef std::multimap<int, tinput> tipo_mapa;
 
 	//TODO: No es esto lo mismo que Entrada???
 	struct Resultado_lookup
@@ -110,7 +110,7 @@ class Input
 	private:
 
 	Resultado_lookup 	obtener(int) const;
-	DLibI::Controles_SDL 	controles_sdl;
+	ldi::sdl_input 	controles_sdl;
 };
 
 }

@@ -19,11 +19,11 @@ void Mapa::limpiar()
 
 bool Mapa::visibilidad_entre_puntos(Espaciable::tpunto pt1, Espaciable::tpunto pt2) const
 {
-	DLibH::Segmento_2d<double> seg={ {pt1.x, pt1.y}, {pt2.x, pt2.y}};
+	ldt::segment_2d<double> seg={ {pt1.x, pt1.y}, {pt2.x, pt2.y}};
 
 	for(const auto& o : obstaculos)
 	{
-		if(interseccion_segmento_poligono(seg, o.acc_poligono()))
+		if(intersection_segment_polygon(seg, o.acc_poligono()))
 		{
 			return false;
 		}
@@ -53,7 +53,7 @@ void Mapa::construir_nodos_ruta()
 
 				if(visibilidad_entre_puntos(pta, ptb) && comprobacion_ancho(pta, ptb, 12.0) )
 				{
-					n.conexiones.push_back(Nodo_ruta::conexion{on, n.origen.pt.distancia_hasta(on.origen.pt)});
+					n.conexiones.push_back(Nodo_ruta::conexion{on, n.origen.pt.distance_to(on.origen.pt)});
 				}
 			}
 		}
@@ -83,7 +83,7 @@ const Nodo_ruta * Mapa::localizar_nodo_cercano(Espaciable::tpunto pt) const
 	double dist=-1.0;
 	for(const auto& n : nodos_ruta)
 	{
-		double d=pt.distancia_hasta(n.origen.pt);
+		double d=pt.distance_to(n.origen.pt);
 
 		if((dist < 0.0 || d <= dist) && visibilidad_entre_puntos(pt, n.origen.pt) && comprobacion_ancho(pt, n.origen.pt, 12.0))
 		{
@@ -96,7 +96,7 @@ const Nodo_ruta * Mapa::localizar_nodo_cercano(Espaciable::tpunto pt) const
 }
 
 //La razón para recibir directamente un punto de ruta es porque el nodo necesita
-//una REFERENCIA a un punto de ruta. No podemos crearlo aquí y dejarlo 
+//una REFERENCIA a un punto de ruta. No podemos crearlo aquí y dejarlo
 //apuntando a memoria inválida.
 Nodo_ruta Mapa::crear_inicio_temporal(Punto_ruta& pr) const
 {
@@ -104,11 +104,11 @@ Nodo_ruta Mapa::crear_inicio_temporal(Punto_ruta& pr) const
 
 	for(const auto& n : nodos_ruta)
 	{
-		auto pta=pr.pt, ptb=n.origen.pt; 
+		auto pta=pr.pt, ptb=n.origen.pt;
 
 		if(visibilidad_entre_puntos(pta, ptb) && comprobacion_ancho(pta, ptb, 12.0))
 		{
-			nr.conexiones.push_back(Nodo_ruta::conexion{n, n.origen.pt.distancia_hasta(n.origen.pt)});
+			nr.conexiones.push_back(Nodo_ruta::conexion{n, n.origen.pt.distance_to(n.origen.pt)});
 		}
 	}
 
@@ -117,7 +117,7 @@ Nodo_ruta Mapa::crear_inicio_temporal(Punto_ruta& pr) const
 
 bool Mapa::comprobacion_ancho(Espaciable::tpunto pta, Espaciable::tpunto ptb, double ancho) const
 {
-	auto pt_mas_vector=[](Punto_2d<double> pt, Vector_2d<double> v, double fac)
+	auto pt_mas_vector=[](ldt::point_2d<double> pt, ldt::vector_2d<double> v, double fac)
 	{
 		auto res=pt;
 		res.x+=v.x * fac;
@@ -126,11 +126,11 @@ bool Mapa::comprobacion_ancho(Espaciable::tpunto pta, Espaciable::tpunto ptb, do
 	};
 
 	//Coger el vector entre los puntos, desplazar perpendicularmente, probar más posiciones.
-	auto v=obtener_para_puntos_cartesiano(pta.x, pta.y, ptb.x, ptb.y).perpendicular();
+	auto v=vector_from_points(pta, ptb).right_normal();
 
 	auto ptc=pt_mas_vector(pta, v, ancho), ptd=pt_mas_vector(ptb, v, ancho);
 	if(!visibilidad_entre_puntos(ptc, ptd)) return false;
-	
+
 	auto pte=pt_mas_vector(pta, v, -ancho), ptf=pt_mas_vector(ptb, v, -ancho);
 	if(!visibilidad_entre_puntos(pte, ptf)) return false;
 

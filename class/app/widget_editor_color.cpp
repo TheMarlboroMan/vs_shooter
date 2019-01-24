@@ -6,7 +6,7 @@
 
 using namespace App;
 
-Widget_editor_color::Widget_editor_color(const DLibV::Fuente_TTF& fuente, tcolor& f, tcolor& l)
+Widget_editor_color::Widget_editor_color(const ldv::ttf_font& fuente, tcolor& f, tcolor& l)
 	:color_fondo(f), color_linea(l), cerrar(false), indice_actual(min_indice), t_pulsado(0.0f)
 {
 	layout.mapear_fuente("akashi", fuente);

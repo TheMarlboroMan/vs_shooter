@@ -6,7 +6,7 @@
 
 using namespace App;
 
-Widget_editor_obstaculo::Widget_editor_obstaculo(const DLibV::Fuente_TTF& fuente, Obstaculo& o)
+Widget_editor_obstaculo::Widget_editor_obstaculo(const ldv::ttf_font& fuente, Obstaculo& o)
 	:elemento(o), tipo(elemento.acc_tipo()),
 	cerrar{false}, indice_actual{min_indice}, t_pulsado{0.0f}
 {

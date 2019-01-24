@@ -25,7 +25,7 @@ catch(std::runtime_error& e)
 
 void Configuracion_base::grabar()
 {
-	using namespace Herramientas_proyecto;
+	using namespace tools;
 	dnot_token_opciones_serializador os;
 	os.tabular_profundidad=true;
 	std::ofstream f(ruta_fichero);
@@ -40,7 +40,7 @@ void Configuracion_base::grabar()
 
 const tools::dnot_token& Configuracion_base::token_por_ruta(const std::string& c) const
 {
-	using namespace Herramientas_proyecto;
+	using namespace tools;
 	const dnot_token * p=&token;
 	auto v=explotar(c, ':');
 	for(const auto& clave : v) 
@@ -59,7 +59,7 @@ const tools::dnot_token& Configuracion_base::token_por_ruta(const std::string& c
 
 tools::dnot_token& Configuracion_base::token_por_ruta(const std::string& c)
 {
-	using namespace Herramientas_proyecto;
+	using namespace tools;
 	dnot_token * p=&token;
 	auto v=explotar(c, ':');
 	for(const auto& clave : v) p=&p->acc_tokens()[clave];

@@ -61,7 +61,7 @@ class Controlador_principal:
 	Bloque_input				obtener_bloque_input(DFramework::Input& input, const Traduccion_input&) const;
 
 	DLibH::Log_base&			log;
-	const DLibV::Fuente_TTF&		fuente_akashi;
+	const ldv::ttf_font&		fuente_akashi;
 
 	ldv::camera				camara;
 	Mapa					mapa;

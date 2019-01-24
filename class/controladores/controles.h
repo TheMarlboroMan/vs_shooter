@@ -47,7 +47,7 @@ class Controlador_controles:
 
 	DLibH::Log_base&			log;
 	App::App_config& 			config;
-	const DLibV::Fuente_TTF&		fuente_akashi;
+	const ldv::ttf_font&		fuente_akashi;
 
 	std::map<int, tinput>			controles;
 	std::string				str_controles, str_actual;

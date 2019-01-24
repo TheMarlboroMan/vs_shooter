@@ -14,7 +14,7 @@ class Widget_editor_obstaculo:
 {
 	public:
 
-				Widget_editor_obstaculo(const DLibV::Fuente_TTF&, Obstaculo&);
+				Widget_editor_obstaculo(const ldv::ttf_font&, Obstaculo&);
 	
 	virtual void 		dibujar(ldv::screen&);
 	virtual void		inicializar(DFramework::Input&);
