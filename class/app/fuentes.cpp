@@ -2,7 +2,7 @@
 
 using namespace App;
 
-const DLibV::Fuente_TTF& Fuentes::obtener_fuente(const std::string f, int t) const
+const ldv::ttf_font& Fuentes::obtener_fuente(const std::string f, int t) const
 {
 	if(!fuentes.count({f, t}))
 	{
@@ -16,6 +16,6 @@ void Fuentes::registrar_fuente(const std::string f, int t)
 {
 	if(!fuentes.count({f, t}))
 	{
-		fuentes.insert( std::pair<info_fuente, DLibV::Fuente_TTF>({f, t}, DLibV::Fuente_TTF("data/fuentes/"+f+".ttf", t) ) );
+		fuentes.insert( std::pair<info_fuente, ldv::ttf_font>({f, t}, ldv::ttf_font("data/fuentes/"+f+".ttf", t) ) );
 	}
 }

@@ -6,7 +6,7 @@
 
 #include <iostream>
 
-#include <video/fuente_ttf/fuente_ttf.h>
+#include <video/ttf_font/ttf_font.h>
 
 namespace App
 {
@@ -27,12 +27,12 @@ class Fuentes
 {
 	public:
 
-	const DLibV::Fuente_TTF&			obtener_fuente(const std::string, int) const;
-	void						registrar_fuente(const std::string, int);
+	const ldv::ttf_font&					obtener_fuente(const std::string, int) const;
+	void									registrar_fuente(const std::string, int);
 
 	private:
 
-	std::map<info_fuente, DLibV::Fuente_TTF>	fuentes;
+	std::map<info_fuente, ldv::ttf_font>	fuentes;
 };
 
 }
