@@ -7,7 +7,8 @@
 #include "input.h"
 #include "audio.h"
 #include "cargador_recursos.h"
-#include <class/controlador_argumentos.h>
+#include <class/arg_manager.h>
+#include <class/fps_counter.h>
 
 /**
 * El Kernel es propietario de los recursos y la interface de input. No es
@@ -29,7 +30,7 @@ class Kernel
 {
 	public:
 
-				Kernel(Herramientas_proyecto::Controlador_argumentos&, Kernel_driver_interface&, Configuracion_base&);
+				Kernel(tools::arg_manager&, Kernel_driver_interface&, Configuracion_base&);
 	void 			ciclar_modo_pantalla();
 	int			acc_fps() const {return controlador_fps.acc_frames_contados();}
 
@@ -52,8 +53,8 @@ class Kernel
 
 	float paso_delta;
 
-	Herramientas_proyecto::Controlador_argumentos& 	controlador_argumentos;
-	DLibH::Controlador_fps_SDL 			controlador_fps;
+	tools::arg_manager& 	controlador_argumentos;
+	tools::fps_counter 			controlador_fps;
 	ldv::screen 				pantalla;
 	Input						input;
 

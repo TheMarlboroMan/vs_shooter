@@ -9,22 +9,22 @@ using namespace App;
 Widget_editor_color::Widget_editor_color(const ldv::ttf_font& fuente, tcolor& f, tcolor& l)
 	:color_fondo(f), color_linea(l), cerrar(false), indice_actual(min_indice), t_pulsado(0.0f)
 {
-	layout.mapear_fuente("akashi", fuente);
-	layout.parsear("data/layout/widget_color.dnot", "layout");
+	layout.map_font("akashi", fuente);
+	layout.parse("data/layout/widget_color.dnot", "layout");
 
 	actualizar_layout();
 }
-	
+
 void Widget_editor_color::dibujar(ldv::screen& pantalla)
 {
-	using namespace DLibH;
+	using namespace ldt;
 
-	layout.draw(pantalla);	
+	layout.draw(pantalla);
 }
 
 void Widget_editor_color::input(DFramework::Input& input, float delta)
 {
-	if(input.es_input_down(Input::escape)) 
+	if(input.es_input_down(Input::escape))
 	{
 		cerrar=true;
 		return;
@@ -38,7 +38,7 @@ void Widget_editor_color::input(DFramework::Input& input, float delta)
 
 	if(input.es_eventos_input_texto ())
 	{
-		static_cast<ldv::ttf_font *>(layout.obtener_por_id("txt_input"))->asignar(input.acc_input_texto());
+		static_cast<ldv::ttf_representation *>(layout.get_by_id("txt_input"))->set_text(input.acc_input_texto());
 	}
 
 	if(input.es_input_down(Input::enter) && input.acc_input_texto().size())
@@ -53,7 +53,7 @@ void Widget_editor_color::input(DFramework::Input& input, float delta)
 
 		cambiar_por_indice(indice_actual, val);
 		input.vaciar_input_texto();
-		static_cast<ldv::ttf_font *>(layout.obtener_por_id("txt_input"))->asignar("");
+		static_cast<ldv::ttf_representation *>(layout.get_by_id("txt_input"))->set_text("");
 	}
 }
 
@@ -100,8 +100,8 @@ void Widget_editor_color::cambiar_seleccion(int dir)
 	if(indice_actual < min_indice) indice_actual=min_indice;
 	else if(indice_actual > max_indice) indice_actual=max_indice;
 
-	int y=layout.const_int("y_selector")+(indice_actual * layout.const_int("salto_selector"));
-	layout.obtener_por_id("selector")->go_to(layout.const_int("x_selector"), y);
+	int y=layout.get_int("y_selector")+(indice_actual * layout.get_int("salto_selector"));
+	layout.get_by_id("selector")->go_to({layout.get_int("x_selector"), y});
 }
 
 void Widget_editor_color::cambiar_color(int dir, float delta)
@@ -132,7 +132,7 @@ void Widget_editor_color::cambiar(int val, int& ref, const std::string& id)
 	ref=val;
 
 	std::string cad_final=std::to_string(val);
-	static_cast<ldv::ttf_font *>(layout.obtener_por_id(id))->asignar(cad_final);
+	static_cast<ldv::ttf_representation *>(layout.get_by_id(id))->set_text(cad_final);
 
 	actualizar_colores();
 }
@@ -153,13 +153,12 @@ void Widget_editor_color::actualizar_layout()
 
 void Widget_editor_color::actualizar_colores()
 {
-	DLibV::Representacion_primitiva_caja * fondo=static_cast<DLibV::Representacion_primitiva_caja *>(layout.obtener_por_id("caja_frente"));
-	DLibV::Representacion_primitiva_caja * linea=static_cast<DLibV::Representacion_primitiva_caja *>(layout.obtener_por_id("caja_linea"));
+	ldv::box_representation * fondo=static_cast<ldv::box_representation *>(layout.get_by_id("caja_frente"));
+	ldv::box_representation * linea=static_cast<ldv::box_representation *>(layout.get_by_id("caja_linea"));
 
-	auto f=[](DLibV::Representacion_primitiva_caja& rep, tcolor col)
+	auto f=[](ldv::box_representation& rep, tcolor col)
 	{
-		rep.mut_rgb(col.r, col.g, col.b);
-		rep.set_alpha(col.a);
+		rep.set_color({col.r, col.g, col.b, col.a});
 	};
 
 	f(*fondo, color_fondo);

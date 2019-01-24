@@ -4,14 +4,14 @@ using namespace DFramework;
 
 void Input::turno()
 {
-	controles_sdl.recoger();
+	controles_sdl.loop();
 }
 
 Input::Resultado_lookup Input::obtener(int i) const
 {
 	//Esto puede dar problemas en el futuro si queremos usar el mismo
 	//input para dos cosas distintas.
-	//Vamos a cachear cada input en el dispositivo que le pertenece... 
+	//Vamos a cachear cada input en el dispositivo que le pertenece...
 
 	auto it=lookup.find(i);
 
@@ -42,11 +42,11 @@ Input::Resultado_lookup Input::obtener(int i) const
 
 		if(mapa_teclado.count(i))
 		{
-			f(mapa_teclado, Resultado_lookup::TECLADO); 
+			f(mapa_teclado, Resultado_lookup::TECLADO);
 		}
 		else if(mapa_raton.count(i))
 		{
-			f(mapa_raton, Resultado_lookup::RATON); 
+			f(mapa_raton, Resultado_lookup::RATON);
 		}
 		else if(mapa_joystick.count(i))
 		{
@@ -59,7 +59,7 @@ Input::Resultado_lookup Input::obtener(int i) const
 
 bool Input::es_senal_salida() const
 {
-	return controles_sdl.es_senal_salida();
+	return controles_sdl.is_exit_signal();
 }
 
 bool Input::es_input_down(int i) const
@@ -68,16 +68,16 @@ bool Input::es_input_down(int i) const
 	switch(rl.mapa)
 	{
 		case Resultado_lookup::TECLADO:
-			for(auto val : rl.val) 
-				if(controles_sdl.es_tecla_down(val.val)) return true;
+			for(auto val : rl.val)
+				if(controles_sdl.is_key_down(val.val)) return true;
 		break;
 		case Resultado_lookup::RATON:
-			for(auto val : rl.val) 
-				if(controles_sdl.es_boton_down(val.val)) return true;
+			for(auto val : rl.val)
+				if(controles_sdl.is_mouse_button_down(val.val)) return true;
 		break;
 		case Resultado_lookup::JOYSTICK:
-			for(auto val : rl.val) 
-				if(controles_sdl.es_joystick_boton_down(val.indice, val.val)) return true;
+			for(auto val : rl.val)
+				if(controles_sdl.is_joystick_button_down(val.indice, val.val)) return true;
 		break;
 		default: break;
 	}
@@ -91,16 +91,16 @@ bool Input::es_input_up(int i) const
 	switch(rl.mapa)
 	{
 		case Resultado_lookup::TECLADO:
-			for(auto val : rl.val) 
-				if(controles_sdl.es_tecla_up(val.val)) return true;
+			for(auto val : rl.val)
+				if(controles_sdl.is_key_up(val.val)) return true;
 		break;
 		case Resultado_lookup::RATON:
-			for(auto val : rl.val) 
-				if(controles_sdl.es_boton_up(val.val)) return true;
+			for(auto val : rl.val)
+				if(controles_sdl.is_mouse_button_up(val.val)) return true;
 		break;
 		case Resultado_lookup::JOYSTICK:
-			for(auto val : rl.val) 
-				if(controles_sdl.es_joystick_boton_up(val.indice, val.val)) return true;
+			for(auto val : rl.val)
+				if(controles_sdl.is_joystick_button_up(val.indice, val.val)) return true;
 		break;
 		default: break;
 	}
@@ -114,16 +114,16 @@ bool Input::es_input_pulsado(int i) const
 	switch(rl.mapa)
 	{
 		case Resultado_lookup::TECLADO:
-			for(auto val : rl.val) 
-				if(controles_sdl.es_tecla_pulsada(val.val)) return true;
+			for(auto val : rl.val)
+				if(controles_sdl.is_key_pressed(val.val)) return true;
 		break;
 		case Resultado_lookup::RATON:
 			for(auto val : rl.val)
-				if(controles_sdl.es_boton_pulsado(val.val)) return true;
+				if(controles_sdl.is_mouse_button_pressed(val.val)) return true;
 		break;
 		case Resultado_lookup::JOYSTICK:
-			for(auto val : rl.val) 
-				if(controles_sdl.es_joystick_boton_pulsado(val.indice, val.val)) return true;
+			for(auto val : rl.val)
+				if(controles_sdl.is_joystick_button_pressed(val.indice, val.val)) return true;
 		break;
 		default: break;
 	}
@@ -131,7 +131,7 @@ bool Input::es_input_pulsado(int i) const
 	return false;
 }
 
-//Esta es la función a la que se llama en primer lugar desde el Kernel. 
+//Esta es la función a la que se llama en primer lugar desde el Kernel.
 //Cargará todos los inputs registrados por la aplicación.
 //Se mira primero el tipo de input y luego se hace corresponder la
 //clave de aplicación con la clave SDL.
@@ -172,20 +172,20 @@ void Input::limpiar(int clave)
 
 Input::Entrada Input::obtener_entrada() const
 {
-	if(controles_sdl.recibe_eventos_teclado_down())
+	if(controles_sdl.is_event_keyboard_down())
 	{
-		return Entrada{Entrada::ttipo::teclado, controles_sdl.obtener_tecla_down(), 0};
+		return Entrada{Entrada::ttipo::teclado, controles_sdl.get_key_down_index(), 0};
 	}
-	else if(controles_sdl.recibe_eventos_boton_raton())
+	else if(controles_sdl.is_event_mouse_button_down())
 	{
-		return Entrada{Entrada::ttipo::raton, controles_sdl.obtener_boton_down(), 0};
+		return Entrada{Entrada::ttipo::raton, controles_sdl.get_mouse_button_down_index(), 0};
 	}
-	else if(controles_sdl.recibe_eventos_boton_joystick_down())
+	else if(controles_sdl.is_event_joystick_button_down())
 	{
-		int cantidad=controles_sdl.acc_cantidad_joysticks(), i=0;
+		int cantidad=controles_sdl.get_joysticks_size(), i=0;
 		while(i < cantidad)
 		{
-			int btn=controles_sdl.obtener_joystick_boton_down(i);
+			int btn=controles_sdl.get_joystick_button_down_index(i);
 			if(btn >= 0) return Entrada{Entrada::ttipo::joystick, btn, i};
 			++i;
 		}
@@ -202,13 +202,13 @@ Input::Entrada Input::localizar_entrada(int i) const
 
 	switch(l.mapa)
 	{
-		case Resultado_lookup::NADA:	
+		case Resultado_lookup::NADA:
 		break;
-		
+
 		case Resultado_lookup::TECLADO:
 			res.tipo=Entrada::ttipo::teclado;
 			res.codigo=l.val[0].val;
-			
+
 		break;
 
 		case Resultado_lookup::RATON:

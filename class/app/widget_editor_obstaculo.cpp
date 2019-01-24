@@ -10,22 +10,20 @@ Widget_editor_obstaculo::Widget_editor_obstaculo(const ldv::ttf_font& fuente, Ob
 	:elemento(o), tipo(elemento.acc_tipo()),
 	cerrar{false}, indice_actual{min_indice}, t_pulsado{0.0f}
 {
-	layout.mapear_fuente("akashi", fuente);
-	layout.parsear("data/layout/widget_obstaculo.dnot", "layout");
+	layout.map_font("akashi", fuente);
+	layout.parse("data/layout/widget_obstaculo.dnot", "layout");
 
 	actualizar_layout();
 }
-	
+
 void Widget_editor_obstaculo::dibujar(ldv::screen& pantalla)
 {
-	using namespace DLibH;
-
-	layout.draw(pantalla);	
+	layout.draw(pantalla);
 }
 
 void Widget_editor_obstaculo::input(DFramework::Input& input, float delta)
 {
-	if(input.es_input_down(Input::escape)) 
+	if(input.es_input_down(Input::escape))
 	{
 		cerrar=true;
 		return;
@@ -49,8 +47,8 @@ void Widget_editor_obstaculo::cambiar_seleccion(int dir)
 	if(indice_actual < min_indice) indice_actual=min_indice;
 	else if(indice_actual > max_indice) indice_actual=max_indice;
 
-	int y=layout.const_int("y_selector")+(indice_actual * layout.const_int("salto_selector"));
-	layout.obtener_por_id("selector")->go_to(layout.const_int("x_selector"), y);
+	int y=layout.get_int("y_selector")+(indice_actual * layout.get_int("salto_selector"));
+	layout.get_by_id("selector")->go_to({layout.get_int("x_selector"), y});
 }
 
 void Widget_editor_obstaculo::cambiar_valor(int dir, float delta)
@@ -106,7 +104,7 @@ void Widget_editor_obstaculo::actualizar_layout()
 			case Obstaculo::ttipos::inocuo:	cad_final="Inocuo"; break;
 		}
 
-		static_cast<ldv::ttf_font *>(layout.obtener_por_id(id))->asignar(cad_final);
+		static_cast<ldv::ttf_representation *>(layout.get_by_id(id))->set_text(cad_final);
 	};
 
 	actualizar_tipo("txt_tipo", tipo);
@@ -121,5 +119,3 @@ void Widget_editor_obstaculo::inicializar(DFramework::Input&)
 {
 
 }
-
-

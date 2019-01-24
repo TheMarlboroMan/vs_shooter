@@ -4,11 +4,11 @@
 #include "eventos.h"
 #include "estados.h"
 #include "input.h"
-#include <video/pantalla/pantalla.h>
+#include <video/screen/screen.h>
 
 /**
 * Interface para un controlador. Los controladores deben ser registrados en
-* el director de estados para que los cambios de estado sean posibles y 
+* el director de estados para que los cambios de estado sean posibles y
 * pueda inyectarse la cola de eventos.
 */
 
@@ -20,10 +20,10 @@ class Controlador_interface
 	public:
 
 	Controlador_interface()
-		:cola_eventos(nullptr), estados(nullptr), abandonar(false), romper(false) 
+		:cola_eventos(nullptr), estados(nullptr), abandonar(false), romper(false)
 	{}
 
-	virtual ~Controlador_interface() 
+	virtual ~Controlador_interface()
 	{}
 
 	void 				mut_debug(const std::string& c) {debug=c;}

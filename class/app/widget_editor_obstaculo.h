@@ -1,7 +1,7 @@
 #ifndef WIDGET_EDITOR_OBSTACULO_H
 #define WIDGET_EDITOR_OBSTACULO_H
 
-#include <class/compositor_vista.h>
+#include <class/view_composer.h>
 
 #include "widget_editor_interface.h"
 #include "obstaculo.h"
@@ -9,13 +9,13 @@
 namespace App
 {
 
-class Widget_editor_obstaculo: 
+class Widget_editor_obstaculo:
 	public Widget_editor_interface
 {
 	public:
 
 				Widget_editor_obstaculo(const ldv::ttf_font&, Obstaculo&);
-	
+
 	virtual void 		dibujar(ldv::screen&);
 	virtual void		inicializar(DFramework::Input&);
 	virtual void		input(DFramework::Input&, float);
@@ -29,7 +29,7 @@ class Widget_editor_obstaculo:
 	void			cambiar_valor(int, float);
 	void			cambiar_tipo();
 
-	Herramientas_proyecto::Compositor_vista		layout;
+	tools::view_composer		layout;
 	Obstaculo&		elemento;
 	Obstaculo::ttipos	tipo;
 	bool			cerrar;
