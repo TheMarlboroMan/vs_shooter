@@ -15,24 +15,24 @@ Espaciable::Espaciable(const tpoligono& p)
 
 void Espaciable::establecer_posicion(double x, double y)
 {
-	poligono.centrar_en({x, y});
+	poligono.center_in({x, y});
 }
 
 void Espaciable::mover(double x, double y)
 {
-	auto c=poligono.acc_centro();
-	poligono.centrar_en({c.x+x, c.y+y});
+	auto c=poligono.get_rotation_center();
+	poligono.center_in({c.x+x, c.y+y});
 }
 
 
 bool Espaciable::en_colision_con(const Espaciable& e) const
 {
-	return colision_poligono_SAT(poligono, e.poligono);
+	return SAT_collision_check(poligono, e.poligono);
 }
 
 void Espaciable::desplazar_angulo_velocidad(double angulo, double velocidad)
 {
-	DLibH::Vector_2d<double> v=vector_unidad_para_angulo_cartesiano(angulo);
-	DLibH::Punto_2d<double> pd{v.x * velocidad, v.y * velocidad};
-	poligono.desplazar(pd);
+	ldt::vector_2d<double> v=vector_from_angle(angulo);
+	ldt::point_2d<double> pd{v.x * velocidad, v.y * velocidad};
+	poligono.move(pd);
 }

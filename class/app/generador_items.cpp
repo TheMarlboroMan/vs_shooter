@@ -1,9 +1,8 @@
 #include "generador_items.h"
 
-#include <video/representacion/representacion_grafica/representacion_bitmap/representacion_bitmap.h>
-#include <video/gestores/gestor_texturas.h>
+#include <video/representation/raster/bitmap/bitmap_representation.h>
 
-#include <class/generador_numeros.h>
+#include <class/number_generator.h>
 
 using namespace App;
 
@@ -21,14 +20,14 @@ void Generador_items::turno(float delta)
 		tiempo_restante-=delta;
 		if(tiempo_restante < 0.0f) tiempo_restante=0.0f;
 	}
-	
+
 }
 
 void Generador_items::reiniciar()
 {
 	tiempo_restante=6.0;
 
-	Herramientas_proyecto::Generador_int gen(0, 3);
+	tools::int_generator gen(0, 3);
 	switch(gen())
 	{
 		case 0: tipo=titems::triple; break;
@@ -40,21 +39,20 @@ void Generador_items::reiniciar()
 
 void Generador_items::formar_poligono()
 {
-	poligono.insertar_vertice({-5.0, 10.0});
-	poligono.insertar_vertice({5.0, 10.0});
-	poligono.insertar_vertice({10.0, 5.0});
-	poligono.insertar_vertice({10.0, -5.0});
-	poligono.insertar_vertice({5.0, -10.0});
-	poligono.insertar_vertice({-5.0, -10.0});
-	poligono.insertar_vertice({-10.0, -5.0});
-	poligono.insertar_vertice({-10.0, 5.0});
-	poligono.cerrar();
-	poligono.mut_centro({0.0, 0.0});
+	poligono.add_vertex({-5.0, 10.0});
+	poligono.add_vertex({5.0, 10.0});
+	poligono.add_vertex({10.0, 5.0});
+	poligono.add_vertex({10.0, -5.0});
+	poligono.add_vertex({5.0, -10.0});
+	poligono.add_vertex({-5.0, -10.0});
+	poligono.add_vertex({-10.0, -5.0});
+	poligono.add_vertex({-10.0, 5.0});
+	poligono.set_rotation_center({0.0, 0.0});
 }
 
-void Generador_items::dibujar(Representador& r, DLibV::Pantalla& pantalla, const DLibV::Camara& camara) const
+void Generador_items::dibujar(Representador& r, ldv::screen& pantalla, const ldv::camera& camara, const ldv::resource_manager& _rm) const
 {
-	if(!tiempo_restante) 
+	if(!tiempo_restante)
 	{
 		int indice=0;
 
@@ -66,12 +64,12 @@ void Generador_items::dibujar(Representador& r, DLibV::Pantalla& pantalla, const
 			case titems::divide:	indice=5; break;
 		}
 
-		DLibV::Representacion_bitmap bmp(DLibV::Gestor_texturas::obtener(indice));
+		ldv::bitmap_representation bmp(_rm.get_texture(indice));
 
-		auto c=poligono.acc_centro();
-		bmp.establecer_modo_blend(DLibV::Representacion::BLEND_ALPHA);
-		bmp.ir_a(c.x - 25, -c.y - 25);
-		bmp.volcar(pantalla, camara);
+		auto c=poligono.get_rotation_center();
+		bmp.set_blend(ldv::representation::blends::alpha);
+		bmp.go_to({c.x - 25, -c.y - 25});
+		bmp.draw(pantalla, camara);
 
 	}
 
