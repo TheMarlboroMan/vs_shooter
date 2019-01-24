@@ -54,10 +54,10 @@ class App_config:
 	void configurar_jugador(const std::string& ruta, input_jugador j)
 	{
 		auto& tok=token_por_ruta(ruta);
-		auto& l=tok.acc_lista();
-		l[0].asignar(j.tipo);
-		l[1].asignar(j.device);
-		l[2].asignar(j.codigo);
+		auto& l=tok.get_vector();
+		l[0].set(j.tipo);
+		l[1].set(j.device);
+		l[2].set(j.codigo);
 	};
 
 	std::string ruta_jugador(const std::string& tipo, int j) const
@@ -66,7 +66,7 @@ class App_config:
 	}
 
 	input_jugador token_por_ruta_jugador(const std::string& tipo, int j) const
-	{	
+	{
 		const auto& tok=token_por_ruta(ruta_jugador(tipo, j));
 		return input_jugador{tok[0], tok[1], tok[2]};
 	}
@@ -82,7 +82,7 @@ class App_config:
 	////////////////////////////////////
 	// Implementacion...
 
-	protected: 
+	protected:
 
 	std::string obtener_clave_version_archivo() const {return "config:meta:v";}
 	std::string obtener_version_archivo() const {return "1";}

@@ -3,7 +3,7 @@
 
 #include "app_config.h"
 #include "../../framework/kernel_driver_interface.h"
-#include <input/controles_sdl/controles_sdl.h>
+#include <input/sdl_input/sdl_input.h>
 
 namespace App
 {

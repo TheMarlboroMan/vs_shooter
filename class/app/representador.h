@@ -1,11 +1,11 @@
 #ifndef REPRESENTADOR_H
 #define REPRESENTADOR_H
 
-#include <video/pantalla/pantalla.h>
-#include <video/camara/camara.h>
-#include <video/representacion/representacion_primitiva/representacion_primitiva_poligono/representacion_primitiva_poligono.h>
-#include <video/representacion/representacion_primitiva/representacion_primitiva_linea/representacion_primitiva_linea.h>
-#include <herramientas/poligono_2d/poligono_2d.h>
+#include <video/screen/screen.h>
+#include <video/camera/camera.h>
+#include <video/representation/primitive/polygon/polygon_representation.h>
+#include <video/representation/primitive/line/line_representation.h>
+#include <tools/2d_polygon/2d_polygon.h>
 #include "color.h"
 
 
@@ -17,19 +17,19 @@ class Representador
 {
 	public:
 
-	void 			dibujar_poligono(DLibV::Pantalla&, const DLibH::Poligono_2d<double>&, tcolor, const DLibV::Camara&);
-	void 			dibujar_poligono_lineas(DLibV::Pantalla&, const DLibH::Poligono_2d<double>&, tcolor, const DLibV::Camara&);
-	void 			dibujar_segmento(DLibV::Pantalla&, const DLibH::Segmento_2d<double>&, tcolor, const DLibV::Camara&);
+	void 			dibujar_poligono(ldv::screen&, const ldt::2d_polygon<double>&, tcolor, const ldv::camera&);
+	void 			dibujar_poligono_lineas(ldv::screen&, const ldt::2d_polygon<double>&, tcolor, const ldv::camera&);
+	void 			dibujar_segmento(ldv::screen&, const DLibH::Segmento_2d<double>&, tcolor, const ldv::camera&);
 
 
 
-	void 			dibujar_poligono(DLibV::Pantalla&, const DLibH::Poligono_2d<double>&, tcolor);
-	void 			dibujar_poligono_lineas(DLibV::Pantalla&, const DLibH::Poligono_2d<double>&, tcolor);
-	void 			dibujar_segmento(DLibV::Pantalla&, const DLibH::Segmento_2d<double>&, tcolor);
+	void 			dibujar_poligono(ldv::screen&, const ldt::2d_polygon<double>&, tcolor);
+	void 			dibujar_poligono_lineas(ldv::screen&, const ldt::2d_polygon<double>&, tcolor);
+	void 			dibujar_segmento(ldv::screen&, const DLibH::Segmento_2d<double>&, tcolor);
 
-	void 			dibujar_poligono_sin_transformar(DLibV::Pantalla&, const DLibH::Poligono_2d<double>&, tcolor);
+	void 			dibujar_poligono_sin_transformar(ldv::screen&, const ldt::2d_polygon<double>&, tcolor);
 
-	void 			dibujar_rejilla(DLibV::Pantalla&, int grid, tcolor, double nx, double ny, double zoom);
+	void 			dibujar_rejilla(ldv::screen&, int grid, tcolor, double nx, double ny, double zoom);
 
 	private:
 

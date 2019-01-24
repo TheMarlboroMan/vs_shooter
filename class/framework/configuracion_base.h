@@ -7,8 +7,8 @@
 #endif
 
 /*
-* Esta clase lee y escribe en un archivo los datos de configuración de la 
-* aplicación. Al leer los datos de configuración los almacena entre sus 
+* Esta clase lee y escribe en un archivo los datos de configuración de la
+* aplicación. Al leer los datos de configuración los almacena entre sus
 * propiedades. Podemos (y debemos) extenderla para la configuración de cada
 * proyecto implementando todos los métodos virtuales puros que tiene.
 */
@@ -62,18 +62,18 @@ class Configuracion_base
 
 	Configuracion_base(const std::string& ruta);
 
-	protected: 
+	protected:
 
 	//Conversor de lo que sea a string...
 	template <typename T>
 	void 						configurar(const std::string& clave, T v)
 	{
 		auto& tok=token_por_ruta(clave);
-		tok.asignar(v);
+		tok.set(v);
 	}
 
-	const Herramientas_proyecto::Dnot_token&	token_por_ruta(const std::string& c) const;
-	Herramientas_proyecto::Dnot_token&		token_por_ruta(const std::string& c);
+	const tools::dnot_token&	token_por_ruta(const std::string& c) const;
+	tools::dnot_token&			token_por_ruta(const std::string& c);
 
 	////////////////////////////////////
 	// A implementar por clases que la extiendan...
@@ -95,9 +95,9 @@ class Configuracion_base
 	///////////////////////////////////
 	// Propiedades.
 
-	private:	
+	private:
 
-	Herramientas_proyecto::Dnot_token		token;
+	tools::dnot_token				token;
 	const std::string				ruta_fichero;
 };
 
