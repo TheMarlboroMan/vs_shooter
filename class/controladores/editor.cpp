@@ -234,7 +234,7 @@ void Controlador_editor::dibujar(ldv::screen& pantalla)
 		case tobjetocreado::arma: texto+=" [weapon]"; break;
 	}
 
-	DLibV::Representacion_TTF txt(fuente_akashi, {255, 255, 255, 255}, texto);
+	ldv::ttf_font txt(fuente_akashi, {255, 255, 255, 255}, texto);
 	txt.go_to(16, 380);
 	txt.draw(pantalla);
 

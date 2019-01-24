@@ -311,7 +311,7 @@ void Controlador_principal::dibujar_info_jugador(ldv::screen& pantalla, const Ju
 
 	std::string municion=std::to_string(m);
 	std::string texto=std::to_string(j.acc_salud())+" | "+std::to_string(j.acc_energia())+" - "+municion;
-	DLibV::Representacion_TTF txt(fuente_akashi, {(Uint8)jc.r, (Uint8)jc.g, (Uint8)jc.b, 192}, texto);
+	ldv::ttf_font txt(fuente_akashi, {(Uint8)jc.r, (Uint8)jc.g, (Uint8)jc.b, 192}, texto);
 	txt.go_to(x, y);
 	txt.draw(pantalla);
 }

@@ -83,7 +83,7 @@ void Controlador_ayuda_editor::despertar()
 			l+=cad+"\n";
 	}
 
-	static_cast<DLibV::Representacion_TTF *>(layout.obtener_por_id("txt_ayuda"))->asignar(l);
+	static_cast<ldv::ttf_font *>(layout.obtener_por_id("txt_ayuda"))->asignar(l);
 }
 
 void Controlador_ayuda_editor::dormir()

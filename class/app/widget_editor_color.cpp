@@ -38,7 +38,7 @@ void Widget_editor_color::input(DFramework::Input& input, float delta)
 
 	if(input.es_eventos_input_texto ())
 	{
-		static_cast<DLibV::Representacion_TTF *>(layout.obtener_por_id("txt_input"))->asignar(input.acc_input_texto());
+		static_cast<ldv::ttf_font *>(layout.obtener_por_id("txt_input"))->asignar(input.acc_input_texto());
 	}
 
 	if(input.es_input_down(Input::enter) && input.acc_input_texto().size())
@@ -53,7 +53,7 @@ void Widget_editor_color::input(DFramework::Input& input, float delta)
 
 		cambiar_por_indice(indice_actual, val);
 		input.vaciar_input_texto();
-		static_cast<DLibV::Representacion_TTF *>(layout.obtener_por_id("txt_input"))->asignar("");
+		static_cast<ldv::ttf_font *>(layout.obtener_por_id("txt_input"))->asignar("");
 	}
 }
 
@@ -132,7 +132,7 @@ void Widget_editor_color::cambiar(int val, int& ref, const std::string& id)
 	ref=val;
 
 	std::string cad_final=std::to_string(val);
-	static_cast<DLibV::Representacion_TTF *>(layout.obtener_por_id(id))->asignar(cad_final);
+	static_cast<ldv::ttf_font *>(layout.obtener_por_id(id))->asignar(cad_final);
 
 	actualizar_colores();
 }

@@ -144,11 +144,11 @@ void  Controlador_controles::dibujar(ldv::screen& pantalla)
 {
 	pantalla.limpiar(0, 0, 0, 255);
 
-	DLibV::Representacion_TTF txt(fuente_akashi, {255, 255, 255, 255}, str_actual);
+	ldv::ttf_font txt(fuente_akashi, {255, 255, 255, 255}, str_actual);
 	txt.go_to(16, 16);
 	txt.draw(pantalla);
 
-	DLibV::Representacion_TTF txt2(fuente_akashi, {255, 255, 255, 255}, str_controles);
+	ldv::ttf_font txt2(fuente_akashi, {255, 255, 255, 255}, str_controles);
 	txt2.go_to(16, 64);
 	txt2.draw(pantalla);
 }

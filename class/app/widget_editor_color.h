@@ -1,7 +1,7 @@
 #ifndef WIDGET_EDITOR_COLOR_H
 #define WIDGET_EDITOR_COLOR_H
 
-#include <class/compositor_vista.h>
+#include <class/view_composer.h>
 
 #include "widget_editor_interface.h"
 #include "color.h"
@@ -9,13 +9,13 @@
 namespace App
 {
 
-class Widget_editor_color: 
+class Widget_editor_color:
 	public Widget_editor_interface
 {
 	public:
 
 	Widget_editor_color(const ldv::ttf_font&, tcolor&, tcolor&);
-	
+
 	virtual void 	dibujar(ldv::screen&);
 	virtual void	inicializar(DFramework::Input&);
 	virtual void	input(DFramework::Input&, float);
@@ -32,7 +32,7 @@ class Widget_editor_color:
 	void		cambiar_por_indice(int indice, int val);
 	int		valor_por_indice(int indice) const;
 
-	Herramientas_proyecto::Compositor_vista		layout;
+	tools::view_composer		layout;
 	tcolor&		color_fondo;
 	tcolor&		color_linea;
 	bool		cerrar;

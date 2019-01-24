@@ -106,7 +106,7 @@ void Widget_editor_obstaculo::actualizar_layout()
 			case Obstaculo::ttipos::inocuo:	cad_final="Inocuo"; break;
 		}
 
-		static_cast<DLibV::Representacion_TTF *>(layout.obtener_por_id(id))->asignar(cad_final);
+		static_cast<ldv::ttf_font *>(layout.obtener_por_id(id))->asignar(cad_final);
 	};
 
 	actualizar_tipo("txt_tipo", tipo);

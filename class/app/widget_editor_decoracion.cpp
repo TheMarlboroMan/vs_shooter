@@ -11,22 +11,22 @@ Widget_editor_decoracion::Widget_editor_decoracion(const ldv::ttf_font& fuente, 
 	profundidad(d.acc_profundidad()), frente(d.es_frente()),
 	cerrar{false}, indice_actual{min_indice}, t_pulsado{0.0f}
 {
-	layout.mapear_fuente("akashi", fuente);
-	layout.parsear("data/layout/widget_decoracion.dnot", "layout");
+	layout.map_font("akashi", fuente);
+	layout.parse("data/layout/widget_decoracion.dnot", "layout");
 
 	actualizar_layout();
 }
-	
+
 void Widget_editor_decoracion::dibujar(ldv::screen& pantalla)
 {
-	using namespace DLibH;
+	using namespace ldt;
 
-	layout.draw(pantalla);	
+	layout.draw(pantalla);
 }
 
 void Widget_editor_decoracion::input(DFramework::Input& input, float delta)
 {
-	if(input.es_input_down(Input::escape)) 
+	if(input.es_input_down(Input::escape))
 	{
 		cerrar=true;
 		return;
@@ -40,7 +40,7 @@ void Widget_editor_decoracion::input(DFramework::Input& input, float delta)
 
 	if(input.es_eventos_input_texto ())
 	{
-		static_cast<DLibV::Representacion_TTF *>(layout.obtener_por_id("txt_input"))->asignar(input.acc_input_texto());
+		static_cast<ldv::ttf_representation *>(layout.get_by_id("txt_input"))->set_text(input.acc_input_texto());
 	}
 
 	if(input.es_input_down(Input::enter) && input.acc_input_texto().size() && es_indice_texto(indice_actual))
@@ -54,7 +54,7 @@ void Widget_editor_decoracion::input(DFramework::Input& input, float delta)
 		cambiar_numero(val, min_max_por_indice(indice_actual), referencia_por_indice(indice_actual));
 		actualizar_layout();
 		input.vaciar_input_texto();
-		static_cast<DLibV::Representacion_TTF *>(layout.obtener_por_id("txt_input"))->asignar("");
+		static_cast<ldv::ttf_representation *>(layout.get_by_id("txt_input"))->set_text("");
 	}
 }
 
@@ -69,8 +69,8 @@ void Widget_editor_decoracion::cambiar_seleccion(int dir)
 	if(indice_actual < min_indice) indice_actual=min_indice;
 	else if(indice_actual > max_indice) indice_actual=max_indice;
 
-	int y=layout.const_int("y_selector")+(indice_actual * layout.const_int("salto_selector"));
-	layout.obtener_por_id("selector")->go_to(layout.const_int("x_selector"), y);
+	int y=layout.get_int("y_selector")+(indice_actual * layout.get_int("salto_selector"));
+	layout.get_by_id("selector")->go_to({layout.get_int("x_selector"), y});
 }
 
 Widget_editor_decoracion::min_max Widget_editor_decoracion::min_max_por_indice(int indice) const
@@ -80,14 +80,14 @@ Widget_editor_decoracion::min_max Widget_editor_decoracion::min_max_por_indice(i
 		case 8: return {min_profundidad, max_profundidad}; break;
 		default: return {min_color, max_color}; break;
 	}
-	
+
 	return {0,0};
 }
 
 void Widget_editor_decoracion::cambiar_valor(int dir, float delta)
 {
 	auto f=[this](int dir, int indice)
-	{		
+	{
 		switch(indice)
 		{
 			case 9: frente=!frente; break;
@@ -145,18 +145,17 @@ void Widget_editor_decoracion::actualizar_layout()
 	auto actualizar_numero=[this](const std::string& id, int val)
 	{
 		std::string cad_final=std::to_string(val);
-		static_cast<DLibV::Representacion_TTF *>(layout.obtener_por_id(id))->asignar(cad_final);
+		static_cast<ldv::ttf_representation *>(layout.get_by_id(id))->set_text(cad_final);
 	};
 
 	auto actualizar_bool=[this](const std::string& id, bool val, const std::string& cad_true, const std::string& cad_false)
 	{
-		static_cast<DLibV::Representacion_TTF *>(layout.obtener_por_id(id))->asignar(val ? cad_true : cad_false);
+		static_cast<ldv::ttf_representation *>(layout.get_by_id(id))->set_text(val ? cad_true : cad_false);
 	};
 
-	auto f_color=[](DLibV::Representacion_primitiva_caja& rep, tcolor col)
+	auto f_color=[](ldv::box_representation& rep, tcolor col)
 	{
-		rep.mut_rgb(col.r, col.g, col.b);
-		rep.set_alpha(col.a);
+		rep.set_color({col.r, col.g, col.b, col.a});
 	};
 
 	actualizar_numero("txt_r_frente", color_frente.r);
@@ -170,8 +169,8 @@ void Widget_editor_decoracion::actualizar_layout()
 	actualizar_numero("txt_profundidad", profundidad);
 	actualizar_bool("txt_frente_fondo", frente, "Frente", "Fondo");
 
-	DLibV::Representacion_primitiva_caja * fondo=static_cast<DLibV::Representacion_primitiva_caja *>(layout.obtener_por_id("caja_frente"));
-	DLibV::Representacion_primitiva_caja * linea=static_cast<DLibV::Representacion_primitiva_caja *>(layout.obtener_por_id("caja_linea"));
+	ldv::box_representation * fondo=static_cast<ldv::box_representation *>(layout.get_by_id("caja_frente"));
+	ldv::box_representation * linea=static_cast<ldv::box_representation *>(layout.get_by_id("caja_linea"));
 	f_color(*fondo, color_frente);
 	f_color(*linea, color_linea);
 }
